@@ -8,6 +8,7 @@ import AlertErrors from '../Layouts/AlertErrors'
 import LoadingSpinner from '../Layouts/Loading'
 import Header from '../Layouts/Header'
 import { ProductsContext } from '../admin/products/ProductsContext'
+import { CartsContext } from '../admin/CartsContext'
 
 const sanitazeHTML = (html) => {
   return DOMPurify.sanitize(html)
@@ -16,6 +17,7 @@ const sanitazeHTML = (html) => {
 const DetailProductUser = () => {
 
   const { getProductBySlug } = useContext(ProductsContext)
+  const { addCarts, msgSuccess } = useContext(CartsContext)
 
   // state product
   const [image, setImage] = useState('')
@@ -37,7 +39,6 @@ const DetailProductUser = () => {
   const [cartStock, setCartStock] = useState('')
   const [cartNote, setCartNote] = useState('')
   const [qty, setQty] = useState(1)
-  const [success, setSuccess] = useState('')
   const [errors, setErrors] = useState('')
 
   const [incrementCount, setIncrementCount] = useState(false)
@@ -134,21 +135,23 @@ const DetailProductUser = () => {
     setLoadingSpinner(true)
     try {
       const total = getTotal()
-      const response = await axios.post('http://localhost:3001/products/add-cart', { idUser, idProduct, qty, cartSizeId, cartNote, total })
-      setSuccess(response.data.msg)
+      const data = {
+        idUser, idProduct, qty, cartSizeId, cartNote, total
+      }
+      await addCarts(data)
       setModalSuccess(true)
-      setTimeout(() => setModalSuccess(false), 2000)
     } catch (error) {
       console.log(error)
     } finally {
       setLoadingSpinner(false)
+      setTimeout(() => setModalSuccess(false), 2000)
     }
   }
 
   return (
     <>
       {loadingSpinner ? <LoadingSpinner /> : null}
-      {modalSuccess ? <ModalSuccess msg={success} close={() => setModalSuccess(false)} /> : null}
+      {modalSuccess ? <ModalSuccess msg={msgSuccess} close={() => setModalSuccess(false)} /> : null}
       <Header />
       <section className='mt-40 mb-96'>
         <div className='flex w-full'>

@@ -6,6 +6,7 @@ import axios from 'axios'
 import { useContext } from 'react'
 import { CategoriesContext } from '../admin/categories/CategoriesContext'
 import jwtDecode from 'jwt-decode'
+import { CartsContext } from '../admin/CartsContext'
 
 const Navbar = () => {
 
@@ -14,6 +15,7 @@ const Navbar = () => {
   const [showCat, setShowCat] = useState(false)
   const navigate = useNavigate()
   const { getCategories, categories } = useContext(CategoriesContext)
+  const { getCartsByUser, carts } = useContext(CartsContext)
 
   useEffect(() => {
     const getToken = async () => {
@@ -30,6 +32,8 @@ const Navbar = () => {
         }
       }
     }
+
+    getCartsByUser()
     getToken()
     getCategories()
   }, [])
@@ -95,7 +99,7 @@ const Navbar = () => {
                   <div className='relative'>
                     <a className='flex cursor-pointer text-textSecondary hover:text-textPrimary'>
                       <i className="uil uil-shopping-bag text-4xl font-bold"></i>
-                      <input className='absolute w-4 text-center left-5 bg-cyan-400 mt-1 rounded-md font-semibold border border-zinc-400 text-xs focus: outline-none cursor-pointer' readOnly />
+                      <input className='absolute w-4 text-center left-5 bg-cyan-400 mt-1 rounded-md font-semibold border border-zinc-400 text-xs focus: outline-none cursor-pointer' readOnly value={carts.length} />
                     </a>
                   </div>
                 </li>

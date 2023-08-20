@@ -18,57 +18,60 @@ import EditProduct from './components/admin/products/EditProduct'
 import { CategoriesProvider } from './components/admin/categories/CategoriesContext'
 import DetailProduct from './components/admin/products/detailProducts/DetailProduct'
 import DetailProductUser from './components/DetailProduct/DetailProductUser'
+import { CartsProvider } from './components/admin/CartsContext'
 
 function App() {
   return (
     <div className='font-URL'>
-      <CategoriesProvider>
-        <SubCategoriesProvider>
-          <ProductsProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path='/' element={<Home />} />
+      <CartsProvider>
+        <CategoriesProvider>
+          <SubCategoriesProvider>
+            <ProductsProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route path='/' element={<Home />} />
 
-                <Route path='/products/:slug/:slug' element={(<DetailProductUser />)} />
+                  <Route path='/products/:slug/:slug' element={(<DetailProductUser />)} />
 
-                <Route path='/login' element={<Login />} />
-                <Route path='/register' element={<Register />} />
+                  <Route path='/login' element={<Login />} />
+                  <Route path='/register' element={<Register />} />
 
-                {/* ROUTE ADMIN */}
-                <Route path='/admin/dashboard' element={<Dashboard />} />
+                  {/* ROUTE ADMIN */}
+                  <Route path='/admin/dashboard' element={<Dashboard />} />
 
-                <Route path='/admin/dashboard/categories' element={(<Categories />)} />
-                <Route path='/admin/dashboard/categories/add-category' element={(<>
-                  <NavbarAdmin /> <Categories /> <AddCategory />
-                </>)} />
-                <Route path='/admin/dashboard/categories/edit/:id' element={(<>
-                  <NavbarAdmin /> <Categories /> <EditCategory />
-                </>)} />
+                  <Route path='/admin/dashboard/categories' element={(<Categories />)} />
+                  <Route path='/admin/dashboard/categories/add-category' element={(<>
+                    <NavbarAdmin /> <Categories /> <AddCategory />
+                  </>)} />
+                  <Route path='/admin/dashboard/categories/edit/:id' element={(<>
+                    <NavbarAdmin /> <Categories /> <EditCategory />
+                  </>)} />
 
-                <Route path='/admin/dashboard/sub-categories' element={(<SubCategories />)} />
-                <Route path='/admin/dashboard/sub-categories/add-sub-categories' element={(<>
-                  <NavbarAdmin /> <SubCategories /> <AddSubCategories />
-                </>)} />
-                <Route path='/admin/dashboard/sub-categories/edit/:id' element={(<>
-                  <NavbarAdmin /> <SubCategories /> <EditSubCategory />
-                </>)} />
+                  <Route path='/admin/dashboard/sub-categories' element={(<SubCategories />)} />
+                  <Route path='/admin/dashboard/sub-categories/add-sub-categories' element={(<>
+                    <NavbarAdmin /> <SubCategories /> <AddSubCategories />
+                  </>)} />
+                  <Route path='/admin/dashboard/sub-categories/edit/:id' element={(<>
+                    <NavbarAdmin /> <SubCategories /> <EditSubCategory />
+                  </>)} />
 
-                <Route path='/admin/dashboard/products' element={(<Products />)} />
-                <Route path='/admin/dashboard/products/add-products' element={(<>
-                  <NavbarAdmin /> <AddProducts />
-                </>)} />
-                <Route path='/admin/dashboard/products/edit/' element={(<>
-                  <NavbarAdmin /> <EditProduct />
-                </>)} />
-                <Route path='/admin/dashboard/products/detail/:id' element={(<>
-                  <NavbarAdmin /> <DetailProduct />
-                </>)} />
+                  <Route path='/admin/dashboard/products' element={(<Products />)} />
+                  <Route path='/admin/dashboard/products/add-products' element={(<>
+                    <NavbarAdmin /> <AddProducts />
+                  </>)} />
+                  <Route path='/admin/dashboard/products/edit/' element={(<>
+                    <NavbarAdmin /> <EditProduct />
+                  </>)} />
+                  <Route path='/admin/dashboard/products/detail/:id' element={(<>
+                    <NavbarAdmin /> <DetailProduct />
+                  </>)} />
 
-              </Routes>
-            </BrowserRouter>
-          </ProductsProvider>
-        </SubCategoriesProvider>
-      </CategoriesProvider>
+                </Routes>
+              </BrowserRouter>
+            </ProductsProvider>
+          </SubCategoriesProvider>
+        </CategoriesProvider>
+      </CartsProvider>
     </div>
   )
 }
