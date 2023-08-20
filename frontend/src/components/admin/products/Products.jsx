@@ -70,9 +70,6 @@ const Products = () => {
                       Kategori
                     </th>
                     <th scope="col" className="px-4 py-3">
-                      Sub Kategori
-                    </th>
-                    <th scope="col" className="px-4 py-3">
                       Gambar
                     </th>
                     <th scope="col" className="px-4 py-3">
@@ -86,7 +83,6 @@ const Products = () => {
                       <td className='px-4 py-4 text-center'>{i + 1}</td>
                       <td className='px-4 py-4'>{product.title}</td>
                       <td className='px-4 py-4'>{product.id_category.title}</td>
-                      <td className='px-4 py-4'>{product.id_sub_category.title}</td>
                       <td className='px-4 py-4'>
                         <img src={product.url} className='w-28 h-24' />
                       </td>

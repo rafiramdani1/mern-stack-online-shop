@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React, { createContext, useEffect, useState } from 'react'
+import React, { createContext, useState } from 'react'
 
 export const CartsContext = createContext()
 
@@ -7,7 +7,6 @@ export const CartsProvider = ({ children }) => {
 
   const [carts, setCarts] = useState([])
   const [msgSuccess, setMsgSuccess] = useState('')
-  const [msgErrors, setMsgErrors] = useState('')
 
   // GET Carts By User
   const getCartsByUser = async () => {

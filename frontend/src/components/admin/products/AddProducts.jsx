@@ -9,11 +9,12 @@ import ModalSuccess from '../../layouts/ModalSuccess'
 import { CategoriesContext } from '../categories/CategoriesContext'
 import { ProductsContext } from './ProductsContext'
 import { SubCategoriesContext } from '../sub-categories/SubCategoriesContext'
+import slugify from 'slugify'
 
 const AddProducts = () => {
 
   const { getCategories, categories } = useContext(CategoriesContext)
-  const { addProduct, msgSuccess, msgError, clearError } = useContext(ProductsContext)
+  const { addProduct, msgSuccess, msgErrors, clearError } = useContext(ProductsContext)
   const { getSubCategoryByCategoryId } = useContext(SubCategoriesContext)
 
   useEffect(() => {
@@ -39,14 +40,14 @@ const AddProducts = () => {
   const handleTitle = (e) => {
     const value = e.target.value
     setTitle(value)
-    const newSlug = value.toLowerCase().replace(/\s+/g, '-')
+    const newSlug = slugify(value, { lower: true })
     setSlug(newSlug)
     clearError()
   }
 
   const handleSlug = (e) => {
     const value = e.target.value
-    const newSlug = value.toLowerCase().replace(/\s+/g, '-')
+    const newSlug = slugify(value, { lower: true })
     setSlug(newSlug)
     clearError()
   }
@@ -124,7 +125,7 @@ const AddProducts = () => {
               <div className='border-b border-zinc-200'></div>
               <form onSubmit={handleAddProduct} className="space-y-4 md:space-y-6">
 
-                {msgError && (<AlertErrors msg={msgError} close={clearError} />)}
+                {msgErrors && (<AlertErrors msg={msgErrors} close={clearError} />)}
 
                 <div className='flex'>
                   <div className='w-1/2 mr-3'>
@@ -216,6 +217,7 @@ const AddProducts = () => {
           </div>
         </div>
       </section>
+
     </>
   )
 }

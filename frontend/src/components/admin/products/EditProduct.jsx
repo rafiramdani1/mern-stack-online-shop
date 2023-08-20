@@ -2,13 +2,13 @@ import React, { useState, useEffect, useContext } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
-import axios from 'axios'
 import AlertErrors from '../../layouts/AlertErrors'
 import LoadingSpinner from '../../layouts/Loading'
 import ModalSuccess from '../../layouts/ModalSuccess'
 import { ProductsContext } from './ProductsContext'
 import { CategoriesContext } from '../categories/CategoriesContext'
 import { SubCategoriesContext } from '../sub-categories/SubCategoriesContext'
+import slugify from 'slugify'
 
 const EditProduct = () => {
 
@@ -30,8 +30,6 @@ const EditProduct = () => {
   const [price, setPrice] = useState('')
   const [image, setImage] = useState('')
   const [imgPreview, setImgPreview] = useState('')
-  const [success, setSuccess] = useState('')
-  const [errors, setErrors] = useState('')
   const [loadingSpinner, setLoadingSpinner] = useState(false)
   const [modalSuccess, setModalSuccess] = useState(false)
   const [subCategories, setSubCategories] = useState([])
@@ -75,14 +73,14 @@ const EditProduct = () => {
   const handleTitleChange = e => {
     const value = e.target.value
     setTitle(value)
-    const newSlug = value.toLowerCase().replace(/\s+/g, '-')
+    const newSlug = slugify(value, { lower: true })
     setSlug(newSlug)
     clearError()
   }
 
   const handleSlugChange = e => {
     const value = e.target.value
-    const newSlug = value.toLowerCase().replace(/\s+/g, '-')
+    const newSlug = slugify(value, { lower: true })
     setSlug(newSlug)
     clearError()
   }

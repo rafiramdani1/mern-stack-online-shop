@@ -1,4 +1,3 @@
-import axios from 'axios'
 import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ModalSuccess from '../../layouts/ModalSuccess'
@@ -6,6 +5,7 @@ import LoadingSpinner from '../../layouts/Loading'
 import AlertErrors from '../../layouts/AlertErrors'
 import { CategoriesContext } from '../categories/CategoriesContext'
 import { SubCategoriesContext } from './SubCategoriesContext'
+import slugify from 'slugify'
 
 const AddSubCategories = () => {
 
@@ -25,14 +25,14 @@ const AddSubCategories = () => {
   const handleChangeTitle = (e) => {
     const value = e.target.value
     setTitle(value)
-    const newSlug = value.toLowerCase().replace(/\s+/g, "-") // replace spasi
+    const newSlug = slugify(value, { lower: true })
     setSlug(newSlug)
     clearError()
   }
 
   const handleChangeSlug = (e) => {
     const value = e.target.value
-    const newSlug = value.toLowerCase().replace(/\s+/g, '-')
+    const newSlug = slugify(value, { lower: true })
     setSlug(newSlug)
     clearError()
   }
