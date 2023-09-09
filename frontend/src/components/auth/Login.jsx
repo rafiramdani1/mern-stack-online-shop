@@ -12,14 +12,13 @@ const Login = () => {
   const [errors, setErrors] = useState('')
   const navigate = useNavigate()
 
-
   useEffect(() => {
     const token = async () => {
       try {
         await axios.get('http://localhost:3001/auth/token')
         navigate('/')
       } catch (error) {
-        console.log(error.response.statusText)
+        return
       }
     }
     token()

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../Layouts/Loading'
+import AlertErrors from '../Layouts/AlertErrors'
 
 const Register = () => {
 
@@ -15,15 +16,7 @@ const Register = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = async () => {
-      try {
-        await axios.get('http://localhost:3001/auth/token')
-        navigate('/')
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    token()
+
   }, [])
 
   const handleUsername = (e) => {
@@ -87,13 +80,8 @@ const Register = () => {
                 </h1>
                 <form onSubmit={registerUser} className="space-y-4 md:space-y-6" action="#">
 
-                  {
-                    errors && (
-                      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                        <strong className="font-bold">{errors}</strong>
-                      </div>
-                    )
-                  }
+                  {errors && <AlertErrors msg={errors} close={() => setErrors('')} />}
+
                   {
                     success && (
                       <div className="bg-teal-100 border border-teal-400 text-teal-700 px-4 py-3 rounded relative" role="alert">

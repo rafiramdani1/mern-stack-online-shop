@@ -24,10 +24,10 @@ export const verifyEmail = async (req, res) => {
     if (tokens.verifyExp < Date.now()) {
       await Tokens.findOneAndRemove({ userId: req.params.id, token: req.params.token })
       await Users.findOneAndRemove({ _id: req.params.id })
-      return res.status(400).json({ msg: 'Token expired, please re-registered!', status: false })
+      return res.status(400).json({ msg: 'Token expired, silahkan registrasi ulang!', status: false })
     }
     await Users.updateOne({ _id: req.params.id }, { $set: { verified: true } })
     await Tokens.findOneAndRemove({ userId: req.params.id, token: req.params.token })
-    return res.status(200).json({ msg: 'Account has been actived, please login!', status: true })
+    return res.status(200).json({ msg: 'Akun telah terverifikasi, silahkan login', status: true })
   } catch (error) { return res.status(400).json({ msg: 'invalid link', status: false }) }
 }

@@ -7,34 +7,19 @@ import { useContext } from 'react'
 import { CategoriesContext } from '../admin/categories/CategoriesContext'
 import jwtDecode from 'jwt-decode'
 import { CartsContext } from '../admin/CartsContext'
+import { AuthContext } from '../auth/AuthContext'
 
 const Navbar = () => {
 
-  const [isLogin, setIsLogin] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
   const [showCat, setShowCat] = useState(false)
   const navigate = useNavigate()
+  const { authNavbar, isLogin, isAdmin } = useContext(AuthContext)
   const { getCategories, categories } = useContext(CategoriesContext)
   const { getCartsByUser, carts } = useContext(CartsContext)
 
   useEffect(() => {
-    const getToken = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/auth/token')
-        setIsLogin(true)
-        const decoded = jwtDecode(response.data.accessToken)
-        if (decoded.role === 'admin') {
-          setIsAdmin(true)
-        }
-      } catch (error) {
-        if (error.response) {
-          console.log(error.response.statusText)
-        }
-      }
-    }
-
+    authNavbar()
     getCartsByUser()
-    getToken()
     getCategories()
   }, [])
 

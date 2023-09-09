@@ -12,18 +12,30 @@ dotenv.config()
 export const registerUser = async (req, res) => {
   try {
     const { username, email, password, confirmPassword } = req.body
+
+    // cek duplicate username
     const duplicateUsername = await Users.findOne({ username })
-    if (duplicateUsername) return res.status(400).json({ status: false, msg: 'Username has been registered!' })
+    if (duplicateUsername) return res.status(400).json({ msg: 'Username sudah digunakan!' })
+
+    // cek duplicate email
     const duplicateEmail = await Users.findOne({ email })
-    if (duplicateEmail) return res.status(400).json({ status: false, msg: 'Email has been registered!' })
-    if (password !== confirmPassword) return res.status(400).json({ msg: 'Password confirmation is incorrect', status: false })
+    if (duplicateEmail) return res.status(400).json({ msg: 'Email sudah terdaftar!' })
+
+    // cek confirm password
+    if (password !== confirmPassword) return res.status(400).json({ msg: 'Konfirmasi password tidak sama!' })
+
+    // hash password
     const hashPassword = await bcrypt.hash(password, 10)
+
+    // add user 
     const user = await new Users({ username, email, password: hashPassword }).save()
+
     const tokenExp = Date.now() + 3600000 // 1 hours
+
     const Usertoken = await new Tokens({ userId: user._id, token: crypto.randomBytes(32).toString('hex'), verifyExp: tokenExp }).save()
     const message = `${process.env.BASE_URL}/user/verify/${user._id}/${Usertoken.token}`
     await sendMail(user.email, 'verify email', message)
-    return res.status(200).json({ msg: 'Registration has been successful, check your email', status: true })
+    return res.status(200).json({ msg: 'Registrasi berhasil, cek email untuk verifikasi!' })
   } catch (error) { console.log(error) }
 }
 

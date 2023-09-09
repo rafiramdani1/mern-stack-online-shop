@@ -3,7 +3,6 @@ import fileUpload from "express-fileupload";
 import routerAuth from './routes/auth.js';
 import routerCategories from "./routes/routes.categories.js";
 import routerProduct from "./routes/routes.products.js";
-// import routerSubCategory from "./routes/routes.subCategory.js"
 import routerSubCategory from "./routes/routes.subCategory.js";
 import dotenv from 'dotenv'
 import cors from 'cors'
@@ -28,7 +27,6 @@ app.use('/auth', routerAuth)
 app.use('/categories', routerCategories)
 app.use('/products', routerProduct)
 app.use('/sub-categories', routerSubCategory)
-// app.use('/api', routerApi)
 
 // server
 const port = process.env.PORT

@@ -18,38 +18,38 @@ const Categories = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    refreshToken()
+    // refreshToken()
     getCategories()
   }, [])
 
-  const refreshToken = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/auth/token')
-      const decoded = jwtDecode(response.data.accessToken)
-      if (decoded.role !== 'admin') return navigate('/')
-      setExpired(decoded.exp)
-    } catch (error) {
-      if (error.response) {
-        navigate('/')
-      }
-    }
-  }
+  // const refreshToken = async () => {
+  //   try {
+  //     const response = await axios.get('http://localhost:3001/auth/token')
+  //     const decoded = jwtDecode(response.data.accessToken)
+  //     if (decoded.role !== 'admin') return navigate('/')
+  //     setExpired(decoded.exp)
+  //   } catch (error) {
+  //     if (error.response) {
+  //       navigate('/')
+  //     }
+  //   }
+  // }
 
-  // refresh token
-  const axiosRefresh = axios.create()
-  axiosRefresh.interceptors.request.use(async (config) => {
-    const currentDate = new Date()
-    if (expired * 1000 < currentDate.getTime()) {
-      const response = await axios.get('http://localhost:3001/auth/token')
-      config.headers.Authorization = `Bearer ${response.data.accessToken}`
-      const decoded = jwtDecode(response.data.accessToken)
-      if (decoded.role !== 'admin') return navigate('/')
-      setExpired(decoded.exp)
-    }
-    return config
-  }, (error) => {
-    return Promise.reject(error)
-  })
+  // // refresh token
+  // const axiosRefresh = axios.create()
+  // axiosRefresh.interceptors.request.use(async (config) => {
+  //   const currentDate = new Date()
+  //   if (expired * 1000 < currentDate.getTime()) {
+  //     const response = await axios.get('http://localhost:3001/auth/token')
+  //     config.headers.Authorization = `Bearer ${response.data.accessToken}`
+  //     const decoded = jwtDecode(response.data.accessToken)
+  //     if (decoded.role !== 'admin') return navigate('/')
+  //     setExpired(decoded.exp)
+  //   }
+  //   return config
+  // }, (error) => {
+  //   return Promise.reject(error)
+  // })
 
   const handleDeleteClick = id => {
     setIdCategoryDelete(id)
