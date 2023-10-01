@@ -1,15 +1,4 @@
-GET http://localhost:3001/api/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2M2ZmOTA3NWMwZGRhNzJiNmYwYzNhNWQiLCJ1c2VybmFtZSI6InJhZmlyYW1kYW5pIiwiZW1haWwiOiJyYWZpcmFtZGFuaTE5OTlAZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2Nzc4NTAwODMsImV4cCI6MTY3Nzg1MDA5OH0.om6WXmGDSuwc1ZFHnjEWYBH25kElqiq4M6ooVFuleG0
 
-
-###
-POST http://localhost:3001/login
-Content-Type: application/json
-
-{
-  "email": "rafiramdani1999@gmail.com",
-  "password": "123rafi456"
-}
 
 ###
 GET http://localhost:3001/token
