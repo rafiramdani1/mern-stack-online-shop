@@ -1,5 +1,5 @@
 import express from 'express'
-import { getProducts, AddProduct, editProduct, deleteProduct, getProductById, getProductBySlug, getSizeAll, getSizeProductById, searchProduct, addSizeProduct, EditSizeProduct, DeleteSizeProductById, addCart, getSizeProductByIdProduct, getCarts } from '../controllers/admin/products.controllers.js'
+import { getProducts, AddProduct, editProduct, deleteProduct, getProductById, getProductBySlug, getSizeProductById, addSizeProduct, EditSizeProduct, DeleteSizeProductById, addCart, getSizeProductByIdProduct, getCarts, deleteCartById, getProductsByCategory, searchProducts } from '../controllers/admin/products.controllers.js'
 import { validation, addProductValidation, addSizeProductValidation, editSizeStockProduct } from '../validation/index.js'
 
 const routerProduct = express.Router()
@@ -7,21 +7,23 @@ const routerProduct = express.Router()
 // get products
 routerProduct.get('/', getProducts)
 routerProduct.get('/:id', getProductById)
-routerProduct.get('/productSize/sizes', getSizeAll)
-routerProduct.get('/productSize/id-product/:id', getSizeProductByIdProduct)
-routerProduct.get('/size/:id', getSizeProductById)
-routerProduct.get('/products/:slug', getProductBySlug)
-routerProduct.get('/products/search', searchProduct)
-
+routerProduct.get('/category/:category', getProductsByCategory)
 // Post Add Product
-routerProduct.post('/add-product', addProductValidation, validation, AddProduct)
+routerProduct.post('/', addProductValidation, validation, AddProduct)
 // edit product
-routerProduct.put('/edit/:id', addProductValidation, validation, editProduct)
+routerProduct.put('/:id', addProductValidation, validation, editProduct)
 // delete product
-routerProduct.delete('/delete/:id', deleteProduct)
+routerProduct.delete('/:id', deleteProduct)
+routerProduct.get('/slug/:slug', getProductBySlug)
+
+
+routerProduct.get('/size/id-product/:id', getSizeProductByIdProduct)
+routerProduct.get('/size/:id', getSizeProductById)
+routerProduct.get('/products/search', searchProducts)
 
 // add size product
-routerProduct.post('/add-size', addSizeProductValidation, validation, addSizeProduct)
+routerProduct.post('/sizes', addSizeProductValidation, validation, addSizeProduct)
+
 // edit size & stock product
 routerProduct.put('/size/edit', EditSizeProduct)
 // delete size product
@@ -32,5 +34,7 @@ routerProduct.post('/add-cart', addCart)
 
 // get carts
 routerProduct.get('/api/carts', getCarts)
+
+routerProduct.delete('/cart/delete/:id', deleteCartById)
 
 export default routerProduct
