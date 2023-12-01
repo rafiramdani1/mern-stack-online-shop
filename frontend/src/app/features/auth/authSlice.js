@@ -20,15 +20,6 @@ export const refreshToken = () => async (dispatch, getState) => {
   }
 }
 
-export const verifyEmail = (id, token) => async (dispatch, getState) => {
-  try {
-    const response = await dispatch(apiSlice.endpoints.verifyEmailAccount.initiate(id, token))
-    return response
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 const isAuthLocalStorage = localStorage.getItem('isAuth')
 
 const authSlice = createSlice({

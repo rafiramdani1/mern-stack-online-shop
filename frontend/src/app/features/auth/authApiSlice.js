@@ -26,8 +26,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
       })
     }),
     verifyEmailAccount: builder.query({
-      query: (id, token) => ({
-        url: `/auth/user/verify/${id}/${token}`,
+      query: credentials => ({
+        url: `/auth/user/verify/${credentials.id}/${credentials.token}`,
         method: 'GET'
       })
     })

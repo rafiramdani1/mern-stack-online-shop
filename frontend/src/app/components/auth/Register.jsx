@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { useRegisterMutation } from '../../features/auth/authApiSlice'
 import LoadingSpinner from '../layouts/LoadingSpinner'
@@ -79,8 +79,6 @@ const Register = () => {
     try {
       const response = await register(formData).unwrap()
       setMsgSuccess(response.msg)
-      console.log(response)
-
       setTimeout(() => {
         setMsgSuccess('')
         reset()
