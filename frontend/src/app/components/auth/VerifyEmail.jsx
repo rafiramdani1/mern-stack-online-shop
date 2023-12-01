@@ -47,7 +47,7 @@ const VerifyEmail = () => {
 
           </div>
         </div>
-      </section >
+      </section>
     </>
   )
 }
