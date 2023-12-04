@@ -28,10 +28,6 @@ const Navbar = () => {
   const { data: categories } = useGetCategoriesQuery()
   const { data: carts } = useGetCartsQuery()
 
-  if (carts) {
-    console.log(carts)
-  }
-
   const handleShowCarts = () => {
     if (!isAuth || !token || !user) {
       navigate('/login')
@@ -39,7 +35,8 @@ const Navbar = () => {
     setShowCarts(!showCarts)
   }
 
-  const handleSearch = async () => {
+  const handleSearch = async (e) => {
+    e.preventDefault()
     if (searchQuery === '') {
       refInputSearch.current.focus()
       return
@@ -99,21 +96,23 @@ const Navbar = () => {
             </div>
           </div>
           <div className='flex w-1/2 justify-end'>
-            <div className="relative">
-              <div className="absolute mt-2 inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
-                <svg aria-hidden="true" className="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <form onSubmit={handleSearch}>
+              <div className="relative">
+                <div className="absolute mt-0.5 inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                  <svg aria-hidden="true" className="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input
+                  ref={refInputSearch}
+                  type="search"
+                  id="default-search"
+                  className="block mt-3 w-60 md:w-72 lg:w-80 p-4 pl-10 h-6 text-sm text-textPrimary border border-borderInput rounded-lg bg-bgInput focus:ring-focusRingInput focus:border-zinc-600"
+                  placeholder="Cari..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  required />
+                <button type="submit" className="text-white h-7 absolute right-[0.18rem] bottom-[0.19rem] bg-textPrimary border border-borderButton hover:bg-textSecondary focus:ring-2 focus:outline-none focus:ring-ringFocusBtn font-medium rounded-lg text-xs px-3 py-1">cari</button>
               </div>
-              <input
-                ref={refInputSearch}
-                type="search"
-                id="default-search"
-                className="block mt-3 w-60 md:w-72 lg:w-80 p-4 pl-10 h-6 text-sm text-textPrimary border border-borderInput rounded-lg bg-bgInput focus:ring-focusRingInput focus:border-zinc-600"
-                placeholder="Cari..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                required />
-              <button onClick={handleSearch} type="submit" className="text-white h-7 absolute right-[0.18rem] bottom-[0.38rem] bg-textPrimary border border-borderButton hover:bg-zinc-800 focus:ring-2 focus:outline-none focus:ring-ringFocusBtn font-medium rounded-lg text-xs px-3 py-1">cari</button>
-            </div>
+            </form>
 
             <div className='mt-1.5 ml-10'>
               <ul className='flex'>
@@ -158,7 +157,7 @@ const Navbar = () => {
 
           </div>
         </div>
-      </div >
+      </div>
     </>
   )
 }

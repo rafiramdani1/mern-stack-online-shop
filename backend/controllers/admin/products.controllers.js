@@ -95,22 +95,29 @@ export const searchProducts = async (req, res) => {
   try {
     const searchQuery = req.query.q.toLowerCase(); // Ambil query pencarian dan ubah ke huruf kecil
 
-    // Buat regex untuk pencarian tanpa mempedulikan kapital
-    const regexQuery = new RegExp(searchQuery, 'i');
+    // Pisahkan kata-kata dari query pencarian
+    const searchKeywords = searchQuery.split(' ');
+
+    // Buat array regex untuk setiap kata
+    const regexQueries = searchKeywords.map(keyword => new RegExp(keyword, 'i'));
 
     // Lakukan pencarian berdasarkan judul, kategori, dan subkategori
     const products = await Product.find({
       $or: [
-        { title: regexQuery },
-        { 'id_category.title': regexQuery },
-        { 'id_sub_category.title': regexQuery },
+        // { title: { $in: regexQueries } },
+        { 'id_category.title': { $in: regexQueries } },
+        // { 'id_sub_category.title': { $in: regexQueries } },
       ],
     }).populate('id_category');
+
+    console.log(products)
 
     res.json(products);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: 'Terjadi kesalahan server' });
+    res.status(500).json({
+      message: 'Terjadi kesalahan server'
+    });
   }
 }
 
