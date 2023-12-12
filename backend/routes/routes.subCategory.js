@@ -4,11 +4,11 @@ import { getSubCategory, addSubCategory, deleteSubCategory, editSubCategory, get
 const routerSubCategory = express.Router()
 
 routerSubCategory.get('/', getSubCategory)
+routerSubCategory.post('/', addSubCategory)
 routerSubCategory.get('/:id', getSubCategoryById)
-routerSubCategory.get('/sub-category-id/:id', getSubCategoryByCategoryId)
-routerSubCategory.post('/addSubCategory', addSubCategory)
-routerSubCategory.put('/editSubCategory/:id', editSubCategory)
-routerSubCategory.delete('/delete/:id', deleteSubCategory)
+routerSubCategory.get('/category/:id', getSubCategoryByCategoryId)
+routerSubCategory.put('/:id', editSubCategory)
+routerSubCategory.delete('/:id', deleteSubCategory)
 
 
 export default routerSubCategory

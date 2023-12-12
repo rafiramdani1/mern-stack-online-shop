@@ -3,11 +3,14 @@ export default {
   content: ["./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",],
   theme: {
+    fontFamily: {
+      URL: ['Poppins']
+    },
     extend: {
       colors: {
-        textPrimary: '#3f3f46',
-        textSecondary: '#52525b',
-        textHoverPrimary: '#27272a',
+        textPrimary: '#27272a',
+        textSecondary: '#3f3f46',
+        textHoverPrimary: '#18181b',
         borderButton: '#a1a1aa',
         hoverBgButton: '#3f3f46',
         ringFocusBtn: '#d4d4d8',

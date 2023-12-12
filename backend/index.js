@@ -1,13 +1,15 @@
 import express from "express";
 import fileUpload from "express-fileupload";
-import routerAuth from './routes/auth.js';
-import routerCategories from "./routes/routes.categories.js";
+import routerAuth from './routes/routes.auth.js';
 import routerProduct from "./routes/routes.products.js";
 import routerSubCategory from "./routes/routes.subCategory.js";
 import dotenv from 'dotenv'
 import cors from 'cors'
 import cookieParser from "cookie-parser";
 import connectDb from "./config/Db.js";
+import routerUser from "./routes/routes.user.js";
+import routerSizes from "./routes/routes.sizes.js";
+import { categoryRouter } from "./src/category/category.route.js";
 
 const app = express()
 dotenv.config()
@@ -23,10 +25,12 @@ app.use(express.static('public'))
 app.use(cookieParser())
 
 // setup routes
-app.use('/auth', routerAuth)
-app.use('/categories', routerCategories)
-app.use('/products', routerProduct)
-app.use('/sub-categories', routerSubCategory)
+app.use('/api/auth', routerAuth)
+app.use('/api/user', routerUser)
+app.use('/api/categories', categoryRouter)
+app.use('/api/products', routerProduct)
+app.use('/api/sub-categories', routerSubCategory)
+app.use('/api/sizes', routerSizes)
 
 // server
 const port = process.env.PORT
