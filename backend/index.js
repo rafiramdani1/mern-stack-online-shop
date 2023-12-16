@@ -1,8 +1,5 @@
 import express from "express";
 import fileUpload from "express-fileupload";
-import routerAuth from './routes/routes.auth.js';
-import routerProduct from "./routes/routes.products.js";
-import routerSubCategory from "./routes/routes.subCategory.js";
 import dotenv from 'dotenv'
 import cors from 'cors'
 import cookieParser from "cookie-parser";
@@ -10,8 +7,11 @@ import connectDb from "./config/Db.js";
 import routerUser from "./routes/routes.user.js";
 import routerSizes from "./routes/routes.sizes.js";
 import { categoryRouter } from "./src/category/category.route.js";
+import { routerAuth } from "./src/auth/auth.route.js";
+import { routerSubCategory } from "./src/sub-category/subCategory.route.js";
+import { productRouter } from "./src/product/product.route.js";
 
-const app = express()
+export const app = express()
 dotenv.config()
 
 // validation connect db
@@ -28,7 +28,7 @@ app.use(cookieParser())
 app.use('/api/auth', routerAuth)
 app.use('/api/user', routerUser)
 app.use('/api/categories', categoryRouter)
-app.use('/api/products', routerProduct)
+app.use('/api/products', productRouter)
 app.use('/api/sub-categories', routerSubCategory)
 app.use('/api/sizes', routerSizes)
 

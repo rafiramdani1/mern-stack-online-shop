@@ -13,7 +13,7 @@ const LayoutAdmin = () => {
 
   useEffect(() => {
     if (isAuth) {
-      if (user && user.role !== 'admin') {
+      if (user && user.roleId.roleName !== 'admin') {
         navigate('/')
       }
     } else {

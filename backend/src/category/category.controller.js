@@ -1,13 +1,13 @@
-import mongoose, { Mongoose } from "mongoose"
 import { categoryService } from "./category.service.js"
-
 
 const getCategories = async (req, res) => {
   try {
     const categories = await categoryService.getAllCategories()
     res.status(200).json(categories)
   } catch (error) {
-    res.status(400).send(error)
+    res.status(400).json({
+      msg: error.message
+    })
   }
 }
 
@@ -18,7 +18,7 @@ const getCategoryById = async (req, res) => {
     res.status(200).json(category)
   } catch (error) {
     res.status(400).json({
-      message: error?.message
+      msg: error.message
     })
   }
 }
@@ -34,14 +34,9 @@ const addCategory = async (req, res) => {
       status: true
     })
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(400).json({
-        status: false,
-        msg: error.message
-      });
-    } else {
-      res.status(400).json(error);
-    }
+    res.status(400).json({
+      msg: error.message
+    })
   }
 }
 
@@ -57,14 +52,9 @@ const editCategoryById = async (req, res) => {
       data: category
     })
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(400).json({
-        status: false,
-        msg: error.message
-      });
-    } else {
-      res.status(400).json(error);
-    }
+    res.status(400).json({
+      msg: error.message
+    })
   }
 }
 

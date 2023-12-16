@@ -1,7 +1,7 @@
 import { validationResult, check, body } from 'express-validator'
 
 // Errors validator
-export const validation = (req, res, next) => {
+export const validationResults = (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) { return res.status(400).json({ status: false, msg: errors.array()[0].msg }) }
   next()
@@ -24,11 +24,15 @@ export const LoginValidation = [
 ]
 
 
-// ADMIN
-
 // Add & Update Category
-export const addAndUpdateCategory = [
+export const addAndUpdateCategoryValidation = [
   check('title', 'Title tidak boleh kosong!').notEmpty(), check('slug', 'Slug tidak boleh kosong!').notEmpty()
+]
+
+// add & update subcategory
+export const addSubCategoryValidation = [
+  check('title', 'Title tidak boleh kosong!').notEmpty(),
+  check('slug', 'Slug tidak boleh kosong!').notEmpty()
 ]
 
 // Add Product
