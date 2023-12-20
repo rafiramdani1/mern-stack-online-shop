@@ -1,6 +1,6 @@
 import express from 'express'
 import { getProducts, AddProduct, editProduct, deleteProduct, getProductById, getProductBySlug, getSizeProductById, addSizeProduct, EditSizeProduct, DeleteSizeProductById, addCart, getSizeProductByIdProduct, getCarts, deleteCartById, getProductsByCategory, searchProducts } from '../controllers/admin/products.controllers.js'
-import { validation, addProductValidation, addSizeProductValidation, editSizeStockProduct } from '../validation/index.js'
+import { validationResults, addProductValidation, addSizeProductValidation, editSizeStockProduct } from '../validation/index.js'
 
 const routerProduct = express.Router()
 
@@ -9,9 +9,9 @@ routerProduct.get('/', getProducts)
 routerProduct.get('/:id', getProductById)
 routerProduct.get('/category/:category', getProductsByCategory)
 // Post Add Product
-routerProduct.post('/', addProductValidation, validation, AddProduct)
+routerProduct.post('/', addProductValidation, validationResults, AddProduct)
 // edit product
-routerProduct.put('/:id', addProductValidation, validation, editProduct)
+routerProduct.put('/:id', addProductValidation, validationResults, editProduct)
 // delete product
 routerProduct.delete('/:id', deleteProduct)
 routerProduct.get('/slug/:slug', getProductBySlug)
@@ -22,7 +22,7 @@ routerProduct.get('/size/:id', getSizeProductById)
 routerProduct.get('/products/search', searchProducts)
 
 // add size product
-routerProduct.post('/sizes', addSizeProductValidation, validation, addSizeProduct)
+routerProduct.post('/sizes', addSizeProductValidation, validationResults, addSizeProduct)
 
 // edit size & stock product
 routerProduct.put('/size/edit', EditSizeProduct)

@@ -15,8 +15,8 @@ const EditSubCategory = () => {
   const navigate = useNavigate()
 
   // locale state
-  const [subCategory, setSubCategory] = useState('')
-  const [oldSubCategory, setOldSubCategory] = useState('')
+  const [title, setTitle] = useState('')
+  const [oldTitle, setOldTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [oldSlug, setOldSlug] = useState('')
   const [categoryId, setCategoryId] = useState('')
@@ -31,8 +31,8 @@ const EditSubCategory = () => {
   // set data to state
   useEffect(() => {
     if (subCategoryById) {
-      setSubCategory(subCategoryById.title)
-      setOldSubCategory(subCategoryById.title)
+      setTitle(subCategoryById.title)
+      setOldTitle(subCategoryById.title)
       setSlug(subCategoryById.slug)
       setOldSlug(subCategoryById.slug)
       setCategoryId(subCategoryById.id_category._id)
@@ -42,7 +42,7 @@ const EditSubCategory = () => {
   // handle change input
   const handleChangeSubCategory = (e) => {
     const value = e.target.value
-    setSubCategory(value)
+    setTitle(value)
     const newSlug = slugify(value, { lower: true })
     setSlug(newSlug)
     reset()
@@ -79,7 +79,7 @@ const EditSubCategory = () => {
   const handleUpdateSubCategory = async event => {
     event.preventDefault()
     try {
-      const response = await updateSubCategory({ subCategory, oldSubCategory, slug, oldSlug, categoryId, idSubCategory }).unwrap()
+      const response = await updateSubCategory({ title, oldTitle, slug, oldSlug, categoryId, idSubCategory }).unwrap()
       setMsgSuccess(response.msg)
 
       // call refetch sub categories data
@@ -125,8 +125,8 @@ const EditSubCategory = () => {
                   <label
                     className="mb-2 text-sm font-bold text-textPrimary">Sub Kategori</label>
                   <input type="text" name="title" placeholder="Sub kategori"
-                    className="bg-bgInput border border-borderInput text-textPrimary sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput block w-full p-2.5" value={subCategory} onChange={handleChangeSubCategory} />
-                  <input type='hidden' value={oldSubCategory} readOnly />
+                    className="bg-bgInput border border-borderInput text-textPrimary sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput block w-full p-2.5" value={title} onChange={handleChangeSubCategory} />
+                  <input type='hidden' value={oldTitle} readOnly />
                 </div>
 
                 <div>

@@ -86,7 +86,7 @@ const Navbar = () => {
                   </div>
                 </li>
 
-                {user?.role === 'admin' ? (
+                {user?.roleId.roleName === 'admin' ? (
                   <li className='mr-4'>
                     <Link to={'/admin/dashboard'} className='text-sm font-semibold text-textSecondary hover:text-textPrimary cursor-pointer mr-4'>Dashboard</Link>
                   </li>
