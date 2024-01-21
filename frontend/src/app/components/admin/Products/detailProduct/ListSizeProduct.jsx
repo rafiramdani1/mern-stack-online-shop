@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 
 const ListSizeProduct = ({ sizeProduct, openModalEdit, openModalDelete }) => {
-
+  if (sizeProduct) {
+    console.log(sizeProduct)
+  }
   return (
     <>
       <div className="relative w-1/2 overflow-x-auto shadow-md sm:rounded-lg ml-16">

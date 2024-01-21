@@ -6,7 +6,7 @@ import AddSizeProduct from './AddSizeProduct'
 import ListSizeProduct from './ListSizeProduct'
 import EditSizeProduct from './EditSizeProduct'
 import ModalDelete from '../../../layouts/ModalDelete'
-import { useDeleteSizeProductByIdMutation } from '../../../../features/sizes/sizesApiSlice'
+import { useDeleteSizeProductByIdMutation } from '../../../../features/products/productsApiSlice'
 import LoadingSpinner from '../../../layouts/LoadingSpinner'
 import ModalSuccess from '../../../layouts/ModalSuccess'
 
@@ -20,6 +20,9 @@ const DetailProduct = () => {
   // use get product by id
   const { data: productById, isLoading, refetch } = useGetProductByIdQuery(idProduct)
 
+  if (productById) {
+    console.log(productById)
+  }
 
   const [msgSuccess, setMsgSuccess] = useState('')
   const [modalAddSize, setModalAddSize] = useState(false)
@@ -88,10 +91,10 @@ const DetailProduct = () => {
             <h2 className='text-slate-700 text-base font-medium'>Pilih ukuran sepatu :</h2>
             <div className='flex mt-2'>
 
-              {productById?.sizeProduct.length <= 0 ?
+              {productById?.sizeProduct?.length <= 0 ?
                 <p className='text-xs tracking-tighter text-zinc-600'>-ukuran sepatu belum tersedia-</p>
                 : (
-                  productById?.sizeProduct.map(size => (
+                  productById?.sizesProduct?.map(size => (
                     <div key={size._id}>
                       <div className='mr-1'>
                         <button type='button' className='border px-2 py-1 rounded-sm text-slate-800 font-medium text-sm shadow-sm hover:bg-cyan-500 hover:ring-1 hover:text-white'>{size.size}</button>
@@ -122,7 +125,7 @@ const DetailProduct = () => {
 
       {
         <ListSizeProduct
-          sizeProduct={productById?.sizeProduct}
+          sizeProduct={productById?.sizesProduct}
           openModalEdit={openModalEdit}
           openModalDelete={handleOpenModalDelete}
         />

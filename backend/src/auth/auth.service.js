@@ -158,7 +158,6 @@ const verifyEmail = async (userId, userToken) => {
   }
 }
 
-
 export const authService = {
   createUser,
   verifyEmail,

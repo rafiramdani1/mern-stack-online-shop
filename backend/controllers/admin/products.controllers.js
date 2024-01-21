@@ -121,61 +121,6 @@ export const searchProducts = async (req, res) => {
   }
 }
 
-// export const searchProduct = async (req, res) => {
-//   try {
-//     const searchQuery = req.query.q
-//     const products = await Product.find()
-//     const options = {
-//       keys: ['title'],
-//       threshold: 0.3
-//     }
-//     const fuse = new Fuse(products, options)
-//     const results = fuse.search(searchQuery)
-
-//     const arrTitle = results[0].item.title
-
-//     console.log(arrTitle.split(' '))
-//     if (searchQuery.length === 0) return res.status(400).json({ msg: 'Produk tidak ditemukan' })
-//     if (results.length === 0) return res.status(404).json({ msg: `Produk dengan kata kunci "${searchQuery}" tidak ditemukan` })
-//     return res.json(results)
-
-//     const searchTerm = req.query.q
-
-//     const products = await Product.find()
-
-//     const options = {
-//       keys: ['title', 'category'],
-//       threshold: 0.3,
-//     }
-
-//     const fuse = new Fuse(products, options)
-//     const results = fuse.search(searchTerm)
-
-//     const productKeywords = products.map(product => product.title.toLowerCase().split(' '))
-//     let suggestKeyword = ''
-
-//     console.log(productKeywords)
-//     for (let i = 0; i < productKeywords.length; i++) {
-//       for (let j = 0; j < productKeywords[i].length; j++) {
-//         const word = productKeywords[i][j]
-//         const rating = stringSimilarity.compareTwoStrings(word, searchTerm.toLowerCase())
-
-//         if (rating > 0.7) {
-//           suggestKeyword = word
-//           break
-//         }
-//         // if (suggestKeyword.length > 0) break
-//       }
-//     }
-
-//     res.json({ results, suggestKeyword });
-
-//   } catch (err) {
-//     console.log(err);
-//     res.status(500).json({ message: "Server Error" });
-//   }
-// }
-
 // POST Add Product
 export const AddProduct = async (req, res) => {
   // cek files

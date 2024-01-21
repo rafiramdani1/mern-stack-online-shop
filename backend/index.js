@@ -5,11 +5,12 @@ import cors from 'cors'
 import cookieParser from "cookie-parser";
 import connectDb from "./config/Db.js";
 import routerUser from "./routes/routes.user.js";
-import routerSizes from "./routes/routes.sizes.js";
 import { categoryRouter } from "./src/category/category.route.js";
 import { routerAuth } from "./src/auth/auth.route.js";
 import { routerSubCategory } from "./src/sub-category/subCategory.route.js";
 import { productRouter } from "./src/product/product.route.js";
+import { sizesRouter } from "./src/size/size.route.js";
+import { cartRouter } from "./src/cart/cart.route.js";
 
 export const app = express()
 dotenv.config()
@@ -30,7 +31,8 @@ app.use('/api/user', routerUser)
 app.use('/api/categories', categoryRouter)
 app.use('/api/products', productRouter)
 app.use('/api/sub-categories', routerSubCategory)
-app.use('/api/sizes', routerSizes)
+app.use('/api/sizes', sizesRouter)
+app.use('/api/carts', cartRouter)
 
 // server
 const port = process.env.PORT

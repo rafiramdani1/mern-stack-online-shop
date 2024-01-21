@@ -34,7 +34,7 @@ function App() {
           <Route path='/register' element={<Register />} />
           <Route path='/user/verify/:id/:token' element={<VerifyEmail />} />
 
-          {/* refesh token */}
+          {/* refesh token */}  
           <Route element={<RefreshToken />}>
 
             {/* public route */}
@@ -43,7 +43,6 @@ function App() {
               <Route path='/product/:slug' element={<DetailProductUser />} />
               <Route path='products/search' element={<ProductsSearchResults />} />
               <Route path='/products' element={<ProductsByCategory />} />
-
             </Route>
 
             {/* Require auth admin */}

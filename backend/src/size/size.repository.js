@@ -1,13 +1,12 @@
+import sizeAll from '../../models/size.model.js'
 import sizeProductModel from '../../models/sizeProduct.model.js'
 
-const findSizeProductByIdProduct = async (id) => {
-  const sizesProduct = await sizeProductModel.find({
-    id_product: id
-  }).sort({ size: 1 })
-  return sizesProduct
+const findAllSizes = async () => {
+  const sizes = await sizeAll.find({})
+  return sizes
 }
 
 export const sizeRepository = {
-  findSizeProductByIdProduct,
+  findAllSizes,
 }
 

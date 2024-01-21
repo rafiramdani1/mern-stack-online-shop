@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 import { useGetProductBySlugQuery } from '../../features/products/productsApiSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { getSizeById } from '../../features/sizes/sizesSlice'
+import { getSizeProductById } from '../../features/products/productsSlice'
 import AlertErrors from '../layouts/AlertErrors'
 import { resetState, selectQuantityCart, selectsubTotalCart, setDecrementQty, setIncrementQty, setPrice } from '../../features/cart/cartSlice'
 import { selectCurrentToken, selectCurrentUser } from '../../features/auth/authSlice'
@@ -58,10 +58,10 @@ const DetailProductUser = () => {
     setCartStock('')
     setCartNote('')
     try {
-      const response = await dispatch(getSizeById(id))
-      setCartSizeId(response._id)
-      setCartSize(response.size)
-      setCartStock(response.stock)
+      const response = await dispatch(getSizeProductById(id))
+      setCartSizeId(response.data._id)
+      setCartSize(response.data.size)
+      setCartStock(response.data.stock)
       setActiveBoxSize(id)
     } catch (error) {
       console.log(error)
@@ -168,7 +168,7 @@ const DetailProductUser = () => {
             <div className='mt-2'>
               <h2 className='text-slate-700 text-base font-medium'>Pilih ukuran sepatu :</h2>
               <div className='flex mt-2'>
-                {product?.sizeProduct.map(size => (
+                {product?.sizesProduct?.map(size => (
                   <div className='mr-1' key={size._id}>
                     <button onClick={() => selectSize(size._id)} type='button' className={`border px-2 py-1 rounded-sm ${activeBoxSize === size._id ? ' bg-cyan-500 right-1 text-white' : 'text-slate-800'} font-medium text-sm shadow-sm hover:bg-cyan-500 hover:ring-1 hover:text-white`}>
                       {size.size}

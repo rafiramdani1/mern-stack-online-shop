@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useGetSizeByIdQuery, useGetSizesQuery } from '../../../../features/sizes/sizesApiSlice'
-import { useGetProductByIdQuery, useUpdateSizeProductMutation } from '../../../../features/products/productsApiSlice'
+import { useGetSizesQuery } from '../../../../features/sizes/sizesApiSlice'
+import { useGetProductByIdQuery, useGetSizeProductByIdQuery, useUpdateSizeProductMutation } from '../../../../features/products/productsApiSlice'
 import LoadingSpinner from '../../../layouts/LoadingSpinner'
 import ModalSuccess from '../../../layouts/ModalSuccess'
 import AlertErrors from '../../../layouts/AlertErrors'
@@ -11,7 +11,7 @@ const EditSizeProduct = ({ idSizeProduct, closeModal }) => {
   const { id: idProduct } = useParams()
 
   const { data: sizes } = useGetSizesQuery()
-  const { data: sizeProduct } = useGetSizeByIdQuery(idSizeProduct)
+  const { data: sizeProduct } = useGetSizeProductByIdQuery(idSizeProduct)
   const { refetch } = useGetProductByIdQuery(idProduct)
 
   const [size, setSize] = useState('')
@@ -21,19 +21,17 @@ const EditSizeProduct = ({ idSizeProduct, closeModal }) => {
 
   useEffect(() => {
     if (sizeProduct) {
-      setSize(sizeProduct.size)
-      setOldSize(sizeProduct.size)
-      setStock(sizeProduct.stock)
+      setSize(sizeProduct.data.size)
+      setOldSize(sizeProduct.data.size)
+      setStock(sizeProduct.data.stock)
     }
   }, [sizeProduct])
 
   const handleChangeSize = (e) => {
     setSize(e.target.value)
-    setErrors('')
   }
   const handleChangeStock = (e) => {
     setStock(e.target.value)
-    setErrors('')
   }
 
   const [updateSizeProduct, { isLoading, isError, error, isSuccess, reset }] = useUpdateSizeProductMutation()
@@ -81,7 +79,7 @@ const EditSizeProduct = ({ idSizeProduct, closeModal }) => {
                     <label className="block mb-2 text-textSecondary text-sm font-medium">Size</label>
                     <select className='block text-xs font-normal appearance-none w-28 bg-gray-50 border border-gray-300 text-gray-900 py-2 px-4 pr-8leading-tight focus:outline-none rounded-lg focus:bg-white focus:border-gray-500' value={size} onChange={handleChangeSize}>
                       <option value=''>Pilih Ukuran</option>
-                      {sizes?.size?.map(size => (
+                      {sizes?.map(size => (
                         <option key={size._id}>{size.size}</option>
                       ))}
                     </select>

@@ -11,4 +11,4 @@ const ProductSchema = mongoose.Schema({
   url: { type: String, required: true }
 })
 const Product = mongoose.model('product', ProductSchema)
-export default Product
+export default Product  

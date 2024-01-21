@@ -76,7 +76,7 @@ const AddSizeProduct = ({ close, onProductSizeAdded }) => {
                       <label className="mb-2 text-sm font-bold text-textPrimary">Ukuran</label>
                       <select className='block appearance-none w-fit text-sm text-textPrimary bg-bgInput border border-borderInput py-2.5 px-4 pr-8 leading-tight focus:outline-none rounded-lg focus:bg-white focus:border-focusBorderInput' value={addSize} onChange={handleChangeSize}>
                         <option value=''>Pilih Ukuran</option>
-                        {sizes?.size?.map(size => (
+                        {sizes?.map(size => (
                           <option key={size._id}>{size.size}</option>
                         ))}
                       </select>
