@@ -1,7 +1,27 @@
 import express from 'express'
 import { productContollers } from './product.controller.js'
+import { addProductValidation, addSizeProductValidation, validationResults } from '../../validation/index.js'
 
 export const productRouter = express.Router()
 
 productRouter.get('/', productContollers.getProducts)
-productRouter.get('/:id', productContollers.getProductById)
+productRouter.get('/id/:productId', productContollers.getProductById)
+productRouter.get('/slug/:productSlug', productContollers.getProductBySlug)
+productRouter.post('/',
+  addProductValidation, validationResults,
+  productContollers.addProduct
+)
+productRouter.put('/:id',
+  addProductValidation, validationResults,
+  productContollers.editProduct
+)
+productRouter.delete('/:id', productContollers.deleteProduct)
+
+// size product
+productRouter.get('/sizes/:id', productContollers.getSizeProductById)
+productRouter.post('/sizes',
+  addSizeProductValidation, validationResults,
+  productContollers.addSizeProduct
+)
+productRouter.put('/sizes/edit', productContollers.editSizeProductById)
+productRouter.delete('/delete/sizes/:id', productContollers.deleteSizeProductById)

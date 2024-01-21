@@ -7,7 +7,7 @@ export const productsSlice = apiSlice.injectEndpoints({
     }),
     getProductById: builder.query({
       query: idProduct => ({
-        url: `/products/${idProduct}`,
+        url: `/products/id/${idProduct}`,
         method: 'GET'
       })
     }),
@@ -45,6 +45,12 @@ export const productsSlice = apiSlice.injectEndpoints({
     }),
 
     // sizes
+    getSizeProductById: builder.query({
+      query: (idSize) => ({
+        url: `products/sizes/${idSize}`,
+        method: 'GET'
+      })
+    }),
     addSizeProduct: builder.mutation({
       query: (sizesProduct) => ({
         url: 'products/sizes',
@@ -54,9 +60,15 @@ export const productsSlice = apiSlice.injectEndpoints({
     }),
     updateSizeProduct: builder.mutation({
       query: (sizeData) => ({
-        url: 'products/size/edit',
+        url: 'products/sizes/edit',
         method: 'PUT',
         body: sizeData
+      })
+    }),
+    deleteSizeProductById: builder.mutation({
+      query: idSize => ({
+        url: `products/delete/sizes/${idSize}`,
+        method: 'DELETE'
       })
     }),
     searchProduct: builder.query({
@@ -77,6 +89,8 @@ export const {
   useAddProductMutation,
   useDeleteProductMutation,
   useUpdateProductMutation,
+  useGetSizeProductByIdQuery,
   useAddSizeProductMutation,
   useUpdateSizeProductMutation,
+  useDeleteSizeProductByIdMutation,
 } = productsSlice

@@ -8,9 +8,9 @@ const Carts = ({ open, close, carts }) => {
   const [totalPrice, setTotalPrice] = useState(0)
 
   useEffect(() => {
-    if (carts && carts.length > 0) {
+    if (carts && carts?.data?.length > 0) {
       // Use reduce to sum total price
-      const sum = carts.reduce((acc, cart) => {
+      const sum = carts.data.reduce((acc, cart) => {
         const productPrice = parseInt(cart.productId.price.replace(/\./g, ""));
         return acc + cart.qty * productPrice;
       }, 0);
@@ -83,7 +83,7 @@ const Carts = ({ open, close, carts }) => {
                         <div className="flow-root">
                           <ul role="list" className="-my-6 divide-y divide-gray-200">
 
-                            {carts?.map(cart => (
+                            {carts?.data?.map(cart => (
                               <li key={cart._id} className="flex py-6">
                                 <div className="h-24 w-24 flex-shrink-0 overflow-hidden">
                                   <img

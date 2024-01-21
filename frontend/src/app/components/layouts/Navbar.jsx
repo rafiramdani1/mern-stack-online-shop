@@ -26,6 +26,7 @@ const Navbar = () => {
 
   const [logout, { isLoading }] = useLogoutMutation()
   const { data: categories } = useGetCategoriesQuery()
+
   const { data: carts } = useGetCartsQuery()
 
   const handleShowCarts = () => {
@@ -123,7 +124,7 @@ const Navbar = () => {
 
                       {/* carts  */}
                       {isAuth ?
-                        <input className={carts?.length === 0 ? 'hidden' : 'absolute w-4 text-center left-5 bg-cyan-400 mt-1 rounded-md font-semibold border border-zinc-400 text-xs focus: outline-none cursor-pointer'} defaultValue={carts?.length} />
+                        <input className={carts?.data?.length === 0 ? 'hidden' : 'absolute w-4 text-center left-5 bg-cyan-400 mt-1 rounded-md font-semibold border border-zinc-400 text-xs focus: outline-none cursor-pointer'} defaultValue={carts?.data?.length} />
                         : ''
                       }
 
@@ -134,7 +135,10 @@ const Navbar = () => {
               </ul>
             </div>
 
-            {<Carts open={showCarts} close={() => setShowCarts(false)} carts={carts} />}
+            {token || user ?
+              <Carts open={showCarts} close={() => setShowCarts(false)} carts={carts} />
+              : ""
+            }
 
             <div className='mt-4 ml-10'>
               <ul className='flex'>
