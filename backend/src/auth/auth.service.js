@@ -44,7 +44,7 @@ const createUser = async (newUserData) => {
     if (!role) {
       throw {
         status: false,
-        msg: 'Internal server Error'
+        msg: 'Type role user not found'
       }
     }
 

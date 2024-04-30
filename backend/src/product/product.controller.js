@@ -1,10 +1,20 @@
 import { productsService } from "./product.service.js"
 import path from 'path'
+import { jwtDecode } from 'jwt-decode'
 
 const getProducts = async (req, res) => {
   try {
-    const products = await productsService.getAllProducts()
-    res.status(200).json(products)
+    let { page, limit, column, sortDirection, filter_search, search, product_realese } = req.query
+    const products = await productsService.getAllProducts(page, limit, column, sortDirection, filter_search, search, product_realese)
+    res.status(200).json({
+      status: true,
+      data: products.data,
+      page: products.page,
+      limit: products.limit,
+      totalRows: products.totalRows,
+      totalPage: products.totalPage,
+      msg: "Data fetched product successfully",
+    })
   } catch (error) {
     res.status(400).json({
       status: false,
@@ -41,8 +51,38 @@ const getProductBySlug = async (req, res) => {
   }
 }
 
+const getProductByCategoryId = async (req, res) => {
+  try {
+    const idCategory = req.params.id
+    const product = await productsService.getProductByCategoryId(idCategory)
+    res.json({
+      status: true,
+      data: product
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
+const getProductByCategorySlug = async (req, res) => {
+  try {
+    let { page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes } = req.query
+    const product = await productsService.getProductByCategorySlug(page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes)
+    res.status(200).json(product)
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
 const addProduct = async (req, res) => {
   try {
+    console.log(req.body)
     if (req.files == null) throw Error("Tidak ada file yang diupload!")
 
     const newProduct = req.body
@@ -53,9 +93,12 @@ const addProduct = async (req, res) => {
     const fileName = file.md5 + ext
     const url = `${req.protocol}://${req.get('host')}/images/${fileName}`
     const allowType = ['.png', '.jpg', '.jpeg']
+    const token = req.cookies.refreshToken
+
+    const decodeToken = await jwtDecode(token)
 
     const dataNewProduct = {
-      newProduct, fileSize, url, allowType, fileName, ext, file
+      newProduct, fileSize, url, allowType, fileName, ext, file, user: decodeToken
     }
 
     await productsService.createProduct(dataNewProduct)
@@ -80,9 +123,12 @@ const editProduct = async (req, res) => {
     const body = req.body
     const reqProtocol = req.protocol
     const reqGetHost = req.get('host')
+    const token = req.cookies.refreshToken
+
+    const decodeToken = await jwtDecode(token)
 
     const dataProduct = {
-      reqFiles, idProduct, body, reqProtocol, reqGetHost
+      reqFiles, idProduct, body, reqProtocol, reqGetHost, user: decodeToken
     }
 
     await productsService.editProduct(dataProduct)
@@ -102,7 +148,14 @@ const editProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   try {
     const productId = req.params.id
-    await productsService.deleteProductById(productId)
+    const token = req.cookies.refreshToken
+    const decodeToken = await jwtDecode(token)
+
+    const dataProduct = {
+      productId,
+      user: decodeToken
+    }
+    await productsService.deleteProductById(dataProduct)
     res.status(200).json({
       status: true,
       msg: 'Produk berhasil dihapus!'
@@ -139,7 +192,7 @@ const addSizeProduct = async (req, res) => {
     await productsService.createSizeProduct(dataProduct)
     res.status(200).json({
       status: true,
-      msg: 'ukuran dan stok berhasil ditambahkan'
+      msg: 'size and stock added successfully!'
     })
   } catch (error) {
     res.status(400).json({
@@ -155,7 +208,7 @@ const editSizeProductById = async (req, res) => {
     await productsService.editSizeProductById(dataSizeProduct)
     res.status(200).json({
       status: true,
-      msg: 'ukuran dan stok berhasil diubah!'
+      msg: 'size and stock changed successfully!'
     })
   } catch (error) {
     res.status(400).json({
@@ -181,15 +234,51 @@ const deleteSizeProductById = async (req, res) => {
   }
 }
 
+const getProductStatusRealese = async (req, res) => {
+  try {
+    const productStatusRealese = await productsService.getProductStatusRealese()
+    res.status(200).json({
+      status: true,
+      data: productStatusRealese
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
+const editProductRealese = async (req, res) => {
+  try {
+    const data = req.body
+    const productRealese = await productsService.updateProductRealese(data)
+    res.status(200).json({
+      status: true,
+      msg: productRealese.msg
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message || error
+    })
+  }
+}
+
 export const productContollers = {
   getProducts,
   getProductById,
   getProductBySlug,
+  getProductByCategoryId,
+  getProductByCategorySlug,
   addProduct,
   editProduct,
   deleteProduct,
   getSizeProductById,
   addSizeProduct,
   editSizeProductById,
-  deleteSizeProductById
+  deleteSizeProductById,
+  getProductStatusRealese,
+  editProductRealese,
 }

@@ -32,7 +32,24 @@ const addCartProduct = async (req, res) => {
   }
 }
 
+const deleteCartById = async (req, res) => {
+  try {
+    const cartId = req.params.id
+    await cartService.deleteCartById(cartId)
+    res.status(200).json({
+      status: true,
+      msg: 'Cart has been deleted!'
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
 export const cartControllers = {
   getCartsByUserId,
   addCartProduct,
+  deleteCartById,
 }

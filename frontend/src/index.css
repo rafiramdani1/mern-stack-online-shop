@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  background-color: #f4f4f5;
+  background-color: #fafafa;
 }
 
 .loading {
@@ -19,6 +19,26 @@ body {
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
+}
+
+.swiper-pagination {
+  position: relative;
+  margin-top: 20px;
+}
+
+.swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  text-align: center;
+  line-height: 20px;
+  font-size: 12px;
+  opacity: 1;
+  background: #a3a3a3;
+}
+
+.swiper-pagination-bullet-active {
+  color: #fff;
+  background: #19191a;
 }
 
 @keyframes spin {

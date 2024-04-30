@@ -5,3 +5,4 @@ export const cartRouter = express.Router()
 
 cartRouter.get('/', cartControllers.getCartsByUserId)
 cartRouter.post('/', cartControllers.addCartProduct)
+cartRouter.delete('/:id', cartControllers.deleteCartById)

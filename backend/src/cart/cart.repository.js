@@ -18,7 +18,13 @@ const insertCart = async (dataProduct) => {
   return cartProduct
 }
 
+const deleteCartById = async (idCart) => {
+  const cartProduct = await Cart.findByIdAndDelete(idCart)
+  return cartProduct
+}
+
 export const cartRepository = {
   insertCart,
   findCartByUserId,
+  deleteCartById,
 } 

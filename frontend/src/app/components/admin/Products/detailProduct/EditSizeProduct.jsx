@@ -11,7 +11,7 @@ const EditSizeProduct = ({ idSizeProduct, closeModal }) => {
   const { id: idProduct } = useParams()
 
   const { data: sizes } = useGetSizesQuery()
-  const { data: sizeProduct } = useGetSizeProductByIdQuery(idSizeProduct)
+  const { data: sizeProduct, refetch: refetchSizeProduct } = useGetSizeProductByIdQuery(idSizeProduct)
   const { refetch } = useGetProductByIdQuery(idProduct)
 
   const [size, setSize] = useState('')
@@ -39,14 +39,10 @@ const EditSizeProduct = ({ idSizeProduct, closeModal }) => {
   const handleEditSizeProduct = async (e) => {
     e.preventDefault()
     try {
-      const response = await updateSizeProduct({ size, oldSize, stock, idSizeProduct }).unwrap()
+      const response = await updateSizeProduct({ size, oldSize, stock, idSizeProduct, idProduct }).unwrap()
       setMsgSuccess(response.msg)
-
       await refetch()
-
-      setTimeout(() => {
-        closeModal()
-      }, 2000)
+      await refetchSizeProduct()
     } catch (error) {
       return
     }
@@ -58,7 +54,7 @@ const EditSizeProduct = ({ idSizeProduct, closeModal }) => {
       {isSuccess ? <ModalSuccess msg={msgSuccess} close={closeModal} /> : null}
 
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-[70] outline-none focus:outline-none">
-        <div className="relative w-1/3 my-6 mx-auto max-w-3xl">
+        <div className="relative w-1/4 my-6 mx-auto max-w-3xl">
           {/*content*/}
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             {/*header*/}
@@ -70,7 +66,7 @@ const EditSizeProduct = ({ idSizeProduct, closeModal }) => {
             {/*body*/}
             <div className="p-6">
 
-              <form onSubmit={handleEditSizeProduct} className="w-full max-w-lg" action='#'>
+              <form onSubmit={handleEditSizeProduct} action='#'>
 
                 {isError && (<AlertErrors msg={error.data.msg} close={reset} />)}
 

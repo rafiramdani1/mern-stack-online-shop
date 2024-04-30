@@ -11,7 +11,7 @@ const Carts = ({ open, close, carts }) => {
     if (carts && carts?.data?.length > 0) {
       // Use reduce to sum total price
       const sum = carts.data.reduce((acc, cart) => {
-        const productPrice = parseInt(cart.productId.price.replace(/\./g, ""));
+        const productPrice = parseInt(cart.productId?.price);
         return acc + cart.qty * productPrice;
       }, 0);
 
@@ -63,14 +63,14 @@ const Carts = ({ open, close, carts }) => {
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-md mt-14">
                   <div className="flex h-full flex-col overflow-y-scroll shadow-xl bg-white">
                     <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 ">
-                      <div className="flex items-start justify-between mt-12">
-                        <Dialog.Title className="text-lg font-medium text-zinc-800">
-                          <i className="uil uil-shopping-bag text-3xl"></i>Keranjang</Dialog.Title>
+                      <div className="flex items-start justify-between mt-24 self-center">
+                        <Dialog.Title className="text-lg font-medium text-zinc-800 self-center">
+                          <i className="uil uil-shopping-bag text-3xl"></i>Cart</Dialog.Title>
 
                         <div className="ml-3 flex items-center">
                           <button
                             type="button"
-                            className="relative -m-2 p-2 text-gray-400 hover:text-gray-500"
+                            className="relative -m-2 p-2 mt-1 text-gray-400 hover:text-gray-500"
                             onClick={close}
                           >
                             <span className="absolute -inset-0.5" />
@@ -82,12 +82,11 @@ const Carts = ({ open, close, carts }) => {
                       <div className="mt-8">
                         <div className="flow-root">
                           <ul role="list" className="-my-6 divide-y divide-gray-200">
-
                             {carts?.data?.map(cart => (
                               <li key={cart._id} className="flex py-6">
                                 <div className="h-24 w-24 flex-shrink-0 overflow-hidden">
                                   <img
-                                    src={cart.productId.url}
+                                    src={cart?.productId?.url}
                                     className="object-center"
                                   />
                                 </div>
@@ -96,16 +95,16 @@ const Carts = ({ open, close, carts }) => {
                                   <div>
                                     <div className="flex justify-between text-base font-medium text-gray-800">
                                       <h3>
-                                        <a href='#' className='text-sm'>{(cart.productId.title).substring(0, 30)}...</a>
+                                        <a href='#' className='text-sm'>{(cart.productId?.title)?.substring(0, 30)}...</a>
                                       </h3>
-                                      <p className="ml-4">Rp{(cart.qty * parseInt(cart.productId.price.replace(/\./g, ""))).toLocaleString("id-ID")}</p>
+                                      <p className="ml-4">Rp{(cart?.qty * parseInt(cart.productId?.price)).toLocaleString("id-ID")}</p>
                                     </div>
                                   </div>
                                   <div className="flex flex-1 items-end justify-between text-sm">
-                                    <p className="text-gray-500">Qty {cart.qty}</p>
+                                    <p className="text-gray-500">Qty {cart?.qty}</p>
 
                                     <div className="flex">
-                                      <button onClick={() => deleteCartProduct(cart._id)}
+                                      <button onClick={() => deleteCartProduct(cart?._id)}
                                         type="button"
                                         className="font-medium text-gray-600 hover:text-red-500"
                                       >
@@ -116,9 +115,13 @@ const Carts = ({ open, close, carts }) => {
                                 </div>
                               </li>
                             ))}
-
                           </ul>
                         </div>
+
+                        {carts?.data.length === 0 ?
+                          <p className='text-center text-textSecondary font-medium'>No Product in the Cart</p>
+                          : ''
+                        }
                       </div>
                     </div>
 

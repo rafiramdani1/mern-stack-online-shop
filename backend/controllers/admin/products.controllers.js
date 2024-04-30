@@ -104,9 +104,9 @@ export const searchProducts = async (req, res) => {
     // Lakukan pencarian berdasarkan judul, kategori, dan subkategori
     const products = await Product.find({
       $or: [
-        // { title: { $in: regexQueries } },
+        { title: { $in: regexQueries } },
         { 'id_category.title': { $in: regexQueries } },
-        // { 'id_sub_category.title': { $in: regexQueries } },
+        { 'id_sub_category.title': { $in: regexQueries } },
       ],
     }).populate('id_category');
 

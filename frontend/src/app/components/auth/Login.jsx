@@ -44,11 +44,12 @@ const Login = () => {
     <>
       <section>
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+          <h1 className='text-2xl text-textPrimary font-bold mb-2 tracking-tighter'>Shoes Store</h1>
           <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 
-              <h1 className="text-xl font-bold leading-tight tracking-tight text-textPrimary text-center">
-                Masuk
+              <h1 className="text-base font-medium leading-tight text-textSecondary">
+                Login your account
               </h1>
 
               {isError ?
@@ -59,7 +60,7 @@ const Login = () => {
 
                 <div>
                   <label className="block mb-2 text-textSecondary text-sm font-medium">
-                    Email anda</label>
+                    Your email</label>
                   <input
                     type="email"
                     name="email"
@@ -86,15 +87,15 @@ const Login = () => {
 
                 <div className="flex items-center justify-between">
                   <a href="/forgot-password"
-                    className="text-sm font-medium hover:underline text-textSecondary hover:text-textPrimary">Lupa password?</a>
+                    className="text-sm font-medium hover:underline text-textSecondary hover:text-textPrimary">Forget password?</a>
                 </div>
 
                 <button type="submit"
-                  className="w-full font-medium text-textPrimary hover:text-white hover:bg-hoverBgButton border border-borderButton focus:ring-2 focus:outline-none focus:ring-ringFocusBtn rounded-lg text-sm px-5 py-2.5 text-center mt-5">Masuk</button>
+                  className="w-full font-medium text-textPrimary hover:text-white hover:bg-hoverBgButton border border-borderButton focus:ring-2 focus:outline-none focus:ring-ringFocusBtn rounded-lg text-sm px-5 py-2.5 text-center mt-5">Login</button>
 
                 <p className="text-sm font-light text-textSecondary">
-                  Belum punya akun? <Link to={'/register'}
-                    className="font-medium text-textPrimary hover:underline hover:text-textHoverPrimary">Daftar</Link>
+                  Don't have an account yet? <Link to={'/register'}
+                    className="font-medium text-textPrimary hover:underline hover:text-textHoverPrimary">Register</Link>
                 </p>
 
               </form>

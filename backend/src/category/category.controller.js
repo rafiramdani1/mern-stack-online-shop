@@ -1,9 +1,18 @@
+import { jwtDecode } from "jwt-decode"
 import { categoryService } from "./category.service.js"
 
 const getCategories = async (req, res) => {
   try {
-    const categories = await categoryService.getAllCategories()
-    res.status(200).json(categories)
+    let { page, limit, column, sortDirection, filter_search, search } = req.query
+    const categories = await categoryService.getAllCategories(page, limit, column, sortDirection, filter_search, search)
+    res.status(200).json({
+      status: 200,
+      data: categories.data,
+      page: categories.page,
+      limit: categories.limit,
+      totalRows: categories.totalRows,
+      totalPage: categories.totalPage
+    })
   } catch (error) {
     res.status(400).json({
       msg: error.message
@@ -26,10 +35,16 @@ const getCategoryById = async (req, res) => {
 const addCategory = async (req, res) => {
   try {
     const newCategoryData = req.body
+    const token = req.cookies.refreshToken
+    const decodeToken = await jwtDecode(token)
 
-    const category = await categoryService.createCategory(newCategoryData)
+    const data = {
+      newCategoryData, user: decodeToken
+    }
+
+    const category = await categoryService.createCategory(data)
     res.status(201).json({
-      msg: 'Kategori berhasil ditambahkan!',
+      msg: 'Category added successfully!',
       data: category,
       status: true
     })
@@ -48,7 +63,7 @@ const editCategoryById = async (req, res) => {
     const category = await categoryService.editCategoryById(categoryId, categoryData)
     res.status(201).json({
       status: true,
-      msg: 'Kategori berhasil diupdate!',
+      msg: 'Category updated successfully!',
       data: category
     })
   } catch (error) {
@@ -61,10 +76,16 @@ const editCategoryById = async (req, res) => {
 const deleteCategoryById = async (req, res) => {
   try {
     const categoryId = req.params.id
-    await categoryService.deleteCategory(categoryId)
+    const token = req.cookies.refreshToken
+    const decodeToken = await jwtDecode(token)
+
+    const data = {
+      categoryId, user: decodeToken
+    }
+    await categoryService.deleteCategory(data)
 
     res.status(200).json({
-      msg: 'Kategori beserta sub kategorinya berhasil dihapus!',
+      msg: 'The category and its subcategories have been successfully deleted!',
       status: true
     })
   } catch (error) {

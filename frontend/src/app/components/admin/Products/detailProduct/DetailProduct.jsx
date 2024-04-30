@@ -9,6 +9,7 @@ import ModalDelete from '../../../layouts/ModalDelete'
 import { useDeleteSizeProductByIdMutation } from '../../../../features/products/productsApiSlice'
 import LoadingSpinner from '../../../layouts/LoadingSpinner'
 import ModalSuccess from '../../../layouts/ModalSuccess'
+import { IoMdAdd } from "react-icons/io";
 
 const sanitazeHTML = (html) => { return DOMPurify.sanitize(html) }
 
@@ -18,11 +19,7 @@ const DetailProduct = () => {
   const { id: idProduct } = useParams()
 
   // use get product by id
-  const { data: productById, isLoading, refetch } = useGetProductByIdQuery(idProduct)
-
-  if (productById) {
-    console.log(productById)
-  }
+  const { data: productById, isLoading, status, refetch } = useGetProductByIdQuery(idProduct)
 
   const [msgSuccess, setMsgSuccess] = useState('')
   const [modalAddSize, setModalAddSize] = useState(false)
@@ -63,6 +60,8 @@ const DetailProduct = () => {
 
   return (
     <>
+      {isLoading || status === 'pending' ? <LoadingSpinner /> : null}
+
       {loadingDelete ? <LoadingSpinner /> : null}
 
       {isSuccess && msgSuccess !== '' ? <ModalSuccess msg={msgSuccess} close={reset} /> : null}
@@ -120,8 +119,9 @@ const DetailProduct = () => {
       </div>
 
       <button
+        title='add size'
         onClick={() => setModalAddSize(true)}
-        className='block max-w-fit text-textPrimary hover:text-white border border-borderButton hover:bg-hoverBgButton focus:ring-2 focus:outline-none focus:ring-ringFocusBtn font-medium rounded-lg text-xs md:text-sm px-5 py-2.5 text-center ml-16 mb-3'>Tambah Ukuran Produk</button>
+        className='block max-w-fit text-textPrimary hover:text-white border border-borderButton hover:bg-hoverBgButton focus:ring-2 focus:outline-none focus:ring-ringFocusBtn font-medium rounded-lg text-xs md:text-sm px-5 py-2 text-center ml-16 mb-3'><IoMdAdd className='text-xl' /></button>
 
       {
         <ListSizeProduct

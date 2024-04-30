@@ -11,6 +11,8 @@ productRouter.post('/',
   addProductValidation, validationResults,
   productContollers.addProduct
 )
+productRouter.get('/category/:id', productContollers.getProductByCategoryId)
+productRouter.get('/productsByCategorySlug/', productContollers.getProductByCategorySlug)
 productRouter.put('/:id',
   addProductValidation, validationResults,
   productContollers.editProduct
@@ -25,3 +27,5 @@ productRouter.post('/sizes',
 )
 productRouter.put('/sizes/edit', productContollers.editSizeProductById)
 productRouter.delete('/delete/sizes/:id', productContollers.deleteSizeProductById)
+productRouter.get('/status-realese', productContollers.getProductStatusRealese)
+productRouter.put('/edit/status-realese', productContollers.editProductRealese)

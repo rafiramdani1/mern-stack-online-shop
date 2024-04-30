@@ -8,9 +8,13 @@ export default {
     },
     extend: {
       colors: {
-        textPrimary: '#27272a',
+        textPrimary: '#262626',
         textSecondary: '#3f3f46',
+        textPrimaryLight: '#d4d4d4',
+        textSecondaryLight: '#e5e5e5',
         textHoverPrimary: '#18181b',
+        bgPrimaryDark: '#171717',
+        bgSecondaryDark: '#262626',
         borderButton: '#a1a1aa',
         hoverBgButton: '#3f3f46',
         ringFocusBtn: '#d4d4d8',

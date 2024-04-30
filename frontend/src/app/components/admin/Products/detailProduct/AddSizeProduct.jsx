@@ -37,12 +37,7 @@ const AddSizeProduct = ({ close, onProductSizeAdded }) => {
     try {
       const response = await addSizeProduct({ addSize, addStock, idProduct }).unwrap()
       setSuccessMsg(response.msg)
-
       await refetch()
-
-      setTimeout(() => {
-        close()
-      }, 2000);
     } catch (error) {
       return
     }
@@ -54,28 +49,29 @@ const AddSizeProduct = ({ close, onProductSizeAdded }) => {
       {isSuccess ? <ModalSuccess msg={successMsg} close={close} /> : null}
 
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-[70] outline-none focus:outline-none">
-        <div className="relative w-1/3 my-6 mx-auto max-w-3xl">
+        <div className="relative w-1/4 my-6 mx-auto max-w-3xl">
           {/*content*/}
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             {/*header*/}
-            <div className="flex items-start justify-between px-6 py-5 border-b border-solid border-zinc-200 rounded-t">
+            <div className="flex items-start justify-between px-6 py-4 border-b border-solid border-zinc-200 rounded-t">
               <h3 className="font-semibold text-base md:text-lg text-textPrimary">
-                Tambah Ukuran Produk
+                Form Add Size Product
               </h3>
+              <button onClick={close}><i className="uil uil-multiply text-textPrimary font-semibold hover:text-red-500"></i></button>
             </div>
             {/*body*/}
             <div className="p-6">
 
               {isError && <AlertErrors msg={error.data.msg} close={reset} />}
 
-              <form onSubmit={handleAddSizeProduct} className="w-full max-w-lg" action='#'>
+              <form onSubmit={handleAddSizeProduct} action='#'>
 
                 <div className='flex'>
                   <div className='mb-2'>
                     <div className='relative mr-3'>
-                      <label className="mb-2 text-sm font-bold text-textPrimary">Ukuran</label>
+                      <label className="mb-2 text-sm font-bold text-textPrimary">Size</label>
                       <select className='block appearance-none w-fit text-sm text-textPrimary bg-bgInput border border-borderInput py-2.5 px-4 pr-8 leading-tight focus:outline-none rounded-lg focus:bg-white focus:border-focusBorderInput' value={addSize} onChange={handleChangeSize}>
-                        <option value=''>Pilih Ukuran</option>
+                        <option value=''>Select Size</option>
                         {sizes?.map(size => (
                           <option key={size._id}>{size.size}</option>
                         ))}
@@ -87,8 +83,8 @@ const AddSizeProduct = ({ close, onProductSizeAdded }) => {
                   </div>
                   <div>
                     <label
-                      className="mb-2 text-sm font-bold text-textPrimary">Stok</label>
-                    <input type="text" name="slug" placeholder="stok"
+                      className="mb-2 text-sm font-bold text-textPrimary">Stock</label>
+                    <input type="text" name="slug" placeholder="stock"
                       className="bg-bgInput border border-borderInput text-textPrimary sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput block w-full p-2.5" value={addStock} onChange={handleChangeStock} />
                   </div>
                 </div>
@@ -96,21 +92,9 @@ const AddSizeProduct = ({ close, onProductSizeAdded }) => {
                 <button type="submit"
                   className="w-full font-medium text-textPrimary hover:text-white hover:bg-hoverBgButton border border-borderButton focus:ring-2 focus:outline-none focus:ring-ringFocusBtn rounded-lg text-sm px-5 py-2.5 text-center mt-5"
                   disabled={loadingAddSize || successMsg !== ''}
-                >Tambah</button>
+                >Add size product</button>
               </form>
-
             </div>
-
-            {/*footer*/}
-            <div className="flex items-center justify-end p-3 border-t border-solid border-zinc-200 rounded-b">
-              <button onClick={close}
-                className="text-textPrimary font-medium rounded-lg text-sm px-4 py-2 hover:text-red-600"
-                type="button"
-              >
-                close
-              </button>
-            </div>
-
           </div>
         </div>
       </div>

@@ -3,7 +3,9 @@ import { apiSlice } from "../../api/apiSlice";
 export const subCategoriesSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     getSubCategories: builder.query({
-      query: () => '/sub-categories'
+      query: data => ({
+        url: `/sub-categories?page=${data.page}&limit=${data.limit}&column=${data.column}&sortDirection=${data.sortDirection}&filter_search=${data.filter_search}&search=${data.searchKeyword}`
+      })
     }),
     getSubCategoryById: builder.query({
       query: idSubCategory => ({
