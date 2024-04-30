@@ -2,9 +2,26 @@ import mongoose from "mongoose"
 import { productsRepository } from "./product.repository.js"
 import path from 'path'
 import { unlink } from "fs"
+import fs from 'fs'
 
-const getAllProducts = async () => {
-  const products = await productsRepository.findAllProducts()
+const getAllProducts = async (page, limit, column, sortDirection, filter_search, search, product_realese) => {
+  if (!page) {
+    page = 1
+  }
+  if (!limit) {
+    limit = 10
+  }
+  if (!column) {
+    column = 'created_at'
+  }
+  if (!sortDirection) {
+    sortDirection = 'desc'
+  }
+  if (!filter_search) {
+    filter_search = 'all'
+  }
+
+  const products = await productsRepository.findAllProducts(page, limit, column, sortDirection, filter_search, search, product_realese)
   return products
 }
 
@@ -22,6 +39,33 @@ const getProductBySlug = async (slug) => {
   const product = await productsRepository.findProductBySlug(slug)
   if (!product) throw Error('Product tidak ditemukan!')
   return product
+}
+
+const getProductByCategoryId = async (idCategory) => {
+  const product = await productsRepository.findProductByCategoryId(idCategory)
+  if (!product) throw Error('Product tidak ditemukan!')
+  return product
+}
+
+const getProductByCategorySlug = async (page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes) => {
+  if (!page) {
+    page = 0
+  }
+  if (!limit) {
+    limit = 10
+  }
+  if (!column) {
+    column = 'created_at'
+  }
+  if (!sortDirection) {
+    sortDirection = 'desc'
+  }
+
+  if (!slug) {
+    throw Error('Product not found!')
+  }
+  const products = await productsRepository.findProuductByCategorySlug(page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes)
+  return products
 }
 
 const createProduct = async (dataNewProduct) => {
@@ -100,6 +144,7 @@ const editProduct = async (dataProduct) => {
   }
 
   const url = `${dataProduct.reqProtocol}://${dataProduct.reqGetHost}/images/${fileName}`
+  console.log(dataProduct)
   const dataNewProduct = {
     idProduct: dataProduct.idProduct,
     title: dataProduct.body.title,
@@ -109,22 +154,30 @@ const editProduct = async (dataProduct) => {
     id_category: dataProduct.body.category,
     id_sub_category: dataProduct.body.subCategoryId,
     url,
-    image: fileName
+    image: fileName,
+    user: dataProduct.user
   }
 
   const newProduct = await productsRepository.updateProduct(dataNewProduct)
   return newProduct
 }
 
-const deleteProductById = async (idProduct) => {
+const deleteProductById = async (dataProduct) => {
   // cek type id
-  await getProductById(idProduct)
-  const product = await productsRepository.deleteProductById(idProduct)
+  await getProductById(dataProduct.productId)
+  const product = await productsRepository.deleteProductById(dataProduct)
 
-  const filePath = `./public/images/${product.image}`
-  unlink(filePath, (err) => {
-    if (err) return console.log(err)
-  })
+  const filePath = `./public/images/${product.image}`;
+  const deletedFileName = `${path.basename(filePath, path.extname(filePath))}-deleted${path.extname(filePath)}`;
+  const deletedFilePath = path.join(path.dirname(filePath), deletedFileName);
+
+  fs.rename(filePath, deletedFilePath, (err) => {
+    if (err) {
+      console.error(err);
+    } else {
+      console.log(`File ${product.image} berhasil dihapus dan diubah namanya menjadi ${deletedFileName}`);
+    }
+  });
   return product
 }
 
@@ -147,7 +200,7 @@ const createSizeProduct = async (dataProduct) => {
   // cek duplicate size
   const findSizeProductByIdProduct = await productsRepository.findSizeProductByIdProductAndSize(dataProduct)
   if (findSizeProductByIdProduct) {
-    throw Error('size sudah ada!')
+    throw Error('size already exists!')
   }
 
   const sizeProduct = await productsRepository.insertSizeProduct(dataProduct)
@@ -156,6 +209,11 @@ const createSizeProduct = async (dataProduct) => {
 
 const editSizeProductById = async (dataSizeProduct) => {
   await getSizeProductById(dataSizeProduct.idSizeProduct)
+
+  const duplicateSize = await productsRepository.findSizeProductByIdProductAndSize(dataSizeProduct)
+  if (duplicateSize && duplicateSize.size !== dataSizeProduct.oldSize) {
+    throw new Error('Size product sudah ada!')
+  }
 
   if (dataSizeProduct.size === "") throw Error('Ukuran tidak boleh kosong!')
   if (dataSizeProduct.stock === "") throw Error('Stok tidak boleh kosong!')
@@ -170,10 +228,40 @@ const deleteSizeProductById = async (idSizeProduct) => {
   return sizeProduct
 }
 
+const getProductStatusRealese = async () => {
+  const productRealese = await productsRepository.findAllProductStatusRealese()
+  return productRealese
+}
+
+const updateProductRealese = async (data) => {
+  await getProductById(data.productId)
+
+  let productRealese
+  const findStatusRealeseById = await productsRepository.findProductStatusRealeseById(data.statusRealeseId)
+  if (findStatusRealeseById) {
+    if (findStatusRealeseById.product_status_realese_title === 'realese') {
+      // cek apakah product mempunyai size
+      const findSizeProduct = await productsRepository.findAllSizesProductByIdProduct(data.productId)
+      if (!findSizeProduct || findSizeProduct.length === 0) {
+        throw {
+          typeError: 'size product not found',
+          msg: 'Cannot change the product status to realesed, because this product does not yet have a size. Please add the product size first!'
+        }
+      }
+      productRealese = await productsRepository.updateProductStatusToRealese(data)
+    } else if (findStatusRealeseById.product_status_realese_title === 'unrealese') {
+      productRealese = await productsRepository.updateProductStatusToUnrealese(data)
+    }
+  }
+  return productRealese
+}
+
 export const productsService = {
   getAllProducts,
   getProductById,
   getProductBySlug,
+  getProductByCategoryId,
+  getProductByCategorySlug,
   createProduct,
   editProduct,
   deleteProductById,
@@ -181,4 +269,6 @@ export const productsService = {
   createSizeProduct,
   editSizeProductById,
   deleteSizeProductById,
+  getProductStatusRealese,
+  updateProductRealese,
 }

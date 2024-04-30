@@ -3,7 +3,9 @@ import { apiSlice } from "../../api/apiSlice";
 export const productsSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     getProducts: builder.query({
-      query: () => '/products'
+      query: data => ({
+        url: `products?page=${data.page}&limit=${data.limit}&column=${data.column}&sortDirection=${data.sortDirection}&filter_search=${data.filter_search}&search=${data.searchKeyword}&product_realese=${data.product_realese}`
+      })
     }),
     getProductById: builder.query({
       query: idProduct => ({
@@ -17,9 +19,21 @@ export const productsSlice = apiSlice.injectEndpoints({
         method: 'GET'
       })
     }),
+    getProductByCategoryId: builder.query({
+      query: categoryId => ({
+        url: `products/category/${categoryId}`,
+        method: 'GET'
+      })
+    }),
+    getProductByCategorySlug: builder.query({
+      query: data => ({
+        url: `products/productsByCategorySlug?page=${data.page}&limit=${data.limit}&column=${data.column}&sortDirection=${data.sortDirection}&search=${data.searchKeyword}&product_realese=${data.product_realese}&slug=${data.slug}&minPrice=${data.minPriceGlobal}&maxPrice=${data.maxPriceGlobal}&sizes=${data?.sizes?.join(',')}`,
+        method: 'GET'
+      })
+    }),
     getProductsByCategory: builder.query({
       query: category => ({
-        url: `products/category/${category}`,
+        url: `products/ category / ${category}`,
         method: 'GET'
       })
     }),
@@ -32,13 +46,13 @@ export const productsSlice = apiSlice.injectEndpoints({
     }),
     deleteProduct: builder.mutation({
       query: idProduct => ({
-        url: `/products/${idProduct}`,
+        url: `/ products / ${idProduct}`,
         method: 'DELETE'
       })
     }),
     updateProduct: builder.mutation({
       query: (productData) => ({
-        url: `products/${productData.get('idProduct')}`,
+        url: `products / ${productData.get('idProduct')}`,
         method: 'PUT',
         body: productData
       })
@@ -47,7 +61,7 @@ export const productsSlice = apiSlice.injectEndpoints({
     // sizes
     getSizeProductById: builder.query({
       query: (idSize) => ({
-        url: `products/sizes/${idSize}`,
+        url: `products / sizes / ${idSize}`,
         method: 'GET'
       })
     }),
@@ -67,14 +81,29 @@ export const productsSlice = apiSlice.injectEndpoints({
     }),
     deleteSizeProductById: builder.mutation({
       query: idSize => ({
-        url: `products/delete/sizes/${idSize}`,
+        url: `products / delete /sizes/${idSize}`,
         method: 'DELETE'
       })
     }),
     searchProduct: builder.query({
       query: searchQuery => ({
-        url: `/products/products/search?q=${searchQuery}`,
+        url: `/ products / products / search ? q = ${searchQuery}`,
         method: 'GET'
+      })
+    }),
+
+    // realses status
+    getRealeseStatus: builder.query({
+      query: () => ({
+        url: '/products/status-realese',
+        method: 'GET'
+      })
+    }),
+    updateProductRealese: builder.mutation({
+      query: data => ({
+        url: 'products/edit/status-realese',
+        method: 'PUT',
+        body: data
       })
     })
   })
@@ -85,6 +114,8 @@ export const {
   useGetProductByIdQuery,
   useGetProductBySlugQuery,
   useGetProductsByCategoryQuery,
+  useGetProductByCategoryIdQuery,
+  useGetProductByCategorySlugQuery,
   useSearchProductQuery,
   useAddProductMutation,
   useDeleteProductMutation,
@@ -93,4 +124,6 @@ export const {
   useAddSizeProductMutation,
   useUpdateSizeProductMutation,
   useDeleteSizeProductByIdMutation,
+  useGetRealeseStatusQuery,
+  useUpdateProductRealeseMutation,
 } = productsSlice

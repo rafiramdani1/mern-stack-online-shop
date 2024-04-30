@@ -1,8 +1,24 @@
 import mongoose from "mongoose"
 import { subCategoryRepository } from "./subCategory.repository.js"
 
-const getAllSubCategories = async () => {
-  const subCategories = await subCategoryRepository.findAllSubCategories()
+const getAllSubCategories = async (page, limit, column, sortDirection, filter_search, search) => {
+  if (!page) {
+    page = 1
+  }
+  if (!limit) {
+    limit = 10
+  }
+  if (!sortDirection) {
+    sortDirection = 'desc'
+  }
+  if (!column) {
+    column = 'created_at'
+  }
+  if (!filter_search) {
+    filter_search = 'all'
+  }
+
+  const subCategories = await subCategoryRepository.findAllSubCategories(page, limit, column, sortDirection, filter_search, search)
   return subCategories
 }
 
@@ -26,28 +42,28 @@ const getSubCategoriesByCategoryId = async (id) => {
   return subCategory
 }
 
-const createSubCategory = async (newSubCategory) => {
+const createSubCategory = async (data) => {
 
   // cek sub category
-  if (newSubCategory.categoryId === '' || newSubCategory.categoryId === 'Pilih Kategori') {
+  if (data.newSubCategory.categoryId === '' || data.newSubCategory.categoryId === 'Pilih Kategori') {
     throw Error('Pilih Kategori!')
   }
 
   // cek duplicate title
   const findSubCategoryByTitle = await subCategoryRepository.findSubCategoryByTitle({
-    $regex: new RegExp('^' + newSubCategory.title + '$', 'i')
+    $regex: new RegExp('^' + data.newSubCategory.title + '$', 'i')
   })
   if (findSubCategoryByTitle) {
     throw Error('Title sudah digunakan!')
   }
 
   // cek duplicate slug
-  const findSubCategoryBySlug = await subCategoryRepository.findSubCategoryBySlug(newSubCategory.slug)
+  const findSubCategoryBySlug = await subCategoryRepository.findSubCategoryBySlug(data.newSubCategory.slug)
   if (findSubCategoryBySlug) {
     throw Error('Slug sudah digunakan!')
   }
 
-  const subCategory = await subCategoryRepository.insertSubCategory(newSubCategory)
+  const subCategory = await subCategoryRepository.insertSubCategory(data)
 
   return subCategory
 }
@@ -78,9 +94,9 @@ const editSubCategoryById = async (id, subCategoryData) => {
   return subCategory
 }
 
-const deleteSubCategoryById = async (id) => {
-  await getSubCategoryById(id)
-  await subCategoryRepository.deleteSubCategory(id)
+const deleteSubCategoryById = async (data) => {
+  await getSubCategoryById(data.subCategoryId)
+  await subCategoryRepository.deleteSubCategory(data)
 }
 
 export const subCategoryService = {

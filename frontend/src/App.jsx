@@ -20,6 +20,7 @@ import DetailProduct from './app/components/admin/Products/detailProduct/DetailP
 import ProductsByCategory from './app/components/products/ProductsByCategory'
 import ProductsSearchResults from './app/components/products/ProductsSearchResults'
 import VerifyEmail from './app/components/auth/VerifyEmail'
+import ProductBySubCategory from './app/components/products/ProductBySubCategory'
 
 
 function App() {
@@ -34,7 +35,7 @@ function App() {
           <Route path='/register' element={<Register />} />
           <Route path='/user/verify/:id/:token' element={<VerifyEmail />} />
 
-          {/* refesh token */}  
+          {/* refesh token */}
           <Route element={<RefreshToken />}>
 
             {/* public route */}
@@ -42,7 +43,8 @@ function App() {
               <Route index element={<Home />} />
               <Route path='/product/:slug' element={<DetailProductUser />} />
               <Route path='products/search' element={<ProductsSearchResults />} />
-              <Route path='/products' element={<ProductsByCategory />} />
+              <Route path='/products/:slug' element={<ProductsByCategory />} />
+              <Route path='/products/:category/:subCategory' element={<ProductBySubCategory />} />
             </Route>
 
             {/* Require auth admin */}
@@ -70,56 +72,6 @@ function App() {
             </Route>
 
           </Route>
-
-          {/* <Route path='/register' element={<Register />} /> */}
-          {/* <Route path='/user/verify/:id/:token' element={<VerifyEmail />} /> */}
-
-          {/* ROUTE PUBLIC */}
-          {/* <Route element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path='/products/:slug/:slug' element={(<DetailProductUser />)} />
-          </Route> */}
-
-          {/* ROUTE ADMIN */}
-          {/* <Route element={<LayoutAdmin />}>
-            <Route
-              path='/admin/dashboard'
-              element={<Dashboard />}
-            />
-
-            <Route path='/admin/dashboard/categories' element={<Categories />}>
-              <Route path='add-category' element={<AddCategory />} />
-              <Route path='edit/:id' element={<EditCategory />} />
-            </Route>
-            <Route path='/admin/dashboard/sub-categories' element={<SubCategories />} />
-          </Route> */}
-
-          {/* <Route path='/admin/dashboard/categories' element={(<Categories />)} />
-          <Route path='/admin/dashboard/categories/add-category' element={(<>
-            <NavbarAdmin /> <Categories /> <AddCategory />
-          </>)} />
-          <Route path='/admin/dashboard/categories/edit/:id' element={(<>
-            <NavbarAdmin /> <Categories /> <EditCategory />
-          </>)} />
-
-          <Route path='/admin/dashboard/sub-categories' element={(<SubCategories />)} />
-          <Route path='/admin/dashboard/sub-categories/add-sub-categories' element={(<>
-            <NavbarAdmin /> <SubCategories /> <AddSubCategories />
-          </>)} />
-          <Route path='/admin/dashboard/sub-categories/edit/:id' element={(<>
-            <NavbarAdmin /> <SubCategories /> <EditSubCategory />
-          </>)} />
-
-          <Route path='/admin/dashboard/products' element={(<Products />)} />
-          <Route path='/admin/dashboard/products/add-products' element={(<>
-            <NavbarAdmin /> <AddProducts />
-          </>)} />
-          <Route path='/admin/dashboard/products/edit/' element={(<>
-            <NavbarAdmin /> <EditProduct />
-          </>)} />
-          <Route path='/admin/dashboard/products/detail/:id' element={(<>
-            <NavbarAdmin /> <DetailProduct />
-          </>)} /> */}
 
         </Routes>
       </BrowserRouter>

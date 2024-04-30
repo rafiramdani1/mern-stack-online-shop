@@ -40,7 +40,6 @@ export const addProductValidation = [
   check('title', 'Title tidak boleh kosong!').notEmpty().isLength({ min: 4 }).withMessage('Title harus lebih dari 4 karakter!'),
   check('slug', 'Slug tidak boleh kosong!').notEmpty().isLength({ min: 4 }).withMessage('Slug harus lebih dari 4 karakter!'),
   check('category', 'Pilih kategori!!').notEmpty(),
-  check('subCategoryId', 'Pilih Sub Kategori!!').notEmpty(),
   check('description', 'Deskripsi tidak boleh kosong!').notEmpty(),
   check('price', 'Harga tidak boleh kosong!').notEmpty()
 ]

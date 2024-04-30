@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 import { useGetProductBySlugQuery } from '../../features/products/productsApiSlice'
@@ -24,7 +24,11 @@ const DetailProductUser = () => {
   const navigate = useNavigate()
 
   // use get product by slug
-  const { data: product, isLoading } = useGetProductBySlugQuery(slugProduct)
+  const { data: product, isLoading, refetch: refetchGetProductBySlug } = useGetProductBySlugQuery(slugProduct)
+
+  useEffect(() => {
+    refetchGetProductBySlug()
+  }, [])
 
   // get state global
   const qty = useSelector(selectQuantityCart)
@@ -69,6 +73,7 @@ const DetailProductUser = () => {
   }
 
   const incrementQty = async () => {
+    console.log('ok')
     if (!activeSize) return setErrors('Pilih ukuran!')
     setDecrementCount(false)
     if (qty >= cartStock) return setIncrementCount(true)
@@ -145,14 +150,12 @@ const DetailProductUser = () => {
 
       {isSuccess && msgSuccess !== '' ? <ModalSuccess msg={msgSuccess} close={handleCloseModalSuccess} /> : null}
 
-      <section className='mt-40 mb-96'>
+      <section className='mt-52 mb-96 px-36'>
         <div className='flex w-full'>
           <div className='w-1/2 justify-start ml-16'>
-            <div className=''>
-              <img className='w-72 h-72' src={product?.product.url} alt='product image' />
-            </div>
+            <img className='object-cover w-96 h-80 rounded-md' src={product?.product.url} alt='product image' />
           </div>
-          <div className='w-1/2 p-2'>
+          <div className='w-1/2 -ml-32'>
             <div className=''>
               <h3 className='text-lg font-bold text-textPrimary'>{product?.product.title}</h3>
               <div>
@@ -161,7 +164,7 @@ const DetailProductUser = () => {
                   <svg aria-hidden="true" className="ml-1 w-5 h-5 text-yellow-300 mt-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                   <h3 className='text-sm text-textPrimary font-normal mt-2'>4.7 (97 rating)</h3>
                 </div>
-                <h2 className='text-2xl mt-2 font-bold text-textPrimary'>Rp. {product?.product.price} </h2>
+                <h2 className='text-2xl mt-2 font-bold text-textPrimary'>Rp. {(product?.product.price)?.toLocaleString('ID-id')} </h2>
                 <div className='border-b mt-2 border-slate-200'></div>
               </div>
             </div>
@@ -180,8 +183,8 @@ const DetailProductUser = () => {
             <div className='border-b mt-2 border-slate-200'></div>
             <div className='mt2'>
               <h2 className='text-textPrimary font-medium text-base'>Kategori :
-                <Link className='text-slate-800 text-sm font-normal'> {product?.product.id_category.title},</Link>
-                <Link className='text-slate-800 text-sm font-normal'> {product?.product.id_sub_category.title}</Link>
+                <Link className='text-slate-800 text-sm font-normal'> {product?.product.id_category?.title},</Link>
+                <Link className='text-slate-800 text-sm font-normal'> {product?.product.id_sub_category?.title}</Link>
               </h2>
             </div>
             <div className='border-b mt-2 border-slate-200'></div>

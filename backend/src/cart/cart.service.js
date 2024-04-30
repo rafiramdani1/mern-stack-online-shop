@@ -26,7 +26,13 @@ const addCartProduct = async (dataProduct) => {
   return cartProduct
 }
 
+const deleteCartById = async (idCart) => {
+  const cartProduct = cartRepository.deleteCartById(idCart)
+  return cartProduct
+}
+
 export const cartService = {
   addCartProduct,
   getCartsByUserIdService,
+  deleteCartById,
 }

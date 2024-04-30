@@ -9,7 +9,7 @@ const Layout = () => {
   return (
     <>
       <Header />
-      <main className='px-20 mt-32 mb-96'>
+      <main className=''>
         <Outlet />
       </main>
     </>

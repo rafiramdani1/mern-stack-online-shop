@@ -4,27 +4,45 @@ import slugify from 'slugify'
 import AlertErrors from '../../layouts/AlertErrors'
 import LoadingSpinner from '../../layouts/LoadingSpinner'
 import { useGetCategoriesQuery, useGetCategoryByIdQuery, useUpdateCategoryMutation } from '../../../features/categories/categoriesApiSlice'
-import ModalSuccess from '../../layouts/ModalSuccess'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectCurrentColumnCategories, selectCurrentFilterSearchCategories, selectCurrentLimitCategories, selectCurrentPageCategories, selectCurrentSearchKeywordCategories, selectCurrentSortDirectionCategories, setSuccess } from '../../../features/categories/categoriesSlice'
 
 const EditCategory = () => {
 
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
   // get param
   const { id: idCategory } = useParams()
-
-  const navigate = useNavigate()
 
   // state form
   const [title, setTitle] = useState('')
   const [oldTitle, setOldTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [oldSlug, setOldSlug] = useState('')
-  const [msgSuccess, setMsgSuccess] = useState('')
 
   // use get category by id
-  const { data: categoryById, isLoading: getCategoryLoading, refetch: refetchCategoryById } = useGetCategoryByIdQuery(idCategory)
+  const { data: categoryById, isLoading: getCategoryLoading, status, refetch: refetchCategoryById } = useGetCategoryByIdQuery(idCategory)
+
+  // global state categories
+  const pageCategory = useSelector(selectCurrentPageCategories)
+  const limitCategory = useSelector(selectCurrentLimitCategories)
+  const columnCategory = useSelector(selectCurrentColumnCategories)
+  const sortDirectionCategory = useSelector(selectCurrentSortDirectionCategories)
+  const filterSearchCategory = useSelector(selectCurrentFilterSearchCategories)
+  const searchKeywordCategory = useSelector(selectCurrentSearchKeywordCategories)
+
+  const queryOptions = {
+    page: pageCategory,
+    limit: limitCategory,
+    column: columnCategory,
+    sortDirection: sortDirectionCategory ? 'asc' : 'desc',
+    filter_search: filterSearchCategory,
+    searchKeyword: searchKeywordCategory
+  }
 
   // use refetch categories
-  const { refetch: refetchGetCategories } = useGetCategoriesQuery()
+  const { refetch: refetchGetCategories } = useGetCategoriesQuery(queryOptions)
 
   useEffect(() => {
     if (categoryById) {
@@ -40,46 +58,30 @@ const EditCategory = () => {
     navigate('/admin/dashboard/categories')
   }
 
-  // onchange title
+  // onchange input
   const handleChangeTitle = (event) => {
     const value = event.target.value
     setTitle(value)
     const newSlug = slugify(value, { lower: true })
     setSlug(newSlug)
   }
-
-  // onchange slug
   const handleChangeSlug = (event) => {
     const value = slugify(event.target.value, { lower: true })
     setSlug(value)
   }
 
-  // use update category
   const [updateCategory, { isLoading: updateCategoryLoading, isError, error, isSuccess, reset }] = useUpdateCategoryMutation()
-
-  const handleCloseModalSuccess = () => {
-    reset()
-    setMsgSuccess('')
-    navigate('/admin/dashboard/categories')
-  }
 
   // handle edit category
   const handleUpdateCategory = async (e) => {
     e.preventDefault()
     try {
       const response = await updateCategory({ title, oldTitle, slug, oldSlug, idCategory }).unwrap()
-      setMsgSuccess(response.msg)
-
-      // call refetch data categories
       await refetchGetCategories()
       await refetchCategoryById()
-
-      // navigate
       if (response.status === true) {
-        setTimeout(() => {
-          setMsgSuccess('')
-          navigate('/admin/dashboard/categories')
-        }, 2000)
+        navigate('/admin/dashboard/categories')
+        await dispatch(setSuccess({ success: true, msg: response.msg }))
       }
     } catch (error) {
       return
@@ -88,28 +90,31 @@ const EditCategory = () => {
 
   return (
     <>
+      {getCategoryLoading || status == 'pending' ? <LoadingSpinner /> : null}
       {updateCategoryLoading ? <LoadingSpinner /> : null}
 
-      {isSuccess ? <ModalSuccess msg={msgSuccess} close={handleCloseModalSuccess} /> : null}
-
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-[70] outline-none focus:outline-none">
-        <div className="relative w-1/3 my-6 mx-auto max-w-3xl">
+        <div className="relative w-1/4 my-6 mx-auto max-w-3xl">
           {/*content*/}
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             {/*header*/}
             <div className="flex items-start justify-between px-6 py-4 border-b border-solid border-zinc-200 rounded-t">
               <h3 className="font-semibold text-base md:text-lg text-textPrimary">
-                Edit Kategori
+                Form Edit Category
               </h3>
-              <button onClick={handleCloseModalEdit}><i className="uil uil-multiply text-textPrimary font-semibold hover:text-red-500"></i></button>
+              <button onClick={handleCloseModalEdit}>
+                <i className="uil uil-multiply text-textPrimary font-semibold hover:text-red-500"></i>
+              </button>
             </div>
             {/*body*/}
             <div className="p-6">
 
-              <form onSubmit={handleUpdateCategory} className="w-full max-w-lg" action='#'>
+              <form onSubmit={handleUpdateCategory} action='#'>
 
                 {/* error message */}
-                {isError && (<AlertErrors msg={error.data.msg} close={reset} />)}
+                {isError && (
+                  <AlertErrors msg={error.data.msg} close={reset} />
+                )}
 
                 <div className='mb-2'>
                   <label
@@ -117,7 +122,7 @@ const EditCategory = () => {
                   <input
                     type="text"
                     name="title"
-                    placeholder="nama kategori"
+                    placeholder="category name"
                     className="bg-bgInput border border-borderInput text-textPrimary sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput block w-full p-2.5"
                     value={title}
                     onChange={handleChangeTitle}
@@ -139,8 +144,8 @@ const EditCategory = () => {
                 <button
                   type="submit"
                   className="w-full font-medium text-textPrimary hover:text-white hover:bg-hoverBgButton border border-borderButton focus:ring-2 focus:outline-none focus:ring-ringFocusBtn rounded-lg text-sm px-5 py-2.5 text-center mt-5"
-                  disabled={updateCategoryLoading || msgSuccess !== ''}
-                >Edit</button>
+                  disabled={updateCategoryLoading}
+                >Edit category</button>
               </form>
             </div>
 
