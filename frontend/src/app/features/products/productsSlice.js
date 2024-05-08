@@ -66,23 +66,46 @@ const productsSlice = createSlice({
     setSortProduct: (state, action) => {
       state.sort = action.payload
     },
+    setFilterProduct: (state, action) => {
+      if (action.payload.minPrice) {
+        state.minPrice = action.payload.minPrice
+      } else if (action.payload.maxPrice) {
+        state.maxPrice = action.payload.maxPrice
+      } else if (action.payload.size) {
+        state.sizes.push(action.payload.size)
+      }
+    },
+    setDeleteSizeProduct: (state, action) => {
+      state.sizes = state.sizes.filter(size => size !== action.payload)
+    },
+    resetSortProduct: (state, action) => {
+      state.sort = 'Sort By Latest'
+    },
+    resetFilterProduct: (state, action) => {
+      state.maxPrice = ''
+      state.minPrice = ''
+      state.sizes = []
+    },
+    resetSearchKeyword: (state, action) => {
+      state.searchKeyword = ''
+    },
     resetPaginationProduct: (state, action) => {
       state.page = 0
       state.limit = 10
       state.column = ''
       state.sortDirection = false
       state.filter_search = 'all'
-      state.searchKeyword = ''
+      // state.searchKeyword = ''
       state.product_realese = ''
-      state.sort = 'Sort By Latest'
-      state.maxPrice = ''
-      state.minPrice = ''
-      state.sizes = []
+      // state.sort = 'Sort By Latest'
+      // state.maxPrice = ''
+      // state.minPrice = ''
+      // state.sizes = []
     }
   }
 })
 
-export const { resetPaginationProduct, setPaginationProduct, setSortProduct } = productsSlice.actions
+export const { resetPaginationProduct, setPaginationProduct, setSortProduct, setFilterProduct, setDeleteSizeProduct, resetSortProduct, resetFilterProduct, resetSearchKeyword } = productsSlice.actions
 export default productsSlice.reducer
 export const selectCurrentPageProduct = state => state.products.page
 export const selectCurrentLimitProduct = state => state.products.limit
@@ -95,3 +118,5 @@ export const selectCurrentSortProduct = state => state.products.sort
 export const selectCurrentMaxPriceProduct = state => state.products.maxPrice
 export const selectCurrentMinPriceProduct = state => state.products.minPrice
 export const selectCurrentSizesProduct = state => state.products.sizes
+export const selectCurrentSearchKeyWordProduct = state => state.products.searchKeyword
+

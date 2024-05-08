@@ -6,7 +6,7 @@ import { useLogoutMutation } from '../../features/auth/authApiSlice'
 import { useGetCategoriesQuery } from '../../features/categories/categoriesApiSlice'
 import { useGetCartsQuery } from '../../features/cart/cartApiSlice'
 import Carts from '../cart/Carts'
-import { searchProductQuery, selectCurrentColumnProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentPageProduct, selectCurrentSearchKeywordProduct, selectCurrentSortDirectionProduct, setPaginationProduct } from '../../features/products/productsSlice'
+import { resetFilterProduct, resetPaginationProduct, resetSearchKeyword, resetSortProduct, selectCurrentPageProduct, setPaginationProduct } from '../../features/products/productsSlice'
 import anime from 'animejs'
 import { fetchSubCategoriesByCategoryId } from '../../features/sub-categories/subCategoriesSlice'
 import { selectCurrentColumnCategories, selectCurrentFilterSearchCategories, selectCurrentLimitCategories, selectCurrentPageCategories, selectCurrentSearchKeywordCategories, selectCurrentSortDirectionCategories } from '../../features/categories/categoriesSlice'
@@ -25,7 +25,6 @@ const Navbar = () => {
   const refLayoutHistorySearch = useRef(null)
 
   // local state
-  const [showCategories, setShowCategories] = useState(false)
   const [showCarts, setShowCarts] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showHistorySearch, setShowHistorySearch] = useState(false)
@@ -101,6 +100,14 @@ const Navbar = () => {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  const handleClikToProductByCategory = async (slug) => {
+    dispatch(resetPaginationProduct())
+    dispatch(resetSortProduct())
+    dispatch(resetFilterProduct())
+    dispatch(resetSearchKeyword())
+    navigate(`/products/${slug}`)
   }
 
   const handleLogout = async (e) => {
@@ -306,18 +313,18 @@ const Navbar = () => {
                   onMouseEnter={() => handleOpenSubCategories(category._id)}
                   onMouseLeave={() => setOpenDropdowmSubCategory(false)}>
                   {category.title !== 'Others' && category.title !== 'Women Collections' && category.title !== 'Kids Collections' ?
-                    <Link
-                      to={`/products/${category.slug}`}
-                      className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center'>
+                    <a
+                      onClick={() => handleClikToProductByCategory(category.slug)}
+                      className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center cursor-pointer'>
                       {category.title}
                       <IoMdArrowDropdown className={`text-neutral-500 transition-transform transform ${openDropdowmSubCategory === category._id ? 'rotate-180' : ''}`} />
-                    </Link>
+                    </a>
                     :
-                    <Link
-                      to={`/products/${category.slug}`}
-                      className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center'>
+                    <a
+                      onClick={() => handleClikToProductByCategory(category.slug)}
+                      className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center cursor-pointer'>
                       {category.title}
-                    </Link>
+                    </a>
                   }
                   {openDropdowmSubCategory === category._id && category.title !== 'Others' && category.title !== 'Women Collections' && category.title !== 'Kids Collections' && (
                     <div className={`absolute bg-white shadow-md p-2 w-52 rounded-lg z-10 animate__animated ${openDropdowmSubCategory === category._id ? 'animate__fadeInUp animate__faster	' : 'hidden'}`}>
@@ -335,8 +342,8 @@ const Navbar = () => {
               </div>
             ))}
           </ul>
-        </div>
-      </div>
+        </div >
+      </div >
     </>
   )
 }
