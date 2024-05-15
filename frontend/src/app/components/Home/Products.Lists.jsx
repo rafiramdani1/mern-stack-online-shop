@@ -8,7 +8,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { GrPrevious, GrNext } from "react-icons/gr";
 import LoadingSpinner from '../layouts/LoadingSpinner'
-import { resetPaginationProduct, selectCurrentColumnProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSortDirectionProduct } from '../../features/products/productsSlice'
+import { resetPaginationProduct, selectCurrentColumnProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct } from '../../features/products/productsSlice'
 import 'swiper/css/pagination';
 import { CiHeart, CiMail, CiShoppingCart } from 'react-icons/ci'
 
@@ -33,6 +33,9 @@ const ProductsLists = ({ category, limitParams }) => {
   const filter_search = useSelector(selectCurrentFilterSearchProduct)
   const searchKeyword = useSelector(selectCurrentSearchKeywordProduct)
   const product_realese = useSelector(selectCurrentProductRealese)
+  const minPrice = useSelector(selectCurrentMinPriceProduct)
+  const maxPrice = useSelector(selectCurrentMaxPriceProduct)
+  const sizes = useSelector(selectCurrentSizesProduct)
 
   // restructure data for params
   const queryOptions = {
@@ -42,7 +45,10 @@ const ProductsLists = ({ category, limitParams }) => {
     sortDirection: sortDirection ? 'asc' : 'desc',
     filter_search: searchQuery !== '' ? filter_search : '',
     searchKeyword,
-    product_realese
+    product_realese,
+    minPriceGlobal: minPrice,
+    maxPriceGlobal: maxPrice,
+    sizes
   }
 
   // use get products 

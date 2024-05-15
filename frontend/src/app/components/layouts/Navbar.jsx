@@ -85,7 +85,11 @@ const Navbar = () => {
     setShowHistorySearch(false)
     try {
       await dispatch(setPaginationProduct({ search: searchQuery }))
-      navigate(`/products/search?q=${searchQuery}&page=${pageProduct + 1}`)
+      dispatch(resetPaginationProduct())
+      dispatch(resetSortProduct())
+      dispatch(resetFilterProduct())
+      dispatch(resetSearchKeyword())
+      navigate(`/products/search?q=${searchQuery}`)
       setSearchQuery('')
     } catch (error) {
       console.log(error)
@@ -108,6 +112,14 @@ const Navbar = () => {
     dispatch(resetFilterProduct())
     dispatch(resetSearchKeyword())
     navigate(`/products/${slug}`)
+  }
+
+  const handleClickToProductBySubCategory = async (slug) => {
+    dispatch(resetPaginationProduct())
+    dispatch(resetSortProduct())
+    dispatch(resetFilterProduct())
+    dispatch(resetSearchKeyword())
+    navigate(`/products/${slug.category}/${slug.subCategory}`)
   }
 
   const handleLogout = async (e) => {
@@ -152,7 +164,7 @@ const Navbar = () => {
                 </div>
                 <input
                   ref={refInputSearch}
-                  onClick={() => setShowHistorySearch(true)}
+                  // onClick={() => setShowHistorySearch(true)}
                   type="search"
                   autoComplete='off'
                   id="default-search"
@@ -329,12 +341,12 @@ const Navbar = () => {
                   {openDropdowmSubCategory === category._id && category.title !== 'Others' && category.title !== 'Women Collections' && category.title !== 'Kids Collections' && (
                     <div className={`absolute bg-white shadow-md p-2 w-52 rounded-lg z-10 animate__animated ${openDropdowmSubCategory === category._id ? 'animate__fadeInUp animate__faster	' : 'hidden'}`}>
                       {subCategories?.map(item => (
-                        <Link
+                        <a
                           key={item._id}
-                          to={`/products/${category.slug}/${item.slug}`}
-                          className='block text-textSecondary hover:text-textPrimary hover:font-medium text-sm p-2'>
+                          onClick={() => handleClickToProductBySubCategory({ category: category.slug, subCategory: item.slug })}
+                          className='block text-textSecondary cursor-pointer hover:text-textPrimary hover:font-medium text-sm p-2'>
                           {item.title}
-                        </Link>
+                        </a>
                       ))}
                     </div>
                   )}

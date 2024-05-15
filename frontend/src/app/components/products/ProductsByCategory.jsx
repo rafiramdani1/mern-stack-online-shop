@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
 import { useGetProductByCategorySlugQuery } from '../../features/products/productsApiSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetPaginationProduct, resetSortProduct, selectCurrentColumnProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct, selectCurrentSortProduct, setDeleteSizeProduct, setFilterProduct, setPaginationProduct, setSortProduct } from '../../features/products/productsSlice';
+import { resetPaginationProduct, selectCurrentColumnProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct, selectCurrentSortProduct, setDeleteSizeProduct, setFilterProduct, setPaginationProduct, setSortProduct } from '../../features/products/productsSlice';
 import { CiHeart, CiMail, CiShoppingCart } from 'react-icons/ci'
 import 'animate.css/animate.min.css';
 import { IoMdArrowDropdown } from 'react-icons/io';
@@ -42,11 +42,11 @@ const ProductByCategory = () => {
     maxPriceGlobal,
     sizesGlobal
   }
-  const [searchQuery, setSearchQuery] = useState("")
-  const [minPrice, setMinPrice] = useState("")
-  const [maxPrice, setMaxPrice] = useState("")
+  const [searchQuery, setSearchQuery] = useState(searchKeyword)
+  const [minPrice, setMinPrice] = useState(minPriceGlobal)
+  const [maxPrice, setMaxPrice] = useState(maxPriceGlobal)
 
-  const [debouncedSearchQuery] = useDebounce(searchQuery, 500)
+  const [debouncedSearchQuery] = useDebounce(searchKeyword, 500)
   const [debounceMinPrice] = useDebounce(minPrice.replace(/\D/g, ''), 400)
   const [debounceMaxPrice] = useDebounce(maxPrice.replace(/\D/g, ''), 400)
 
@@ -64,6 +64,12 @@ const ProductByCategory = () => {
   useEffect(() => {
     refetch()
   }, [page])
+
+  useEffect(() => {
+    setSearchQuery(searchKeyword || '');
+    setMinPrice(minPriceGlobal || '');
+    setMaxPrice(maxPriceGlobal || '');
+  }, [searchKeyword, minPriceGlobal, maxPriceGlobal])
 
   const handleChangeSearch = async (e) => {
     e.preventDefault()
@@ -137,10 +143,10 @@ const ProductByCategory = () => {
           <div className='w-1/4'>
             <SidebarProductFIlter
               handleChangeSearch={handleChangeSearch}
-              searchKeyword={searchKeyword}
-              minPriceGlobal={minPriceGlobal}
+              searchKeyword={searchQuery}
+              minPriceGlobal={minPrice}
               handleMinPriceChange={handleMinPriceChange}
-              maxPriceGlobal={maxPriceGlobal}
+              maxPriceGlobal={maxPrice}
               handleMaxPriceChange={handleMaxPriceChange}
               sizes={sizes}
               sizesGlobal={sizesGlobal}

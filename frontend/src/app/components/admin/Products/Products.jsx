@@ -11,7 +11,7 @@ import { IoMdAdd, IoIosAddCircle } from "react-icons/io";
 import ReactPaginate from 'react-paginate'
 import { format } from 'date-fns'
 import { useDebounce } from 'use-debounce'
-import { selectCurrentColumnProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSortDirectionProduct, setPaginationProduct, updateProductRealese } from '../../../features/products/productsSlice'
+import { selectCurrentColumnProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct, setPaginationProduct, updateProductRealese } from '../../../features/products/productsSlice'
 import ModalConfirm from '../../layouts/ModalConfirm'
 
 const Products = () => {
@@ -35,6 +35,9 @@ const Products = () => {
   const filter_search = useSelector(selectCurrentFilterSearchProduct)
   const searchKeyword = useSelector(selectCurrentSearchKeywordProduct)
   const product_realese = useSelector(selectCurrentProductRealese)
+  const minPriceGlobal = useSelector(selectCurrentMinPriceProduct)
+  const maxPriceGlobal = useSelector(selectCurrentMaxPriceProduct)
+  const sizesGlobal = useSelector(selectCurrentSizesProduct)
 
   // restructure data for params
   const queryOptions = {
@@ -44,14 +47,17 @@ const Products = () => {
     sortDirection: sortDirection ? 'asc' : 'desc',
     filter_search: searchQuery !== '' ? filter_search : '',
     searchKeyword,
-    product_realese
+    product_realese,
+    minPriceGlobal,
+    maxPriceGlobal,
+    sizes: sizesGlobal
   }
 
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
   // use get products
   const { data: products, isLoading, status, refetch } = useGetProductsQuery(
-    { ...queryOptions, searchKeyword: debouncedSearchQuery, limit: 10 }
+    { ...queryOptions, searchKeyword: debouncedSearchQuery, limit: 6 }
   )
 
   useEffect(() => {

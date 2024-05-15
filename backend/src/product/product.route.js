@@ -13,6 +13,7 @@ productRouter.post('/',
 )
 productRouter.get('/category/:id', productContollers.getProductByCategoryId)
 productRouter.get('/productsByCategorySlug/', productContollers.getProductByCategorySlug)
+productRouter.get('/productsBySubCategorySlug/', productContollers.getProductBySubCategorySlug)
 productRouter.put('/:id',
   addProductValidation, validationResults,
   productContollers.editProduct

@@ -1,4 +1,6 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
+import { selectCurrentSearchKeyWordProduct } from '../../features/products/productsSlice'
 
 const SidebarProductFIlter = ({
   handleChangeSearch,
@@ -9,14 +11,17 @@ const SidebarProductFIlter = ({
   handleMaxPriceChange,
   sizes,
   sizesGlobal,
-  handleSizeChange
+  handleSizeChange,
+  hiddenSearch,
+  title,
 }) => {
+
   return (
     <div>
       <div>
-        <h1 className='uppercase bg-neutral-300 p-1 font-medium'>Filter in this category</h1>
+        <h1 className='uppercase bg-neutral-300 p-1 font-medium'>Filter in this {title || 'category'}</h1>
       </div>
-      <div className='mt-5'>
+      <div className={`mt-5 ${hiddenSearch || ''}`}>
         <h2 className='border-b-2 border-neutral-400 p-1 mb-1 text-textPrimary text-sm uppercase font-medium'>search</h2>
         <div className='relative'>
           <div className="absolute mt-0.5 inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
@@ -129,7 +134,7 @@ const SidebarProductFIlter = ({
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

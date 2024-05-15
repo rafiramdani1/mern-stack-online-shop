@@ -44,7 +44,7 @@ function App() {
               <Route path='/product/:slug' element={<DetailProductUser />} />
               <Route path='products/search' element={<ProductsSearchResults />} />
               <Route path='/products/:slug' element={<ProductsByCategory />} />
-              <Route path='/products/:category/:subCategory' element={<ProductBySubCategory />} />
+              <Route path='/products/:category/:slug' element={<ProductBySubCategory />} />
             </Route>
 
             {/* Require auth admin */}

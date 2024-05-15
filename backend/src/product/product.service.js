@@ -4,7 +4,7 @@ import path from 'path'
 import { unlink } from "fs"
 import fs from 'fs'
 
-const getAllProducts = async (page, limit, column, sortDirection, filter_search, search, product_realese) => {
+const getAllProducts = async (page, limit, column, sortDirection, filter_search, search, product_realese, minPrice, maxPrice, sizes) => {
   if (!page) {
     page = 1
   }
@@ -21,7 +21,7 @@ const getAllProducts = async (page, limit, column, sortDirection, filter_search,
     filter_search = 'all'
   }
 
-  const products = await productsRepository.findAllProducts(page, limit, column, sortDirection, filter_search, search, product_realese)
+  const products = await productsRepository.findAllProducts(page, limit, column, sortDirection, filter_search, search, product_realese, minPrice, maxPrice, sizes)
   return products
 }
 
@@ -64,7 +64,28 @@ const getProductByCategorySlug = async (page, limit, column, sortDirection, sear
   if (!slug) {
     throw Error('Product not found!')
   }
-  const products = await productsRepository.findProuductByCategorySlug(page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes)
+  const products = await productsRepository.findProductByCategorySlug(page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes)
+  return products
+}
+
+const getProductBySubCategorySlug = async (page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes) => {
+  if (!page) {
+    page = 0
+  }
+  if (!limit) {
+    limit = 10
+  }
+  if (!column) {
+    column = 'created_at'
+  }
+  if (!sortDirection) {
+    sortDirection = 'desc'
+  }
+
+  if (!slug) {
+    throw Error('Product not found!')
+  }
+  const products = await productsRepository.findProductBySubCategorySlug(page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes)
   return products
 }
 
@@ -262,6 +283,7 @@ export const productsService = {
   getProductBySlug,
   getProductByCategoryId,
   getProductByCategorySlug,
+  getProductBySubCategorySlug,
   createProduct,
   editProduct,
   deleteProductById,
