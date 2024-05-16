@@ -4,8 +4,8 @@ import { jwtDecode } from 'jwt-decode'
 
 const getProducts = async (req, res) => {
   try {
-    let { page, limit, column, sortDirection, filter_search, search, product_realese } = req.query
-    const products = await productsService.getAllProducts(page, limit, column, sortDirection, filter_search, search, product_realese)
+    let { page, limit, column, sortDirection, filter_search, search, product_realese, minPrice, maxPrice, sizes } = req.query
+    const products = await productsService.getAllProducts(page, limit, column, sortDirection, filter_search, search, product_realese, minPrice, maxPrice, sizes)
     res.status(200).json({
       status: true,
       data: products.data,
@@ -16,6 +16,7 @@ const getProducts = async (req, res) => {
       msg: "Data fetched product successfully",
     })
   } catch (error) {
+    console.log(error)
     res.status(400).json({
       status: false,
       msg: error.message
@@ -71,6 +72,19 @@ const getProductByCategorySlug = async (req, res) => {
   try {
     let { page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes } = req.query
     const product = await productsService.getProductByCategorySlug(page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes)
+    res.status(200).json(product)
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
+const getProductBySubCategorySlug = async (req, res) => {
+  try {
+    let { page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes } = req.query
+    const product = await productsService.getProductBySubCategorySlug(page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes)
     res.status(200).json(product)
   } catch (error) {
     res.status(400).json({
@@ -272,6 +286,7 @@ export const productContollers = {
   getProductBySlug,
   getProductByCategoryId,
   getProductByCategorySlug,
+  getProductBySubCategorySlug,
   addProduct,
   editProduct,
   deleteProduct,

@@ -4,7 +4,13 @@ import { useGetProductsQuery } from '../../features/products/productsApiSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingSpinner from '../layouts/LoadingSpinner'
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { selectCurrentColumnProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSortDirectionProduct, setPaginationProduct } from '../../features/products/productsSlice';
+import { resetPaginationProduct, selectCurrentColumnProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct, selectCurrentSortProduct, setFilterProduct, setPaginationProduct, setSortProduct } from '../../features/products/productsSlice';
+import SidebarProductFIlter from '../layouts/SidebarProductFIlter';
+import { CiHeart, CiMail, CiShoppingCart } from 'react-icons/ci';
+import ReactPaginate from 'react-paginate';
+import { IoMdArrowDropdown } from 'react-icons/io';
+import { useGetSizesQuery } from '../../features/sizes/sizesApiSlice';
+import { useDebounce } from 'use-debounce';
 
 const ProductsSearchResults = () => {
   const location = useLocation();
@@ -12,8 +18,10 @@ const ProductsSearchResults = () => {
   const searchParams = new URLSearchParams(location.search);
   const q = searchParams.get('q');
   const [searchQuery, setSearchQuery] = useState('')
-  const [showFilter, setShowFilter] = useState(false)
-  const [sort, setSort] = useState('Featured')
+  const [isHoveredCardIcons, setisHoveredCardIcons] = useState(null)
+  const [openDropdownSort, setOpenDropdownSort] = useState(false)
+
+  const { data: sizes } = useGetSizesQuery()
 
   // global state
   const page = useSelector(selectCurrentPageProduct)
@@ -23,6 +31,10 @@ const ProductsSearchResults = () => {
   const filter_search = useSelector(selectCurrentFilterSearchProduct)
   const searchKeyword = useSelector(selectCurrentSearchKeywordProduct)
   const product_realese = useSelector(selectCurrentProductRealese)
+  const minPriceGlobal = useSelector(selectCurrentMinPriceProduct)
+  const maxPriceGlobal = useSelector(selectCurrentMaxPriceProduct)
+  const sizesGlobal = useSelector(selectCurrentSizesProduct)
+  const sort = useSelector(selectCurrentSortProduct)
 
   // restructure data for params
   const queryOptions = {
@@ -35,77 +47,202 @@ const ProductsSearchResults = () => {
     product_realese,
   }
 
-  const { data: searchResults, isLoading, status, refetch } = useGetProductsQuery({ ...queryOptions, limit: 100, searchKeyword: q, product_realese: 'realese' })
+  const [minPrice, setMinPrice] = useState(minPriceGlobal)
+  const [maxPrice, setMaxPrice] = useState(maxPriceGlobal)
+  const [debounceMinPrice] = useDebounce(minPrice.replace(/\D/g, ''), 400)
+  const [debounceMaxPrice] = useDebounce(maxPrice.replace(/\D/g, ''), 400)
 
-  const handleClickSort = async (name) => {
-    if (name === 'Price : High to Low') {
-      dispatch(setPaginationProduct({ sortCol: { column: 'price', sortDirection: false } }))
-    } else if (name === 'Price : Low to High') {
-      dispatch(setPaginationProduct({ sortCol: { column: 'price', sortDirection: true } }))
+  const { data: products, isLoading, status, refetch } = useGetProductsQuery({
+    ...queryOptions,
+    limit: 3,
+    searchKeyword: q,
+    product_realese: 'realese',
+    // searchKeyword: debouncedSearchQuery,
+    minPriceGlobal: debounceMinPrice,
+    maxPriceGlobal: debounceMaxPrice,
+    sizes: sizesGlobal
+  })
+
+  useEffect(() => {
+    refetch()
+  }, [page])
+
+  const handleChangePage = async (selectedPage) => {
+    await dispatch(setPaginationProduct({ page: selectedPage.selected }))
+  }
+
+  const handleSortData = async (name) => {
+    if (name === 'Sort By Price : High to Low') {
+      dispatch(resetPaginationProduct())
+      dispatch(setSortProduct(name))
+      dispatch(setPaginationProduct({
+        sortCol: {
+          column: 'price', sortDirection: false
+        }
+      }))
+    } else if (name === 'Sort By Price : Low to High') {
+      dispatch(resetPaginationProduct())
+      dispatch(setSortProduct(name))
+      dispatch(setPaginationProduct({
+        sortCol: {
+          column: 'price', sortDirection: true
+        }
+      }))
+    } else if (name === 'Sort By Latest') {
+      dispatch(resetPaginationProduct())
+      dispatch(setSortProduct(name))
+    } else if (name === 'Sort By Popularity') {
+      // by popularity soon
+      dispatch(resetPaginationProduct())
+      dispatch(setSortProduct('Sort By Latest'))
     }
-    // best sellers
-    setSort(name)
-    setShowFilter(false)
+    setOpenDropdownSort(false)
+  }
+
+  const formatNumberPrice = (value) => {
+    return Number(value).toLocaleString('id-ID')
+  }
+
+  const handleMinPriceChange = (event) => {
+    const rawValue = event.target.value
+    const numericValue = rawValue.replace(/\D/g, '')
+    const formattedValue = formatNumberPrice(numericValue)
+    setMinPrice(formattedValue)
+    dispatch(setFilterProduct({ minPrice: formattedValue }))
+  }
+  const handleMaxPriceChange = (event) => {
+    const rawValue = event.target.value
+    const numericValue = rawValue.replace(/\D/g, '')
+    const formattedValue = formatNumberPrice(numericValue)
+    setMaxPrice(formattedValue)
+    dispatch(setFilterProduct({ maxPrice: formattedValue }))
+  }
+
+  const handleSizeChange = (size) => {
+    if (sizesGlobal.includes(size)) {
+      dispatch(setDeleteSizeProduct(size))
+    } else {
+      dispatch(setFilterProduct({ size: size }))
+    }
   }
 
   return (
     <>
-      {isLoading || status === 'pending' ? <LoadingSpinner /> : null}
-      <div className='px-36 mt-40'>
-        <div className='flex justify-between'>
-          <div className='mt-3'>
-            <h1 className='ml-2 font-medium text-zinc-700'>Hasil pencarian : {q}</h1>
+      <div className='mt-48 px-56 mb-40'>
+        <div className='flex gap-3'>
+          <div className='w-1/4'>
+            <SidebarProductFIlter
+              hiddenSearch={'hidden'}
+              title={'search results'}
+              minPriceGlobal={minPrice}
+              handleMinPriceChange={handleMinPriceChange}
+              maxPriceGlobal={maxPrice}
+              handleMaxPriceChange={handleMaxPriceChange}
+              sizes={sizes}
+              sizesGlobal={sizesGlobal}
+              handleSizeChange={handleSizeChange}
+            />
           </div>
-          <div onMouseLeave={() => setShowFilter(false)} className='flex mt-3 items-center'>
-            <h3 className='text-textSecondary font-medium mr-2'>Sort :</h3>
-            <div onClick={() => setShowFilter(!showFilter)} className='cursor-pointer bg-white border border-neutral-400 px-3 py-1.5 w-48 rounded-md text-sm text-textPrimary font-medium'>
-              {sort}
-              <div className="pointer-events-none absolute flex items-center px-2 right-[14rem] -mt-5">
-                <RiArrowDropDownLine className={`text-2xl text-textPrimary ${showFilter ? 'rotate-180' : ''}`} />
+          <div className='w-full'>
+            <div className='flex justify-between text-sm text-textSecondary font-medium my-2 self-center'>
+              <div>
+                <h1>Home / Nike</h1>
+              </div>
+              <div className=''>
+                <button
+                  onClick={() => setOpenDropdownSort(!openDropdownSort)}
+                  className='flex items-center border-b-2 border-textSecondary text-base'>
+                  {sort}
+                  <IoMdArrowDropdown />
+                </button>
+                <div className={`${openDropdownSort ? 'absolute bg-white w-56 border rounded-sm px-1 py-1 animate__animated animate__fadeInUp animate__faster' : 'hidden'}`}>
+                  <ul className=''>
+                    <li
+                      onClick={() => handleSortData('Sort By Popularity')}
+                      className={`hover:bg-neutral-200 p-0.5 cursor-pointer ${sort === 'Sort By Popularity' ? 'bg-neutral-200' : ''}`}>
+                      <button className='text-neutral-600 text-sm'>Sort By Popularity</button>
+                    </li>
+                    <li
+                      onClick={() => handleSortData('Sort By Latest')}
+                      className={`mt-1 hover:bg-neutral-200 p-0.5 cursor-pointer ${sort === 'Sort By Latest' ? 'bg-neutral-200' : ''}`}>
+                      <button className='text-neutral-600 text-sm'>Sort By Latest</button>
+                    </li>
+                    <li
+                      onClick={() => handleSortData('Sort By Price : High to Low')}
+                      className={`mt-1 hover:bg-neutral-200 p-0.5 cursor-pointer ${sort === 'Sort By Price : High to Low' ? 'bg-neutral-200' : ''}`}>
+                      <button className='text-neutral-600 text-sm'>Sort By Price : High to Low</button>
+                    </li>
+                    <li
+                      onClick={() => handleSortData('Sort By Price : Low to High')}
+                      className={`mt-1 hover:bg-neutral-200 p-0.5 cursor-pointer ${sort === 'Sort By Price : Low to High' ? 'bg-neutral-200' : ''}`}>
+                      <button className='text-neutral-600 text-sm'>Sort By Price : Low to High</button>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
-            <div className={`${showFilter ? 'absolute w-48 border bg-white right-[14rem] mt-[9rem] rounded-md' : 'hidden'}`}>
-              <ul className='text-sm text-textSecondary p-2'>
-                <li onClick={() => handleClickSort('Price : High to Low')} className={`cursor-pointer py-1 px-1 rounded-sm mb-1 ${sort === 'Price : High to Low' ? 'bg-neutral-300 text-textSecondary' : 'hover:bg-neutral-300 hover:text-textSecondary'}`}>
-                  <button className=''>Price : High to Low</button>
-                </li>
-                <li onClick={() => handleClickSort('Price : Low to High')} className={`cursor-pointer py-1 px-1 rounded-sm mb-1 ${sort === 'Price : Low to High' ? ' bg-neutral-300 text-textSecondary' : 'hover:bg-neutral-300 hover:text-textSecondary'}`}>
-                  <button className=''>Price : Low to High</button>
-                </li>
-                <li onClick={() => handleClickSort('Best sellers')} className={`cursor-pointer py-1 px-1 rounded-sm ${sort === 'Best sellers' ? ' bg-neutral-300 text-textSecondary' : 'hover:bg-neutral-300 hover:text-textSecondary'}`}>
-                  <button className=''>Best sellers</button>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        {
-          searchResults?.data.length === 0 ?
-            <p className='text-center text-zinc-600 mt-4'>Hasil pencarian tidak ditemukan</p>
-            : ''
-        }
-        <div className='flex flex-wrap'>
-          {searchResults?.data?.map(product => (
-            <Link to={`/product/${product.slug}`} className='w-1/4 rounded-md' key={product._id}>
-              <div className="w-full rounded-md bg-white hover:border hover:border-neutral-300 px-2 pt-2 hover:bg-neutral-200">
-                <div className='flex justify-center'>
-                  <img className="h-[30vh] rounded-t-md" src={product.url} alt="product image" />
-                </div>
-                <div className="pb-3 mt-3">
-                  <h2 className="text-base text-textSecondary font-semibold tracking-tight truncate">{product.title}</h2>
-                  <div className="flex items-center justify-between mt-2.5">
-                    <span className="text-sm text-textSecondary tracking-tight font-bold">Rp. {(product.price).toLocaleString('id-ID')}</span>
-                    <div className="flex items-center">
-                      <div className='flex bg-neutral-100 items-center mr-2 px-2.5 py-0.5 rounded-sm'>
-                        <span className="text-cyan-800 text-xs font-semibold mr-0.5">5</span>
-                        <svg aria-hidden="true" className="w-4 h-4 text-yellow-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>First star</title><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+            <div className='flex flex-wrap'>
+              {products?.data.map(product => (
+                <div className='w-1/3 p-2' key={product._id}>
+                  <Link
+                    onMouseEnter={() => setisHoveredCardIcons(product._id)}
+                    onMouseLeave={() => setisHoveredCardIcons(false)}
+                    to={`/product/${product.slug}`}
+                    className='rounded-md'>
+                    <div className="w-full rounded-md px-2 pt-2 hover:border hover:border-neutral-200">
+                      <div className='flex justify-center'>
+                        <img className="h-[25vh] rounded-t-md" src={product.url} alt="product image" />
+
+                        {isHoveredCardIcons === product._id && (
+                          <div className={`absolute mt-0.5 shadow-md bg-white border border-t-0 border-r-0 border-b border-neutral-300 rounded-sm mr-[14.3rem] animate__animated ${isHoveredCardIcons === product._id ? 'animate__fadeInLeft animate__faster' : 'hidden'}`}>
+                            <ul className='flex gap-3 px-2'>
+                              <li>
+                                <CiHeart className='text-3xl' />
+                              </li>
+                              <li>
+                                <CiShoppingCart className='text-3xl' />
+                              </li>
+                              <li>
+                                <CiMail className='text-3xl' />
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+
+                      </div>
+                      <div className="pb-3 mt-3">
+                        <h2 className="text-sm text-textSecondary font-semibold tracking-tight text-center">{((product.title).length > 70) ? ((product.title).substring(0, 70) + '...') : (product.title)}
+                        </h2>
+                        <div className="flex items-center justify-center mt-2.5">
+                          <span className="text-sm text-neutral-500 tracking-tight font-bold">Rp. {(product.price).toLocaleString('id-ID')}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 </div>
+              ))}
+            </div>
+
+            <div className='flex justify-between'>
+              <div>
+                <p className='text-neutral-700 font-medium text-sm'>Total Rows : {products?.totalRows} Page : {products?.totalRows ? products?.page + 1 : 0} of {products?.totalPage}</p>
               </div>
-            </Link>
-          ))}
+              <div>
+                <ReactPaginate
+                  className='flex px-1'
+                  pageCount={Math.min(20, products?.totalPage)}
+                  onPageChange={handleChangePage}
+                  pageLinkClassName="border bg-neutral-100 px-2 rounded-sm hover:bg-neutral-700 hover:text-white"
+                  previousLinkClassName="font-medium text-neutral-700 hover:text-neutral-800 mr-2"
+                  nextLinkClassName="font-medium text-neutral-700 hover:text-neutral-800 ml-2"
+                  activeLinkClassName="text-white bg-neutral-700"
+                  disabledLinkClassName="hidden"
+                  forcePage={products?.page}
+                />
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </>

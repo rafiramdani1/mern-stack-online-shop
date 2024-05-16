@@ -6,7 +6,7 @@ import { useLogoutMutation } from '../../features/auth/authApiSlice'
 import { useGetCategoriesQuery } from '../../features/categories/categoriesApiSlice'
 import { useGetCartsQuery } from '../../features/cart/cartApiSlice'
 import Carts from '../cart/Carts'
-import { searchProductQuery, selectCurrentColumnProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentPageProduct, selectCurrentSearchKeywordProduct, selectCurrentSortDirectionProduct, setPaginationProduct } from '../../features/products/productsSlice'
+import { resetFilterProduct, resetPaginationProduct, resetSearchKeyword, resetSortProduct, selectCurrentPageProduct, setPaginationProduct } from '../../features/products/productsSlice'
 import anime from 'animejs'
 import { fetchSubCategoriesByCategoryId } from '../../features/sub-categories/subCategoriesSlice'
 import { selectCurrentColumnCategories, selectCurrentFilterSearchCategories, selectCurrentLimitCategories, selectCurrentPageCategories, selectCurrentSearchKeywordCategories, selectCurrentSortDirectionCategories } from '../../features/categories/categoriesSlice'
@@ -25,7 +25,6 @@ const Navbar = () => {
   const refLayoutHistorySearch = useRef(null)
 
   // local state
-  const [showCategories, setShowCategories] = useState(false)
   const [showCarts, setShowCarts] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showHistorySearch, setShowHistorySearch] = useState(false)
@@ -86,7 +85,11 @@ const Navbar = () => {
     setShowHistorySearch(false)
     try {
       await dispatch(setPaginationProduct({ search: searchQuery }))
-      navigate(`/products/search?q=${searchQuery}&page=${pageProduct + 1}`)
+      dispatch(resetPaginationProduct())
+      dispatch(resetSortProduct())
+      dispatch(resetFilterProduct())
+      dispatch(resetSearchKeyword())
+      navigate(`/products/search?q=${searchQuery}`)
       setSearchQuery('')
     } catch (error) {
       console.log(error)
@@ -101,6 +104,24 @@ const Navbar = () => {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  const handleClikToProductByCategory = async (slug) => {
+    setOpenDropdowmSubCategory(false)
+    dispatch(resetPaginationProduct())
+    dispatch(resetSortProduct())
+    dispatch(resetFilterProduct())
+    dispatch(resetSearchKeyword())
+    navigate(`/products/${slug}`)
+  }
+
+  const handleClickToProductBySubCategory = async (slug) => {
+    setOpenDropdowmSubCategory(false)
+    dispatch(resetPaginationProduct())
+    dispatch(resetSortProduct())
+    dispatch(resetFilterProduct())
+    dispatch(resetSearchKeyword())
+    navigate(`/products/${slug.category}/${slug.subCategory}`)
   }
 
   const handleLogout = async (e) => {
@@ -145,7 +166,7 @@ const Navbar = () => {
                 </div>
                 <input
                   ref={refInputSearch}
-                  onClick={() => setShowHistorySearch(true)}
+                  // onClick={() => setShowHistorySearch(true)}
                   type="search"
                   autoComplete='off'
                   id="default-search"
@@ -307,15 +328,17 @@ const Navbar = () => {
                   onMouseLeave={() => setOpenDropdowmSubCategory(false)}>
                   {category.title !== 'Others' && category.title !== 'Women Collections' && category.title !== 'Kids Collections' ?
                     <Link
-                      to={`/products/${category.slug}`}
-                      className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center'>
+                      to={`products/${category.slug}`}
+                      onClick={() => handleClikToProductByCategory(category.slug)}
+                      className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center cursor-pointer'>
                       {category.title}
                       <IoMdArrowDropdown className={`text-neutral-500 transition-transform transform ${openDropdowmSubCategory === category._id ? 'rotate-180' : ''}`} />
                     </Link>
                     :
                     <Link
-                      to={`/products/${category.slug}`}
-                      className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center'>
+                      to={`products/${category.slug}`}
+                      onClick={() => handleClikToProductByCategory(category.slug)}
+                      className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center cursor-pointer'>
                       {category.title}
                     </Link>
                   }
@@ -324,8 +347,9 @@ const Navbar = () => {
                       {subCategories?.map(item => (
                         <Link
                           key={item._id}
-                          to={`/products/${category.slug}/${item.slug}`}
-                          className='block text-textSecondary hover:text-textPrimary hover:font-medium text-sm p-2'>
+                          to={`products/${category.slug}/${item.slug}`}
+                          onClick={() => handleClickToProductBySubCategory({ category: category.slug, subCategory: item.slug })}
+                          className='block text-textSecondary cursor-pointer hover:text-textPrimary hover:font-medium text-sm p-2'>
                           {item.title}
                         </Link>
                       ))}
@@ -335,8 +359,8 @@ const Navbar = () => {
               </div>
             ))}
           </ul>
-        </div>
-      </div>
+        </div >
+      </div >
     </>
   )
 }

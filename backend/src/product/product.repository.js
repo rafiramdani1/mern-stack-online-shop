@@ -5,45 +5,57 @@ import sizeProductModel from '../../models/sizeProduct.model.js'
 import Categories from "../../models/category.mode.js";
 import { categoryRepository } from "../category/category.repository.js";
 
-const findAllProducts = async (page, limit, column, sortDirection, filter_search, search, product_realese) => {
+const findAllProducts = async (page, limit, column, sortDirection, filter_search, search, product_realese, minPrice, maxPrice, sizes) => {
   const pageInt = parseInt(page)
   const limitInt = parseInt(limit)
 
-  const findProductRealese = await productStatusRealese.findOne({ product_status_realese_title: product_realese })
+  let queryOptions = {
+    $and: [
+      { 'product_status': true }
+    ]
+  };
 
-  let queryOptions = {}
-
+  const findProductRealese = await productStatusRealese.findOne({ product_status_realese_title: product_realese });
   if (product_realese) {
-    queryOptions = {
-      product_status: true,
-      id_product_realese: findProductRealese?._id
-    }
-  } else {
-    queryOptions = {
-      product_status: true
-    }
+    queryOptions.$and.push({
+      'id_product_realese': findProductRealese?._id
+    });
   }
 
   if (search) {
-    let searchQuery = { $regex: new RegExp(search, 'i') }
-    if (filter_search === 'title' || filter_search === 'slug' || filter_search === 'category.title' || filter_search === 'category.slug' || filter_search === 'sub_category.title' || filter_search === 'sub_category.slug') {
-      queryOptions[filter_search] = searchQuery
-      queryOptions['product_status'] = true
-      product_realese ? queryOptions['id_product_realese'] = findProductRealese?._id : null
+    let searchQuery = { $regex: new RegExp(search, 'i') };
+    if (['title', 'slug', 'category.title', 'category.slug', 'sub_category.title', 'sub_category.slug'].includes(filter_search)) {
+      queryOptions.$and.push({
+        [filter_search]: searchQuery
+      });
     } else {
-      queryOptions = {
+      queryOptions.$and.push({
         $or: [
           { 'title': searchQuery },
           { 'slug': searchQuery },
           { 'category.title': searchQuery },
           { 'category.slug': searchQuery },
           { 'sub_category.title': searchQuery },
-          { 'sub_category.slug': searchQuery },
+          { 'sub_category.slug': searchQuery }
         ]
-      }
-      queryOptions['product_status'] = true
-      product_realese ? queryOptions['id_product_realese'] = findProductRealese?._id : null
+      });
     }
+  }
+
+  if (minPrice && maxPrice) {
+    queryOptions.$and.push({
+      'price': {
+        $gte: parseInt(minPrice),
+        $lte: parseInt(maxPrice)
+      }
+    });
+  }
+
+  if (sizes) {
+    const sizeArray = sizes.split(',').map(size => parseInt(size.trim()))
+    queryOptions.$and.push({
+      'sizes.size': { $in: sizeArray }
+    })
   }
 
   let findProducts = await Product.aggregate([
@@ -90,6 +102,14 @@ const findAllProducts = async (page, limit, column, sortDirection, filter_search
     {
       $unwind: {  // Unwind jika diperlukan
         path: '$product_status_realese'
+      }
+    },
+    {
+      $lookup: {
+        from: 'sizeproducts',
+        localField: '_id',
+        foreignField: 'id_product',
+        as: 'sizes'
       }
     },
     {
@@ -149,7 +169,7 @@ const findProductByCategoryId = async (idCategory) => {
   return product
 }
 
-const findProuductByCategorySlug = async (page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes) => {
+const findProductByCategorySlug = async (page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes) => {
   const pageInt = parseInt(page)
   const limitInt = parseInt(limit)
 
@@ -295,6 +315,151 @@ const findProuductByCategorySlug = async (page, limit, column, sortDirection, se
 
 }
 
+const findProductBySubCategorySlug = async (page, limit, column, sortDirection, search, product_realese, slug, minPrice, maxPrice, sizes) => {
+  const pageInt = parseInt(page)
+  const limitInt = parseInt(limit)
+
+  let queryOptions = {
+    $and: [
+      { 'sub_category.slug': slug },
+      { 'product_status': true }
+    ]
+  }
+
+  const findProductRealese = await productStatusRealese.findOne({ product_status_realese_title: product_realese })
+  if (product_realese) {
+    queryOptions.$and.push({
+      'id_product_realese': findProductRealese?._id
+    })
+  }
+
+  if (search) {
+    let searchQuery = { $regex: new RegExp(search, 'i') }
+    queryOptions.$and.push({
+      $or: [
+        { 'title': searchQuery },
+        { 'slug': searchQuery },
+        { 'category.title': searchQuery },
+        { 'category.slug': searchQuery },
+        { 'sub_category.title': searchQuery },
+        { 'sub_category.slug': searchQuery }
+      ]
+    })
+  }
+
+  if (minPrice && maxPrice) {
+    queryOptions.$and.push({
+      'price': {
+        $gte: parseInt(minPrice), $lte: parseInt(maxPrice)
+      }
+    })
+  }
+
+  if (sizes) {
+    const sizeArray = sizes.split(',').map(size => parseInt(size.trim()))
+    queryOptions.$and.push({
+      'sizes.size': { $in: sizeArray }
+    })
+  }
+
+  let products = await Product.aggregate([
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'id_category',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              title: 1,
+              slug: 1,
+              status_category: 1,
+            }
+          }
+        ],
+        as: 'category'
+      }
+    },
+    {
+      $unwind: "$category"
+    },
+    {
+      $lookup: {
+        from: 'subcategories',
+        localField: 'id_sub_category',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              title: 1,
+              slug: 1,
+              id_category: 1,
+              status_sub_category: 1
+            }
+          }
+        ],
+        as: 'sub_category'
+      }
+    },
+    {
+      $unwind: "$sub_category"
+    },
+    {
+      $lookup: {
+        from: 'productstatusrealeses',
+        localField: 'id_product_realese',
+        foreignField: '_id',
+        as: 'product_status_realese'
+      }
+    },
+    {
+      $unwind: "$product_status_realese"
+    },
+    {
+      $lookup: {
+        from: 'sizeproducts',
+        localField: '_id',
+        foreignField: 'id_product',
+        as: 'sizes'
+      }
+    },
+    {
+      $match: queryOptions
+    },
+    {
+      $sort: {
+        [column]: sortDirection === 'desc' ? -1 : 1
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: (pageInt) * limitInt },
+          { $limit: limitInt }
+        ],
+        totalRows: [
+          {
+            $count: 'count'
+          }
+        ]
+      }
+    }
+  ])
+
+  const totalRows = products[0]?.totalRows[0]?.count
+  const totalPage = Math.ceil(totalRows / limitInt)
+
+  return {
+    data: products[0].data,
+    page: pageInt,
+    limit: limitInt,
+    totalRows,
+    totalPage
+  }
+}
+
 const insertProduct = async (productData) => {
 
   const findProductStatusByTitle = await productStatusRealese.findOne({ product_status_realese_title: 'unrealese' })
@@ -418,7 +583,8 @@ export const productsRepository = {
   findProductByTitle,
   findProductBySlug,
   findProductByCategoryId,
-  findProuductByCategorySlug,
+  findProductByCategorySlug,
+  findProductBySubCategorySlug,
   insertProduct,
   updateProduct,
   deleteProductById,
