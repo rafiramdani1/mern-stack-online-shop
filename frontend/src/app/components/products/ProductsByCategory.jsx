@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom';
+import React, { Fragment, useEffect, useState } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useGetProductByCategorySlugQuery } from '../../features/products/productsApiSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetPaginationProduct, selectCurrentColumnProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct, selectCurrentSortProduct, setDeleteSizeProduct, setFilterProduct, setPaginationProduct, setSortProduct } from '../../features/products/productsSlice';
+import { resetFilterProduct, resetPaginationProduct, resetSearchKeyword, resetSortProduct, selectCurrentColumnProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct, selectCurrentSortProduct, setDeleteSizeProduct, setFilterProduct, setPaginationProduct, setSortProduct } from '../../features/products/productsSlice';
 import { CiHeart, CiMail, CiShoppingCart } from 'react-icons/ci'
 import 'animate.css/animate.min.css';
 import { IoMdArrowDropdown } from 'react-icons/io';
@@ -17,6 +17,11 @@ const ProductByCategory = () => {
   const dispatch = useDispatch()
   const [isHoveredCardIcons, setisHoveredCardIcons] = useState(null)
   const [openDropdownSort, setOpenDropdownSort] = useState(false)
+
+  // get pathnames
+  const location = useLocation()
+  const pathNames = location.pathname.split('/').filter(item => item)
+  const displayPathnames = pathNames[0] === 'products' ? pathNames.slice(1) : pathNames;
 
   const page = useSelector(selectCurrentPageProduct)
   const limit = useSelector(selectCurrentLimitProduct)
@@ -136,6 +141,15 @@ const ProductByCategory = () => {
     }
   }
 
+  const navigate = useNavigate()
+  const handleBreadcrumb = (link) => {
+    dispatch(resetPaginationProduct())
+    dispatch(resetSortProduct())
+    dispatch(resetFilterProduct())
+    dispatch(resetSearchKeyword())
+    navigate(link)
+  }
+
   return (
     <>
       <div className='mt-48 px-56 mb-40'>
@@ -156,7 +170,28 @@ const ProductByCategory = () => {
           <div className='w-full'>
             <div className='flex justify-between text-sm text-textSecondary font-medium my-2 self-center'>
               <div>
-                <h1>Home / Nike</h1>
+                <ul className='flex gap-2'>
+                  <li>
+                    <Link className='text-neutral-500 text-sm font-medium' to='/'>Home</Link>
+                  </li>
+                  {displayPathnames.map((value, index) => {
+                    const isLast = index === displayPathnames.length - 1
+                    const to = `/${pathNames.slice(0, index + 2).join('/')}`
+
+                    return (
+                      <Fragment key={to}>
+                        <li className='text-neutral-500 font-medium text-sm'>/</li>
+                        <li>
+                          {isLast ? (
+                            <span className='text-textPrimary text-sm font-medium'>{value}</span>
+                          ) :
+                            <Link className='text-neutral-500 text-sm font-medium' to={to} onClick={() => handleBreadcrumb(to)}>{value}</Link>
+                          }
+                        </li>
+                      </Fragment>
+                    )
+                  })}
+                </ul>
               </div>
               <div className=''>
                 <button

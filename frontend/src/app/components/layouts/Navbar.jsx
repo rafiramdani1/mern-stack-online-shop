@@ -107,6 +107,7 @@ const Navbar = () => {
   }
 
   const handleClikToProductByCategory = async (slug) => {
+    setOpenDropdowmSubCategory(false)
     dispatch(resetPaginationProduct())
     dispatch(resetSortProduct())
     dispatch(resetFilterProduct())
@@ -115,6 +116,7 @@ const Navbar = () => {
   }
 
   const handleClickToProductBySubCategory = async (slug) => {
+    setOpenDropdowmSubCategory(false)
     dispatch(resetPaginationProduct())
     dispatch(resetSortProduct())
     dispatch(resetFilterProduct())
@@ -325,28 +327,31 @@ const Navbar = () => {
                   onMouseEnter={() => handleOpenSubCategories(category._id)}
                   onMouseLeave={() => setOpenDropdowmSubCategory(false)}>
                   {category.title !== 'Others' && category.title !== 'Women Collections' && category.title !== 'Kids Collections' ?
-                    <a
+                    <Link
+                      to={`products/${category.slug}`}
                       onClick={() => handleClikToProductByCategory(category.slug)}
                       className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center cursor-pointer'>
                       {category.title}
                       <IoMdArrowDropdown className={`text-neutral-500 transition-transform transform ${openDropdowmSubCategory === category._id ? 'rotate-180' : ''}`} />
-                    </a>
+                    </Link>
                     :
-                    <a
+                    <Link
+                      to={`products/${category.slug}`}
                       onClick={() => handleClikToProductByCategory(category.slug)}
                       className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center cursor-pointer'>
                       {category.title}
-                    </a>
+                    </Link>
                   }
                   {openDropdowmSubCategory === category._id && category.title !== 'Others' && category.title !== 'Women Collections' && category.title !== 'Kids Collections' && (
                     <div className={`absolute bg-white shadow-md p-2 w-52 rounded-lg z-10 animate__animated ${openDropdowmSubCategory === category._id ? 'animate__fadeInUp animate__faster	' : 'hidden'}`}>
                       {subCategories?.map(item => (
-                        <a
+                        <Link
                           key={item._id}
+                          to={`products/${category.slug}/${item.slug}`}
                           onClick={() => handleClickToProductBySubCategory({ category: category.slug, subCategory: item.slug })}
                           className='block text-textSecondary cursor-pointer hover:text-textPrimary hover:font-medium text-sm p-2'>
                           {item.title}
-                        </a>
+                        </Link>
                       ))}
                     </div>
                   )}

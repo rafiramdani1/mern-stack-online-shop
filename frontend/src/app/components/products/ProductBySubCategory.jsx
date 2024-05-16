@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams, Link } from 'react-router-dom'
-import { resetPaginationProduct, selectCurrentColumnProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct, selectCurrentSortProduct, setDeleteSizeProduct, setFilterProduct, setPaginationProduct, setSortProduct } from '../../features/products/productsSlice'
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom'
+import { resetFilterProduct, resetPaginationProduct, resetSearchKeyword, resetSortProduct, selectCurrentColumnProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct, selectCurrentSortProduct, setDeleteSizeProduct, setFilterProduct, setPaginationProduct, setSortProduct } from '../../features/products/productsSlice'
 import { useGetProductBySubCategorySlugQuery } from '../../features/products/productsApiSlice'
 import SidebarProductFIlter from '../layouts/SidebarProductFIlter'
 import { CiHeart, CiMail, CiShoppingCart } from 'react-icons/ci'
@@ -17,6 +17,11 @@ const ProductBySubCategory = () => {
 
   const [isHoveredCardIcons, setisHoveredCardIcons] = useState(null)
   const [openDropdownSort, setOpenDropdownSort] = useState(false)
+
+  // get pathnames
+  const location = useLocation()
+  const pathNames = location.pathname.split('/').filter(item => item)
+  const displayPathnames = pathNames[0] === 'products' ? pathNames.slice(1) : pathNames;
 
   // global state
   const page = useSelector(selectCurrentPageProduct)
@@ -140,6 +145,15 @@ const ProductBySubCategory = () => {
     }
   }
 
+  const navigate = useNavigate()
+  const handleBreadcrumb = (link) => {
+    dispatch(resetPaginationProduct())
+    dispatch(resetSortProduct())
+    dispatch(resetFilterProduct())
+    dispatch(resetSearchKeyword())
+    navigate(link)
+  }
+
   return (
     <>
       <div className='mt-48 px-56 mb-40'>
@@ -160,7 +174,28 @@ const ProductBySubCategory = () => {
           <div className='w-full'>
             <div className='flex justify-between text-sm text-textSecondary font-medium my-2 self-center'>
               <div>
-                <h1>Home / Nike</h1>
+                <ul className='flex gap-2'>
+                  <li>
+                    <Link className='text-neutral-500 text-sm font-medium' to='/'>Home</Link>
+                  </li>
+                  {displayPathnames.map((value, index) => {
+                    const isLast = index === displayPathnames.length - 1
+                    const to = `/${pathNames.slice(0, index + 2).join('/')}`
+
+                    return (
+                      <Fragment key={to}>
+                        <li className='text-neutral-500 font-medium text-sm'>/</li>
+                        <li>
+                          {isLast ? (
+                            <span className='text-textPrimary text-sm font-medium'>{value}</span>
+                          ) :
+                            <Link className='text-neutral-500 text-sm font-medium' to={to} onClick={() => handleBreadcrumb(to)}>{value}</Link>
+                          }
+                        </li>
+                      </Fragment>
+                    )
+                  })}
+                </ul>
               </div>
               <div className=''>
                 <button
