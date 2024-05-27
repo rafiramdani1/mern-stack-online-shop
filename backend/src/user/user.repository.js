@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 import Users from "../../models/users.model.js"
 import { authRepository } from "../auth/auth.repository.js"
 import crypto from 'crypto'
+import UserDetails from "../../models/user_details.model.js"
 
 // create user / registrasi
 const insertUser = async (newUser) => {
@@ -25,7 +26,46 @@ const insertUser = async (newUser) => {
 
 // find user by id
 const findUserById = async (id) => {
-  const user = await Users.findOne(id)
+  const user = await Users.findById(id)
+  return user
+}
+
+// find User Profile
+const findUserProfile = async (id) => {
+  const ObjectId = mongoose.Types.ObjectId
+
+  const findUser = await Users.aggregate([
+    {
+      $lookup: {
+        from: 'user_details',
+        localField: '_id',
+        foreignField: 'user_id',
+        as: 'user_details'
+      }
+    },
+    {
+      $unwind: '$user_details'
+    },
+    {
+      $match: {
+        _id: new ObjectId(id)
+      }
+    },
+    {
+      $project: {
+        _id: 1, // Exclude _id field from the output
+        username: 1,
+        email: 1,
+        user_details: 1,
+      }
+    }
+  ]);
+
+  return findUser[0]
+}
+
+const findUserDetailsById = async (idUser) => {
+  const user = await UserDetails.findOne({ user_id: idUser })
   return user
 }
 
@@ -61,6 +101,44 @@ const updateRefreshToken = async (id, refreshToken) => {
   return user
 }
 
+const insertOrUpdateUserDetails = async (data) => {
+  const user = await Users.updateOne(
+    { _id: data.userId }, {
+    $set: {
+      username: data.username,
+      email: data.email
+    }
+  })
+
+  let userDetails
+
+  const findUserDetails = await findUserDetailsById(data.userId)
+  if (findUserDetails) {
+    userDetails = await UserDetails.updateOne(
+      { user_id: data.userId }, {
+      $set: {
+        user_id: data.userId,
+        fullname: data.fullname,
+        dateOfBirth: data.dateOfBirth,
+        gender: data.gender,
+        phone: data.phone
+      }
+    }
+    )
+  } else {
+    userDetails = await new UserDetails({
+      user_id: data.userId,
+      fullname: data.fullname,
+      dateOfBirth: data.dateOfBirth,
+      gender: data.gender,
+      phone: data.phone
+    }).save()
+  }
+
+
+  return { user, userDetails }
+}
+
 export const userRepository = {
   insertUser,
   findUserById,
@@ -69,4 +147,7 @@ export const userRepository = {
   findUserByRefreshToken,
   checkVerifyAccountUser: findUserByVerified,
   updateRefreshToken,
+  findUserDetailsById,
+  insertUserDetails: insertOrUpdateUserDetails,
+  findUserProfile
 }

@@ -10,6 +10,7 @@ import { selectCurrentToken, selectCurrentUser } from '../../features/auth/authS
 import { useAddCartMutation, useGetCartsQuery } from '../../features/cart/cartApiSlice'
 import LoadingSpinner from '../layouts/LoadingSpinner'
 import ModalSuccess from '../layouts/ModalSuccess'
+import axios from 'axios'
 
 const sanitazeHTML = (html) => {
   return DOMPurify.sanitize(html)
@@ -73,7 +74,6 @@ const DetailProductUser = () => {
   }
 
   const incrementQty = async () => {
-    console.log('ok')
     if (!activeSize) return setErrors('Pilih ukuran!')
     setDecrementCount(false)
     if (qty >= cartStock) return setIncrementCount(true)
@@ -139,9 +139,77 @@ const DetailProductUser = () => {
     }
   }
 
-  const handleBuy = () => {
+  const handleBuy = async () => {
+    if (!token || !user) {
+      navigate('/login')
+      return
+    }
+
+    console.log(user)
     if (!activeSize) return setErrors('Pilih ukuran!')
     if (qty === 0) return setErrors('Masukkan jumlah!')
+
+    const data = {
+      transaction_details: {
+        gross_amount: subTotalCart
+      },
+      item_details: {
+        id: product?.product?._id,
+        price: product?.product?.price,
+        name: product?.product?.title,
+        quantity: qty,
+      },
+      customer_details: {
+        first_name: user?.username,
+        last_name: '-',
+        email: user?.email,
+        phone: '081382207072',
+        billing_address: {
+          first_name: user?.username,
+          last_name: '-',
+          email: user?.email,
+          phone: '081382207072',
+          address: 'KP KAUM PANGKALAN',
+          city: 'Karawang',
+          postal_code: '123123',
+          country_code: 'IDN'
+        }
+      },
+      shipping_address: {
+        first_name: user?.username,
+        last_name: '-',
+        email: user?.email,
+        phone: '081382207072',
+        address: 'KP KAUM PANGKALAN',
+        city: 'Karawang',
+        postal_code: '123123',
+        country_code: 'IDN'
+      }
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3001/api/payment/token', data)
+      window.snap.pay(response.data, {
+        onSuccess: function (result) {
+          /* You may add your own implementation here */
+          alert("payment success!"); console.log(result);
+        },
+        onPending: function (result) {
+          /* You may add your own implementation here */
+          alert("wating your payment!"); console.log(result);
+        },
+        onError: function (result) {
+          /* You may add your own implementation here */
+          alert("payment failed!"); console.log(result);
+        },
+        onClose: function () {
+          /* You may add your own implementation here */
+          alert('you closed the popup without finishing the payment');
+        }
+      });
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -192,6 +260,8 @@ const DetailProductUser = () => {
               <h2 className='text-slate-700 font-medium text-base'>Deskripsi</h2>
               <div className='mt-2 text-slate-800 text-sm font-normal' dangerouslySetInnerHTML={{ __html: sanitazeHTML(product?.product.description) }} />
             </div>
+
+            <div id='snap-container'></div>
           </div>
 
           {/* ADD CART */}

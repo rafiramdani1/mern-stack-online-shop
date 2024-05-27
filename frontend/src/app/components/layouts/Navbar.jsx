@@ -279,25 +279,31 @@ const Navbar = () => {
                         <div className='flex self-center hover:text-textPrimary cursor-pointer'>
                           <FaRegUserCircle className='text-base mr-2' />
                           <li className=''>
-                            Profile</li>
+                            <Link to={'/users'} onClick={() => localStorage.setItem('activeMenuUserProfile', 'profile')}>{user?.username}</Link>
+                          </li>
                         </div>
                         {user?.roleId.roleName === 'admin' ? (
-                          <div className='flex self-center hover:text-textPrimary mt-1.5 cursor-pointer'>
+                          <div className='flex self-center hover:text-textPrimary mt-2 cursor-pointer'>
                             <TiClipboard className='text-base mr-2' />
                             <li>
                               <Link to={'/admin/dashboard'}>Dashboard</Link>
                             </li>
                           </div>
                         ) : ''}
-                        <div className='flex self-center mt-1.5 -ml-0.5 hover:text-textPrimary cursor-pointer'>
+                        <div className='flex self-center mt-2 -ml-0.5 hover:text-textPrimary cursor-pointer'>
+                          <TiClipboard className='text-xl mr-1.5' />
+                          <li className=''>
+                            Purchase History</li>
+                        </div>
+                        <div className='flex self-center mt-2 -ml-0.5 hover:text-textPrimary cursor-pointer'>
                           <CiSettings className='text-xl mr-1.5' />
                           <li className=''>
                             Setting</li>
                         </div>
                         <li>
-                          <div className='border my-1.5 border-neutral-200'></div>
+                          <div className='border my-2 border-neutral-200'></div>
                         </li>
-                        <div className='flex self-center mt-1.5 -ml-0.5 hover:text-textPrimary cursor-pointer'>
+                        <div className='flex self-center mt-2 -ml-0.5 hover:text-textPrimary cursor-pointer'>
                           <CiLogout className='text-xl mr-1.5' />
                           <li>
                             <button onClick={handleLogout} className='hover:text-textPrimary cursor-pointer'>Logout</button>
