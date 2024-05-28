@@ -83,7 +83,7 @@ const findUserByEmail = async (email) => {
 
 // find user by refresh token
 const findUserByRefreshToken = async (refreshToken) => {
-  const user = await Users.findOne({ refresh_token: refreshToken })
+  const user = await Users.findOne({ refresh_token: refreshToken }).populate('roleId')
   return user
 }
 
@@ -124,7 +124,7 @@ const insertOrUpdateUserDetails = async (data) => {
         phone: data.phone
       }
     }
-    )
+  )
   } else {
     userDetails = await new UserDetails({
       user_id: data.userId,

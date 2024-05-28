@@ -13,7 +13,7 @@ const LayoutAuthUser = () => {
 
   useEffect(() => {
     if (isAuth) {
-      if (user && !user?.roleId?.roleName) {
+      if (!user) {
         navigate('/')
       }
     } else {

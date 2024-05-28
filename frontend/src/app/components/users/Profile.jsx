@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { FaRegUserCircle } from 'react-icons/fa'
-import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '../../features/auth/authSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectCurrentUser, setUpdateUserEdit } from '../../features/auth/authSlice'
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from 'react'
@@ -10,8 +10,7 @@ import LoadingSpinner from '../layouts/LoadingSpinner'
 import ModalSuccess from '../layouts/ModalSuccess'
 
 const Profile = () => {
-
-  const user = useSelector(selectCurrentUser)
+  const dispatch = useDispatch()
 
   const [disabledForm, setDisabledForm] = useState(true)
   const [msg, setMsg] = useState('')
@@ -76,6 +75,10 @@ const Profile = () => {
     try {
       const response = await updateUser(formData).unwrap()
       refetch()
+      dispatch(setUpdateUserEdit({
+        username: formData.username,
+        email: formData.email
+      }))
       setMsg(response.msg)
       setTimeout(() => {
         setMsg('')
