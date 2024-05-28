@@ -1,13 +1,14 @@
 import React, { useEffect, useRef } from 'react'
 import { FaRegUserCircle } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectCurrentUser, setUpdateUserEdit } from '../../features/auth/authSlice'
+import { selectCurrentUser } from '../../features/auth/authSlice'
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from 'react'
 import { useGetProfileQuery, useUpdateUserDetailsMutation } from '../../features/user/userApiSlice'
 import LoadingSpinner from '../layouts/LoadingSpinner'
 import ModalSuccess from '../layouts/ModalSuccess'
+import AlertErrors from '../layouts/AlertErrors'
 
 const Profile = () => {
   const dispatch = useDispatch()
@@ -33,10 +34,10 @@ const Profile = () => {
         userId: userProfile._id,
         username: userProfile.username,
         email: userProfile.email,
-        fullname: userProfile.user_details.fullname,
-        phone: userProfile.user_details.phone,
-        dateOfBirth: userProfile.user_details.dateOfBirth,
-        gender: userProfile.user_details.gender
+        fullname: userProfile?.user_details?.fullname,
+        phone: userProfile?.user_details?.phone,
+        dateOfBirth: userProfile?.user_details?.dateOfBirth,
+        gender: userProfile?.user_details?.gender
       })
     }
   }, [userProfile])
@@ -67,7 +68,7 @@ const Profile = () => {
     setDisabledForm(prevState => !prevState)
   }
 
-  const [updateUser, { isLoading: updateUserLoading, isError, isSuccess, reset }] = useUpdateUserDetailsMutation()
+  const [updateUser, { isLoading: updateUserLoading, isError, isSuccess, status: statusUpdateUser, reset }] = useUpdateUserDetailsMutation()
 
   const handleSaveEditData = async event => {
     event.preventDefault()
@@ -75,16 +76,13 @@ const Profile = () => {
     try {
       const response = await updateUser(formData).unwrap()
       refetch()
-      dispatch(setUpdateUserEdit({
-        username: formData.username,
-        email: formData.email
-      }))
       setMsg(response.msg)
       setTimeout(() => {
         setMsg('')
       }, 4000)
     } catch (error) {
-      console.log(error)
+      setDisabledForm(false)
+      setMsg(error.data.msg)
     }
   }
 
@@ -107,6 +105,10 @@ const Profile = () => {
             </div>
           </div>
           <div>
+            {
+              isError && msg !== '' ?
+                <AlertErrors msg={msg} close={() => setMsg('')} /> : null
+            }
             <div className='flex gap-4'>
               <div className=''>
                 <label className="block mb-2 text-textPrimary text-sm font-medium">

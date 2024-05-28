@@ -53,3 +53,11 @@ export const addSizeProductValidation = [
 export const editSizeStockProduct = [
   check('editSize', 'Size is required!').notEmpty(), check('editStock', 'Stock is required!').notEmpty()
 ]
+
+export const updateUserForCustomer = [
+  check('username', 'username is required!').notEmpty()
+    .isLength({ min: 4 }).withMessage('Username must be more than 4 letters'),
+  check('email', 'email is required!').notEmpty().isEmail().withMessage('email not valid!'),
+  check('fullname', 'fullname is required!').notEmpty(),
+  check('phone', 'phone is required!').isMobilePhone('id-ID').withMessage('Format number phone not valid!')
+]

@@ -44,7 +44,10 @@ const findUserProfile = async (id) => {
       }
     },
     {
-      $unwind: '$user_details'
+      $unwind: {
+        path: '$user_details',
+        preserveNullAndEmptyArrays: true
+      }
     },
     {
       $match: {
@@ -78,6 +81,11 @@ const findUserByUsername = async (username) => {
 // find user by email
 const findUserByEmail = async (email) => {
   const user = await Users.findOne({ email }).populate('roleId')
+  return user
+}
+
+const findUserByPhone = async (phone) => {
+  const user = await UserDetails.findOne({ phone })
   return user
 }
 
@@ -124,14 +132,14 @@ const insertOrUpdateUserDetails = async (data) => {
         phone: data.phone
       }
     }
-  )
+    )
   } else {
     userDetails = await new UserDetails({
       user_id: data.userId,
-      fullname: data.fullname,
+      fullname: data?.fullname,
       dateOfBirth: data.dateOfBirth,
       gender: data.gender,
-      phone: data.phone
+      phone: data?.phone
     }).save()
   }
 
@@ -149,5 +157,6 @@ export const userRepository = {
   updateRefreshToken,
   findUserDetailsById,
   insertUserDetails: insertOrUpdateUserDetails,
-  findUserProfile
+  findUserProfile,
+  findUserByPhone
 }

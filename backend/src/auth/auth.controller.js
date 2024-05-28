@@ -9,7 +9,6 @@ dotenv.config()
 const registrasi = async (req, res) => {
   try {
     const newUserData = req.body
-    console.log(newUserData)
 
     await authService.createUser(newUserData)
     res.status(201).json({

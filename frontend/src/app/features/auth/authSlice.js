@@ -24,12 +24,7 @@ const isAuthLocalStorage = localStorage.getItem('isAuth')
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: {
-      userId: null,
-      username: null,
-      email: null,
-      roleId: null
-    },
+    user: null,
     token: null,
     isAuth: isAuthLocalStorage ? isAuthLocalStorage : null
   },
@@ -38,15 +33,7 @@ const authSlice = createSlice({
       localStorage.setItem('isAuth', true)
       state.isAuth = 'true'
       state.token = action.payload.accessToken
-      const user = jwtDecode(action.payload.accessToken)
-      state.user.userId = user.userId
-      state.user.username = user.username
-      state.user.email = user.email
-      state.user.roleId = user.roleId
-    },
-    setUpdateUserEdit: (state, actions) => {
-      state.user.username = actions.payload.username
-      state.user.email = actions.payload.email
+      state.user = jwtDecode(action.payload.accessToken)
     },
     setLogOut: (state, action) => {
       state.isAuth = null
@@ -57,7 +44,7 @@ const authSlice = createSlice({
   }
 })
 
-export const { setCredentials, setLogOut, setUpdateUserEdit } = authSlice.actions
+export const { setCredentials, setLogOut } = authSlice.actions
 export default authSlice.reducer
 export const selectCurrentUser = state => state.auth.user
 export const selectCurrentToken = state => state.auth.token
