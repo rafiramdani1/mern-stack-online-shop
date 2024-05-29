@@ -61,3 +61,13 @@ export const updateUserForCustomer = [
   check('fullname', 'fullname is required!').notEmpty(),
   check('phone', 'phone is required!').isMobilePhone('id-ID').withMessage('Format number phone not valid!')
 ]
+
+export const addShippingAddressValidation = [
+  check('recipient_name', 'Recipient name is required!').notEmpty(),
+  check('phone', 'Phone is required!').notEmpty()
+    .isMobilePhone('id-ID').withMessage('Format number phone not valid!'),
+  check('address_label', 'Address label is required!').notEmpty(),
+  check('city', 'City is required!').notEmpty(),
+  check('complete_address', 'Complete address is required!').notEmpty(),
+  check('status', 'Status Active Shipping address is required!').notEmpty()
+]

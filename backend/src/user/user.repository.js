@@ -3,6 +3,7 @@ import Users from "../../models/users.model.js"
 import { authRepository } from "../auth/auth.repository.js"
 import crypto from 'crypto'
 import UserDetails from "../../models/user_details.model.js"
+import ShippingAddress from "../../models/shippingAddress.model.js"
 
 // create user / registrasi
 const insertUser = async (newUser) => {
@@ -147,6 +148,82 @@ const insertOrUpdateUserDetails = async (data) => {
   return { user, userDetails }
 }
 
+const findShippingAddressByUserId = async (userId) => {
+  const userShippingAddress = await ShippingAddress.find({ user_id: userId })
+  return userShippingAddress
+}
+
+const findShippingAddressById = async (userId, shippingId) => {
+  const shipping = await ShippingAddress.findOne(
+    {
+      user_id: userId,
+      'addresses._id': shippingId
+    }, { 'addresses.$': 1 }
+  )
+  return shipping
+}
+
+const insertShippingAddress = async (data) => {
+
+  const cekShippingUser = await findShippingAddressByUserId(data.userId)
+
+  let userShippingAddress
+  const dataShipping = {
+    recipient_name: data.recipient_name,
+    phone: data.phone,
+    address_label: data.address_label,
+    city: data.city,
+    complete_address: data.complete_address,
+    note_to_courier: data.note_to_courier,
+    status: data.status
+  }
+
+  if (cekShippingUser.length <= 0) {
+    userShippingAddress = await new ShippingAddress({
+      user_id: data.userId,
+      addresses: [dataShipping]
+    }).save()
+  } else {
+    userShippingAddress = await ShippingAddress.updateOne(
+      { user_id: data.userId },
+      {
+        $push: {
+          addresses: [dataShipping]
+        }
+      }
+    )
+  }
+  return userShippingAddress
+}
+
+const updateShippingAddress = async (data) => {
+  const shipping = await ShippingAddress.updateOne(
+    { user_id: data.userId, 'addresses._id': data.shippingId },
+    {
+      $set: {
+        'addresses.$.recipient_name': data.recipient_name,
+        'addresses.$.phone': data.phone,
+        'addresses.$.address_label': data.address_label,
+        'addresses.$.city': data.city,
+        'addresses.$.complete_address': data.complete_address,
+        'addresses.$.note_to_courier': data.note_to_courier,
+        'addresses.$.status': data.status
+      }
+    }
+  )
+
+  return shipping
+}
+
+const deleteShippingAddress = async (data) => {
+  const shipping = await ShippingAddress.updateOne(
+    { user_id: data.userId },
+    { $pull: { addresses: { _id: data.shippingId } } }
+  )
+
+  return shipping
+}
+
 export const userRepository = {
   insertUser,
   findUserById,
@@ -158,5 +235,10 @@ export const userRepository = {
   findUserDetailsById,
   insertUserDetails: insertOrUpdateUserDetails,
   findUserProfile,
-  findUserByPhone
+  findUserByPhone,
+  findShippingAddressByUserId,
+  insertShippingAddress,
+  findShippingAddressById,
+  updateShippingAddress,
+  deleteShippingAddress
 }

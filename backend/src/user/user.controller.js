@@ -32,7 +32,58 @@ const addUserDetail = async (req, res) => {
   }
 }
 
+const addShippingAddress = async (req, res) => {
+  try {
+    const data = req.body
+    await userService.addShippingAddress(data)
+    res.status(200).json({
+      status: true,
+      msg: 'Shipping address added successfully!'
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
+const updateShippingAddress = async (req, res) => {
+  try {
+    const data = req.body
+    await userService.updateShippingAddress(data)
+    res.status(200).json({
+      status: true,
+      msg: 'Shipping updated successfully!',
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: 400,
+      msg: error.message
+    })
+  }
+}
+
+const deleteShippingAddress = async (req, res) => {
+  try {
+    const data = req.body
+    await userService.deleteShippingAddress(data)
+    res.status(200).json({
+      status: true,
+      msg: "Shipping deleted successfully!"
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
 export const userController = {
   getProfileById,
-  addUserDetail
+  addUserDetail,
+  addShippingAddress,
+  updateShippingAddress,
+  deleteShippingAddress
 }
