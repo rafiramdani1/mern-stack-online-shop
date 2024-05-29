@@ -44,6 +44,10 @@ const Profile = () => {
 
   const handleChangeInput = async event => {
     const { name, value } = event.target
+    if (name === "username" && value.includes(" ")) {
+      // Jika mengandung spasi, abaikan perubahan nilai input
+      return; // Menghentikan eksekusi lebih lanjut
+    }
     setFormData({
       ...formData,
       [name]: value

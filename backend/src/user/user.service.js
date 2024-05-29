@@ -13,7 +13,11 @@ const addUserDetails = async (data) => {
   await getProfileById(data.userId)
 
   // cek duplicate username
-  const findUsername = await userRepository.findUserByUsername(data.username)
+  const findUsername = await userRepository.findUserByUsername(
+    {
+      $regex: new RegExp('^' + data.username + '$', 'i')
+    }
+  )
   if (findUsername && data.userId != findUsername._id) {
     throw Error('username has been used!')
   }

@@ -24,7 +24,7 @@ const isAuthLocalStorage = localStorage.getItem('isAuth')
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,
+      user: null,
     token: null,
     isAuth: isAuthLocalStorage ? isAuthLocalStorage : null
   },
