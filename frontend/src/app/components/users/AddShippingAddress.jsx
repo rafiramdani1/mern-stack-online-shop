@@ -1,7 +1,13 @@
 import anime from 'animejs'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '../../features/auth/authSlice'
+import { useAddShippingAddressMutation, useGetShippingAddressByUserQuery } from '../../features/user/userApiSlice'
+import AlertErrors from '../layouts/AlertErrors'
 
 const AddShippingAddress = ({ close }) => {
+
+  const user = useSelector(selectCurrentUser)
 
   const layoutModalRef = useRef(null)
   useEffect(() => {
@@ -13,6 +19,55 @@ const AddShippingAddress = ({ close }) => {
       easing: 'easeInOutSine'
     })
   }, [])
+
+  const { data: shipping } = useGetShippingAddressByUserQuery()
+
+  useEffect(() => {
+    if (shipping) {
+      console.log(shipping)
+    }
+  }, [shipping])
+
+  const [formData, setFormData] = useState({
+    userId: user?.userId,
+    recipient_name: '',
+    phone: '',
+    address_label: '',
+    city: '',
+    complete_address: '',
+    note_to_courier: '',
+    status: shipping?.data === null ? true : false,
+  })
+  const [msg, setMsg] = useState('')
+
+  const handleChangeInput = async event => {
+    const { name, value } = event.target
+
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+  }
+
+  const handleChangeCheckbox = async event => {
+    const status = event.target.checked
+    setFormData({
+      ...formData,
+      status: status
+    })
+  }
+
+  const [addShipping, { isLoading, isSuccess, isError }] = useAddShippingAddressMutation()
+
+  const handleSaveAddShipping = async e => {
+    e.preventDefault()
+    try {
+      const response = await addShipping(formData).unwrap()
+      console.log(response)
+    } catch (error) {
+      setMsg(error.data.msg)
+    }
+  }
 
   return (
     <>
@@ -34,13 +89,13 @@ const AddShippingAddress = ({ close }) => {
             {/*body*/}
             <div className="p-7">
               {/* error message */}
-              {/* {isError ?
+              {isError && msg !== '' ?
                 <AlertErrors
-                  msg={error.data.msg}
-                  close={reset}
-                />  
+                  msg={msg}
+                  close={() => setMsg('')}
+                />
                 : null
-              } */}
+              }
               <form action='#'>
                 <div className='flex gap-4'>
                   <div>
@@ -49,10 +104,12 @@ const AddShippingAddress = ({ close }) => {
                     </label>
                     <input
                       type="text"
-                      name="recipient"
-                      id="recipient"
+                      name="recipient_name"
+                      id="recipient_name"
                       className={`bg-bgInput border border-borderInput sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput p-2 w-52 text-textPrimary`}
                       placeholder="recipient's name"
+                      value={formData.recipient_name}
+                      onChange={handleChangeInput}
                     />
                   </div>
                   <div>
@@ -65,6 +122,8 @@ const AddShippingAddress = ({ close }) => {
                       id="phone"
                       className={`bg-bgInput border border-borderInput sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput p-2 w-52 text-textPrimary`}
                       placeholder="phone"
+                      value={formData.phone}
+                      onChange={handleChangeInput}
                     />
                   </div>
                   <div>
@@ -72,8 +131,11 @@ const AddShippingAddress = ({ close }) => {
                       Address Label *
                     </label>
                     <select
-                      id="label_address"
+                      name='address_label'
+                      id="address_label"
                       className={`bg-bgInput border border-borderInput sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput p-2 w-64 text-textPrimary`}
+                      value={formData.address_label}
+                      onChange={handleChangeInput}
                     >
                       <option value={'-'}>Select</option>
                       <option value="House">House</option>
@@ -89,8 +151,12 @@ const AddShippingAddress = ({ close }) => {
                       Address *
                     </label>
                     <textarea
+                      name='complete_address'
+                      id='complete_address'
                       className={`bg-bgInput border border-borderInput sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput p-2 w-80 text-textPrimary`}
-                      placeholder='complete address'>
+                      placeholder='complete address'
+                      value={formData.complete_address}
+                      onChange={handleChangeInput}>
                     </textarea>
                   </div>
                   <div>
@@ -103,18 +169,8 @@ const AddShippingAddress = ({ close }) => {
                       id="city"
                       className={`bg-bgInput border border-borderInput sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput p-2 w-40 text-textPrimary`}
                       placeholder="city"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-textPrimary text-sm font-medium">
-                      Postal code *
-                    </label>
-                    <input
-                      type="text"
-                      name="postal_code"
-                      id="postal_code"
-                      className={`bg-bgInput border border-borderInput sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput p-2 w-40 text-textPrimary`}
-                      placeholder="postal_code"
+                      value={formData.city}
+                      onChange={handleChangeInput}
                     />
                   </div>
                 </div>
@@ -124,20 +180,36 @@ const AddShippingAddress = ({ close }) => {
                       Note to courier
                     </label>
                     <textarea
-                      className={`bg-bgInput border border-borderInput sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput p-2 w-80 text-textPrimary`}>
+                      name='note_to_courier'
+                      id='note_to_courier'
+                      className={`bg-bgInput border border-borderInput sm:text-sm rounded-lg focus:ring-focusRingInput focus:border-focusBorderInput p-2 w-80 text-textPrimary`}
+                      value={formData.note_to_courier}
+                      onChange={handleChangeInput}
+                    >
                     </textarea>
                   </div>
                 </div>
                 <div className='flex justify-between mt-7'>
-                  <div className='flex self-cente gap-2'>
+                  <div className='flex self-center gap-2'>
                     <input
                       type='checkbox'
+                      checked={shipping?.data === null ? true : null}
                       className='h-5 w-5 cursor-pointer'
+                      value={formData.status}
+                      onChange={handleChangeCheckbox}
+                      disabled={shipping?.data === null ? true : false}
                     />
-                    <label className='mb-2 text-textPrimary text-sm font-medium'>make it the main address</label>
+                    <div className=''>
+                      <label className='mb-2 text-textPrimary text-sm font-medium'>make it the main address</label>
+                      {shipping?.data === null ?
+                        <p className='text-xs'>will automatically activate because there is no other shipping data</p>
+                        : ''
+                      }
+                    </div>
                   </div>
                   <div>
                     <button
+                      onClick={handleSaveAddShipping}
                       className='text-textPrimary text-sm border px-5 py-1 font-medium rounded-md hover:bg-bgPrimaryDark hover:text-white'
                     >
                       Save

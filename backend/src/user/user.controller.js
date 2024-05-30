@@ -32,6 +32,23 @@ const addUserDetail = async (req, res) => {
   }
 }
 
+const getShippingAddressByUserId = async (req, res) => {
+  try {
+    const token = req.cookies.refreshToken
+    const decode = jwtDecode(token)
+    const shippingAddress = await userService.getShippingAddressByUserId(decode.userId)
+    res.status(200).json({
+      status: true,
+      data: shippingAddress
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: 400,
+      msg: error.message
+    })
+  }
+}
+
 const addShippingAddress = async (req, res) => {
   try {
     const data = req.body
@@ -41,6 +58,7 @@ const addShippingAddress = async (req, res) => {
       msg: 'Shipping address added successfully!'
     })
   } catch (error) {
+    console.log(error)
     res.status(400).json({
       status: false,
       msg: error.message
@@ -80,10 +98,29 @@ const deleteShippingAddress = async (req, res) => {
   }
 }
 
+const updateStatusShippingToTrue = async (req, res) => {
+  try {
+    const data = req.body
+    const shipping = await userService.updateStatusShippingToTrue(data)
+    res.status(200).json({
+      status: true,
+      msg: 'The sender address has been successfully changed!',
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+    console.log(error)
+  }
+}
+
 export const userController = {
   getProfileById,
   addUserDetail,
   addShippingAddress,
   updateShippingAddress,
-  deleteShippingAddress
+  deleteShippingAddress,
+  getShippingAddressByUserId,
+  updateStatusShippingToTrue
 }

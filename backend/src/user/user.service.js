@@ -38,6 +38,13 @@ const addUserDetails = async (data) => {
   return user
 }
 
+const getShippingAddressByUserId = async (userId) => {
+  await getProfileById(userId)
+
+  const shippingAddress = await userRepository.findShippingAddressByUserId(userId)
+  return shippingAddress
+}
+
 const addShippingAddress = async (data) => {
 
   // cek user id
@@ -46,12 +53,38 @@ const addShippingAddress = async (data) => {
   // cek shipping data max 3 from user
   const shippingUser = await userRepository.findShippingAddressByUserId(data.userId)
   const maxShippingAddresUser = 3
-  if (shippingUser[0]?.addresses?.length >= maxShippingAddresUser) {
-    throw Error('You cannot add shipping address, because you have 3 shipping address!')
+  if (shippingUser) {
+    if (shippingUser.addresses.length >= maxShippingAddresUser) {
+      throw Error('You cannot add shipping address, because you have 3 shipping address!')
+    }
+  }
+
+  // change status shipping to false
+  if (shippingUser) {
+    if (data.status && shippingUser.addresses.length > 0) {
+      await userRepository.updateStatusShippingToFalse(data.userId)
+    }
   }
 
   const userShippingAddress = await userRepository.insertShippingAddress(data)
   return userShippingAddress
+}
+
+const updateStatusShippingToTrue = async (data) => {
+  await getProfileById(data.userId)
+
+  // get shipping by by userId
+  const shippingUser = await userRepository.findShippingAddressByUserId(data.userId)
+  // change status shipping to false
+  if (shippingUser) {
+    if (data.status && shippingUser.addresses.length > 0) {
+      await userRepository.updateStatusShippingToFalse(data.userId)
+    }
+  }
+
+  const changeStatusShipping = await userRepository.updateStatusShippingToTrue(data)
+  return changeStatusShipping
+
 }
 
 const updateShippingAddress = async (data) => {
@@ -84,7 +117,9 @@ const deleteShippingAddress = async (data) => {
 export const userService = {
   getProfileById,
   addUserDetails,
+  getShippingAddressByUserId,
   addShippingAddress,
   updateShippingAddress,
-  deleteShippingAddress
+  deleteShippingAddress,
+  updateStatusShippingToTrue
 }

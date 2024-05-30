@@ -149,7 +149,17 @@ const insertOrUpdateUserDetails = async (data) => {
 }
 
 const findShippingAddressByUserId = async (userId) => {
-  const userShippingAddress = await ShippingAddress.find({ user_id: userId })
+  const userShippingAddress = await ShippingAddress.findOne({ user_id: userId })
+
+  if (userShippingAddress) {
+    const addresses = userShippingAddress.addresses
+    const trueStatusAddressIndex = addresses.findIndex(address => address.status === true)
+    if (trueStatusAddressIndex !== -1) {
+      const trueStatusAddress = addresses[trueStatusAddressIndex]
+      addresses.splice(trueStatusAddressIndex, 1)
+      addresses.unshift(trueStatusAddress)
+    }
+  }
   return userShippingAddress
 }
 
@@ -162,6 +172,38 @@ const findShippingAddressById = async (userId, shippingId) => {
   )
   return shipping
 }
+
+const updateStatusShippingToFalse = async (userId) => {
+  const shipping = await ShippingAddress.findOne({ user_id: userId })
+
+  if (shipping) {
+    shipping.addresses.forEach(address => {
+      if (address.status === true) {
+        address.status = false
+      }
+    })
+  }
+
+  await shipping.save()
+}
+
+const updateStatusShippingToTrue = async (data) => {
+  const shippingAddress = await ShippingAddress.findOneAndUpdate(
+    {
+      user_id: data.userId,
+      'addresses._id': data.addressId
+    },
+    {
+      $set: { 'addresses.$.status': data.status }
+    },
+    {
+      new: true // Mengembalikan dokumen yang telah diperbarui
+    }
+  );
+
+  return shippingAddress;
+}
+
 
 const insertShippingAddress = async (data) => {
 
@@ -178,12 +220,7 @@ const insertShippingAddress = async (data) => {
     status: data.status
   }
 
-  if (cekShippingUser.length <= 0) {
-    userShippingAddress = await new ShippingAddress({
-      user_id: data.userId,
-      addresses: [dataShipping]
-    }).save()
-  } else {
+  if (cekShippingUser) {
     userShippingAddress = await ShippingAddress.updateOne(
       { user_id: data.userId },
       {
@@ -192,7 +229,13 @@ const insertShippingAddress = async (data) => {
         }
       }
     )
+  } else {
+    userShippingAddress = await new ShippingAddress({
+      user_id: data.userId,
+      addresses: [dataShipping]
+    }).save()
   }
+
   return userShippingAddress
 }
 
@@ -240,5 +283,7 @@ export const userRepository = {
   insertShippingAddress,
   findShippingAddressById,
   updateShippingAddress,
-  deleteShippingAddress
+  deleteShippingAddress,
+  updateStatusShippingToFalse,
+  updateStatusShippingToTrue
 }

@@ -13,11 +13,33 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body: userData
       })
+    }),
+    getShippingAddressByUser: builder.query({
+      query: () => ({
+        url: '/user/shipping-address'
+      })
+    }),
+    addShippingAddress: builder.mutation({
+      query: data => ({
+        url: '/user/add-shipping',
+        method: 'POST',
+        body: data
+      })
+    }),
+    updateStatusShipping: builder.mutation({
+      query: data => ({
+        url: '/user/update-status-shipping',
+        method: 'PUT',
+        body: data
+      })
     })
   })
 })
 
 export const {
   useGetProfileQuery,
-  useUpdateUserDetailsMutation
+  useUpdateUserDetailsMutation,
+  useGetShippingAddressByUserQuery,
+  useAddShippingAddressMutation,
+  useUpdateStatusShippingMutation,
 } = userApiSlice

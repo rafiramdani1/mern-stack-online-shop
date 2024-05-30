@@ -15,6 +15,12 @@ userRouter.post('/',
   validationResults,
   userController.addUserDetail
 )
+
+userRouter.get('/shipping-address',
+  verifyTokenAccess,
+  userController.getShippingAddressByUserId
+)
+
 userRouter.post('/add-shipping',
   verifyTokenAccess,
   addShippingAddressValidation,
@@ -31,4 +37,9 @@ userRouter.put('/update-shopping',
 userRouter.put('/delete-shipping',
   verifyTokenAccess,
   userController.deleteShippingAddress
+)
+
+userRouter.put('/update-status-shipping',
+  verifyTokenAccess,
+  userController.updateStatusShippingToTrue
 )
