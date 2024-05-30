@@ -21,9 +21,28 @@ import ProductsByCategory from './app/components/products/ProductsByCategory'
 import ProductsSearchResults from './app/components/products/ProductsSearchResults'
 import VerifyEmail from './app/components/auth/VerifyEmail'
 import ProductBySubCategory from './app/components/products/ProductBySubCategory'
-
+import { useEffect } from 'react'
+import LayoutAuthUser from './app/components/users/LayoutAuthUser'
+import Users from './app/components/users/Users'
 
 function App() {
+
+  useEffect(() => {
+    const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js'
+
+    let scriptTag = document.createElement('script')
+    scriptTag.src = midtransScriptUrl
+
+    const midtransClientKey = 'SB-Mid-client-9UBaQj78UMpzARx0'
+    scriptTag.setAttribute('data-client-key', midtransClientKey)
+
+    document.body.appendChild(scriptTag)
+
+    return () => {
+      document.body.removeChild(scriptTag)
+    }
+  }, [])
+
   return (
     <div className='font-URL'>
 
@@ -45,6 +64,11 @@ function App() {
               <Route path='products/search' element={<ProductsSearchResults />} />
               <Route path='/products/:slug' element={<ProductsByCategory />} />
               <Route path='/products/:category/:slug' element={<ProductBySubCategory />} />
+            </Route>
+
+            {/* Require Login */}
+            <Route path='/users' element={<LayoutAuthUser />}>
+              <Route index element={<Users />} />
             </Route>
 
             {/* Require auth admin */}

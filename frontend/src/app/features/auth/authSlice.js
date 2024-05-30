@@ -13,7 +13,6 @@ export const refreshToken = () => async (dispatch, getState) => {
 
     if (response.isSuccess) {
       await dispatch(setCredentials(response.data))
-
     }
   } catch (error) {
     console.log(error)
@@ -25,7 +24,7 @@ const isAuthLocalStorage = localStorage.getItem('isAuth')
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,
+      user: null,
     token: null,
     isAuth: isAuthLocalStorage ? isAuthLocalStorage : null
   },

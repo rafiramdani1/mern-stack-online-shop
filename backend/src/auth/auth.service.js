@@ -99,7 +99,7 @@ const loginUser = async (userData) => {
 
     // set access token
     const accessToken = jwt.sign(data, process.env.ACCESS_TOKEN, {
-      expiresIn: '15s'
+      expiresIn: '1d'
     })
     const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN, {
       expiresIn: '1d'

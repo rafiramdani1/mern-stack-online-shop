@@ -10,6 +10,7 @@ import { selectCurrentToken, selectCurrentUser } from '../../features/auth/authS
 import { useAddCartMutation, useGetCartsQuery } from '../../features/cart/cartApiSlice'
 import LoadingSpinner from '../layouts/LoadingSpinner'
 import ModalSuccess from '../layouts/ModalSuccess'
+import axios from 'axios'
 
 const sanitazeHTML = (html) => {
   return DOMPurify.sanitize(html)
@@ -73,7 +74,6 @@ const DetailProductUser = () => {
   }
 
   const incrementQty = async () => {
-    console.log('ok')
     if (!activeSize) return setErrors('Pilih ukuran!')
     setDecrementCount(false)
     if (qty >= cartStock) return setIncrementCount(true)
@@ -139,9 +139,77 @@ const DetailProductUser = () => {
     }
   }
 
-  const handleBuy = () => {
+  const handleBuy = async () => {
+    if (!token || !user) {
+      navigate('/login')
+      return
+    }
+
+    console.log(user)
     if (!activeSize) return setErrors('Pilih ukuran!')
     if (qty === 0) return setErrors('Masukkan jumlah!')
+
+    const data = {
+      transaction_details: {
+        gross_amount: subTotalCart
+      },
+      item_details: {
+        id: product?.product?._id,
+        price: product?.product?.price,
+        name: product?.product?.title,
+        quantity: qty,
+      },
+      customer_details: {
+        first_name: user?.username,
+        last_name: '-',
+        email: user?.email,
+        phone: '081382207072',
+        billing_address: {
+          first_name: user?.username,
+          last_name: '-',
+          email: user?.email,
+          phone: '081382207072',
+          address: 'KP KAUM PANGKALAN',
+          city: 'Karawang',
+          postal_code: '123123',
+          country_code: 'IDN'
+        }
+      },
+      shipping_address: {
+        first_name: user?.username,
+        last_name: '-',
+        email: user?.email,
+        phone: '081382207072',
+        address: 'KP KAUM PANGKALAN',
+        city: 'Karawang',
+        postal_code: '123123',
+        country_code: 'IDN'
+      }
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3001/api/payment/token', data)
+      window.snap.pay(response.data, {
+        onSuccess: function (result) {
+          /* You may add your own implementation here */
+          alert("payment success!"); console.log(result);
+        },
+        onPending: function (result) {
+          /* You may add your own implementation here */
+          alert("wating your payment!"); console.log(result);
+        },
+        onError: function (result) {
+          /* You may add your own implementation here */
+          alert("payment failed!"); console.log(result);
+        },
+        onClose: function () {
+          /* You may add your own implementation here */
+          alert('you closed the popup without finishing the payment');
+        }
+      });
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -160,7 +228,7 @@ const DetailProductUser = () => {
               <h3 className='text-lg font-bold text-textPrimary'>{product?.product.title}</h3>
               <div>
                 <div className='flex'>
-                  <h3 className='flex text-sm text-textSecondary font-normal mt-2'>Terjual 100+ . </h3>
+                  <h3 className='flex text-sm text-textSecondary font-normal mt-2'>Sold 100+ . </h3>
                   <svg aria-hidden="true" className="ml-1 w-5 h-5 text-yellow-300 mt-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                   <h3 className='text-sm text-textPrimary font-normal mt-2'>4.7 (97 rating)</h3>
                 </div>
@@ -169,11 +237,11 @@ const DetailProductUser = () => {
               </div>
             </div>
             <div className='mt-2'>
-              <h2 className='text-slate-700 text-base font-medium'>Pilih ukuran sepatu :</h2>
+              <h2 className='text-slate-700 text-base font-medium'>Select sizes :</h2>
               <div className='flex mt-2'>
                 {product?.sizesProduct?.map(size => (
                   <div className='mr-1' key={size._id}>
-                    <button onClick={() => selectSize(size._id)} type='button' className={`border px-2 py-1 rounded-sm ${activeBoxSize === size._id ? ' bg-cyan-500 right-1 text-white' : 'text-slate-800'} font-medium text-sm shadow-sm hover:bg-cyan-500 hover:ring-1 hover:text-white`}>
+                    <button onClick={() => selectSize(size._id)} type='button' className={`border px-2 py-1 rounded-sm ${activeBoxSize === size._id ? ' bg-neutral-800 right-1 text-white' : 'text-slate-800'} font-medium text-sm shadow-sm hover:bg-neutral-800 hover:text-white`}>
                       {size.size}
                     </button>
                   </div>
@@ -182,7 +250,7 @@ const DetailProductUser = () => {
             </div>
             <div className='border-b mt-2 border-slate-200'></div>
             <div className='mt2'>
-              <h2 className='text-textPrimary font-medium text-base'>Kategori :
+              <h2 className='text-textPrimary font-medium text-base'>Category :
                 <Link className='text-slate-800 text-sm font-normal'> {product?.product.id_category?.title},</Link>
                 <Link className='text-slate-800 text-sm font-normal'> {product?.product.id_sub_category?.title}</Link>
               </h2>
@@ -192,6 +260,8 @@ const DetailProductUser = () => {
               <h2 className='text-slate-700 font-medium text-base'>Deskripsi</h2>
               <div className='mt-2 text-slate-800 text-sm font-normal' dangerouslySetInnerHTML={{ __html: sanitazeHTML(product?.product.description) }} />
             </div>
+
+            <div id='snap-container'></div>
           </div>
 
           {/* ADD CART */}
@@ -200,18 +270,18 @@ const DetailProductUser = () => {
 
               {errors && <AlertErrors msg={errors} close={() => setErrors('')} />}
 
-              <h2 className='text-slate-800 text-lg font-medium'>Jumlah dan catatan</h2>
+              <h2 className='text-slate-800 text-lg font-medium mb-1'>amounts and notes</h2>
               <div className='flex my-2'>
                 <img className='w-16' src={product?.product.url} />
-                <p className='mt-5 ml-2 text-slate-600 text-sm font-normal'>ukuran: {cartSize || '-'} </p>
+                <p className='mt-5 ml-2 text-slate-600 text-sm font-normal'>size: {cartSize || '-'} </p>
               </div>
               <div className='border-b'></div>
               <div className='flex mt-2'>
                 <div className={`border rounded-md px-3`}>
                   <div className='flex'>
-                    <button onClick={decrementQty} className={decrementCount ? 'text-base text-slate-300 font-medium pr-4 cursor-auto' : 'text-base text-slate-700 font-medium hover:text-red-500 pr-4'}>-</button>
+                    <button onClick={decrementQty} className={decrementCount ? 'text-base text-slate-300 font-medium pr-4 cursor-auto' : 'text-base text-neutral-500 font-medium hover:text-neutral-800 pr-4'}>-</button>
                     <input type='text' className={`text-base font-medium text-slate-700 w-7 text-center focus:outline-none`} value={qty} readOnly />
-                    <button onClick={incrementQty} className={incrementCount ? 'text-base font-medium text-slate-300 pl-4 cursor-auto' : 'text-base font-medium text-slate-700 hover:text-cyan-500 pl-4'}>+</button>
+                    <button onClick={incrementQty} className={incrementCount ? 'text-base font-medium text-slate-300 pl-4 cursor-auto' : 'text-base text-neutral-500 font-medium hover:text-neutral-800 pl-4'}>+</button>
                   </div>
                 </div>
                 <div className='flex ml-3'>
@@ -219,23 +289,23 @@ const DetailProductUser = () => {
                 </div>
               </div>
               <div className='mt-3'>
-                <h2 className='text-slate-700 text-sm font-medium'>Tambah catatan :</h2>
+                <h2 className='text-slate-700 text-sm font-medium'>Note :</h2>
                 <textarea rows='2' cols='30'
-                  className="peer rounded-[7px] border border-blue-gray-200 text-xs font-normal text-blue-gray-700 outline outline-0 transition-all focus:border-2 focus:border-cyan-500 focus:outline-0 px-2 py-1" placeholder='optional' value={cartNote} onChange={(e) => setCartNote(e.target.value)}
+                  className="peer rounded-[7px] border border-blue-gray-200 text-xs font-normal text-blue-gray-700 outline outline-0 transition-all focus:border-2 focus:border-neutral-500 focus:outline-0 px-2 py-1" placeholder='optional' value={cartNote} onChange={(e) => setCartNote(e.target.value)}
                 ></textarea>
               </div>
               <div className='flex justify-between mt-3'>
                 <h3 className='text-slate-600 text-sm font-medium'>Subtotal</h3>
-                <h3 className='text-slate-700 text-base font-medium'>Rp. {subTotalCart}</h3>
+                <h3 className='text-slate-700 text-base font-medium'>Rp. {subTotalCart.toLocaleString('id', 'ID')}</h3>
               </div>
               <div className='flex justify-between mt-4'>
                 <button
-                  className='border border-cyan-500 rounded-md py-1 px-5 w-32 text-base font-medium text-cyan-500 mr-2'
+                  className='border border-neutral-500 rounded-md py-1 px-5 w-32 text-base font-medium text-textPrimary mr-2'
                   onClick={handleBuy}
-                >Beli</button>
-                <button className='border border-cyan-700 bg-cyan-500 text-white rounded-md py-1 px-5 w-32 text-base font-medium hover:bg-cyan-600'
+                >Buy</button>
+                <button className='border border-neutral-700 bg-bgSecondaryDark text-white rounded-md py-1 px-5 w-32 text-base font-medium hover:bg-bgPrimaryDark'
                   onClick={handleCart}
-                >+Keranjang</button>
+                >+Cart</button>
               </div>
             </div>
           </div>
