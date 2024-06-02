@@ -4,10 +4,14 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '../../features/auth/authSlice'
 import { useAddShippingAddressMutation, useGetShippingAddressByUserQuery } from '../../features/user/userApiSlice'
 import AlertErrors from '../layouts/AlertErrors'
+import LoadingSpinner from '../layouts/LoadingSpinner'
+import ModalSuccess from '../layouts/ModalSuccess'
+import { useNavigate } from 'react-router-dom'
 
 const AddShippingAddress = ({ close }) => {
 
   const user = useSelector(selectCurrentUser)
+  const navigate = useNavigate()
 
   const layoutModalRef = useRef(null)
   useEffect(() => {
@@ -20,13 +24,7 @@ const AddShippingAddress = ({ close }) => {
     })
   }, [])
 
-  const { data: shipping } = useGetShippingAddressByUserQuery()
-
-  useEffect(() => {
-    if (shipping) {
-      console.log(shipping)
-    }
-  }, [shipping])
+  const { data: shipping, refetch } = useGetShippingAddressByUserQuery()
 
   const [formData, setFormData] = useState({
     userId: user?.userId,
@@ -57,13 +55,21 @@ const AddShippingAddress = ({ close }) => {
     })
   }
 
-  const [addShipping, { isLoading, isSuccess, isError }] = useAddShippingAddressMutation()
+  const handleCloseMsg = async () => {
+    setMsg('')
+    close()
+  }
 
+  const [addShipping, { isLoading, isSuccess, isError }] = useAddShippingAddressMutation()
   const handleSaveAddShipping = async e => {
     e.preventDefault()
     try {
       const response = await addShipping(formData).unwrap()
-      console.log(response)
+      refetch()
+      setMsg(response.msg)
+      setTimeout(() => {
+        close()
+      }, 3000)
     } catch (error) {
       setMsg(error.data.msg)
     }
@@ -71,6 +77,8 @@ const AddShippingAddress = ({ close }) => {
 
   return (
     <>
+      {isLoading ? <LoadingSpinner /> : null}
+      {isSuccess && msg !== '' ? <ModalSuccess msg={msg} close={handleCloseMsg} /> : null}
       <div
         ref={layoutModalRef}
         className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-[70] outline-none focus:outline-none">

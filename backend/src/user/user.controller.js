@@ -1,6 +1,7 @@
 import express from 'express'
 import { userService } from './user.service.js'
 import { jwtDecode } from 'jwt-decode'
+import path from 'path'
 
 const getProfileById = async (req, res) => {
   try {
@@ -115,6 +116,36 @@ const updateStatusShippingToTrue = async (req, res) => {
   }
 }
 
+const addImageProfile = async (req, res) => {
+  try {
+    if (req.files == null) throw Error('File not found')
+
+    const userId = req.body.userId
+    const files = req.files
+    const file = files?.file
+    const fileSize = file?.data?.length
+    const ext = path.extname(file.name)
+    const fileName = file.md5 + ext
+    const image_url = `${req.protocol}://${req.get('host')}/images/user_profile/${fileName}`
+    const allowType = ['.png', '.jpg', '.jpeg']
+
+    const data = {
+      userId, fileSize, image_url, allowType, fileName, ext, file
+    }
+
+    await userService.uploadImageUserProfile(data)
+    res.status(200).json({
+      status: true,
+      msg: 'Image has been changes!'
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
 export const userController = {
   getProfileById,
   addUserDetail,
@@ -122,5 +153,6 @@ export const userController = {
   updateShippingAddress,
   deleteShippingAddress,
   getShippingAddressByUserId,
-  updateStatusShippingToTrue
+  updateStatusShippingToTrue,
+  addImageProfile
 }

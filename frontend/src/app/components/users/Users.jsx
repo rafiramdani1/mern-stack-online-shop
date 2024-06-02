@@ -5,27 +5,58 @@ import { Link, Outlet } from 'react-router-dom'
 import Profile from './Profile'
 import ShippingAddress from './ShippingAddress'
 import PurchaseHistory from './PurchaseHistory'
+import { useGetProfileQuery } from '../../features/user/userApiSlice'
+import LoadingSpinner from '../layouts/LoadingSpinner'
+import AddImageProfile from './AddImageProfile'
+import EditImageProfile from './EditImageProfile'
 
 const Users = () => {
+
+  const { data: userProfile, isLoading, refetch, status } = useGetProfileQuery()
 
   const [activeMenu, setActiveMenu] = useState(
     localStorage.getItem('activeMenuUserProfile') || 'profile'
   )
+  const [addImg, setAddImg] = useState(false)
+  const [editImg, setEditImg] = useState(false)
 
   const handleChangeMenu = (menu) => {
     setActiveMenu(menu)
     localStorage.setItem('activeMenuUserProfile', menu)
   }
 
+  const handleEditImage = () => {
+    if (userProfile) {
+      if (userProfile.user_profile_images.image_url) {
+        setEditImg(true)
+      } else {
+        setAddImg(true)
+      }
+    }
+  }
+
   return (
     <>
+      {isLoading ? <LoadingSpinner /> : null}
+      {addImg ? <AddImageProfile close={() => setAddImg(false)} /> : null}
+      {editImg ? <EditImageProfile close={() => setEditImg(false)} currentImg={userProfile?.user_profile_images?.image_url} /> : null}
       <div className='px-80 mt-48'>
         <div className='flex flex-wrap gap-3 justify-center'>
           <div className='w-1/5 border rounded-md p-3 bg-white h-fit'>
             <div className='flex justify-center mb-2'>
-              <FaCircleUser className='text-3xl' />
+              {
+                userProfile?.user_profile_images?.image_url ?
+                  <img src={userProfile.user_profile_images.image_url} className='bg-cover rounded-full w-48 h-48' />
+                  :
+                  <FaCircleUser className='text-3xl' />
+              }
+
+
             </div>
-            <h2 className='text-center text-textPrimary text-sm'>rafiramdani_</h2>
+            <div className='flex justify-center'>
+              <button onClick={handleEditImage} className='text-xs text-textPrimary px-3 rounded-md py-1 border text-center font-medium hover:bg-bgPrimaryDark hover:text-white'>Edit Photo
+              </button>
+            </div>
             <div className='text-center mt-4'>
               <button className='text-textPrimary text-sm border px-5 py-1 font-medium rounded-md hover:bg-bgPrimaryDark hover:text-white'>Change Password</button>
             </div>
@@ -49,7 +80,7 @@ const Users = () => {
                 </ul>
               </div>
               <div>
-                {activeMenu === 'profile' ? <Profile />
+                {activeMenu === 'profile' ? <Profile userProfile={userProfile} />
                   : activeMenu === 'shipping_address' ? <ShippingAddress />
                     : activeMenu === 'purchase_history' ? <PurchaseHistory />
                       : '-'

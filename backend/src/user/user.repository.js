@@ -4,6 +4,7 @@ import { authRepository } from "../auth/auth.repository.js"
 import crypto from 'crypto'
 import UserDetails from "../../models/user_details.model.js"
 import ShippingAddress from "../../models/shippingAddress.model.js"
+import imageUserProfile from "../../models/imageUserProfile.model.js"
 
 // create user / registrasi
 const insertUser = async (newUser) => {
@@ -51,6 +52,20 @@ const findUserProfile = async (id) => {
       }
     },
     {
+      $lookup: {
+        from: 'userprofileimages',
+        localField: '_id',
+        foreignField: 'userId',
+        as: 'user_profile_images',
+      }
+    },
+    {
+      $unwind: {
+        path: '$user_profile_images',
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
       $match: {
         _id: new ObjectId(id)
       }
@@ -61,6 +76,7 @@ const findUserProfile = async (id) => {
         username: 1,
         email: 1,
         user_details: 1,
+        user_profile_images: 1,
       }
     }
   ]);
@@ -267,6 +283,16 @@ const deleteShippingAddress = async (data) => {
   return shipping
 }
 
+const insertImageProfile = async (data) => {
+  const userProfile = await new imageUserProfile({
+    userId: data.userId,
+    fileName: data.fileName,
+    image_url: data.image_url
+  }).save()
+
+  return userProfile
+}
+
 export const userRepository = {
   insertUser,
   findUserById,
@@ -285,5 +311,6 @@ export const userRepository = {
   updateShippingAddress,
   deleteShippingAddress,
   updateStatusShippingToFalse,
-  updateStatusShippingToTrue
+  updateStatusShippingToTrue,
+  insertImageProfile
 }

@@ -1,20 +1,18 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import { FaRegUserCircle } from 'react-icons/fa'
-import { useDispatch, useSelector } from 'react-redux'
-import { selectCurrentUser } from '../../features/auth/authSlice'
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from 'react'
-import { useGetProfileQuery, useUpdateUserDetailsMutation } from '../../features/user/userApiSlice'
+import { useUpdateUserDetailsMutation } from '../../features/user/userApiSlice'
 import LoadingSpinner from '../layouts/LoadingSpinner'
 import ModalSuccess from '../layouts/ModalSuccess'
 import AlertErrors from '../layouts/AlertErrors'
+import AddImageProfile from './AddImageProfile'
 
-const Profile = () => {
-  const dispatch = useDispatch()
-
+const Profile = ({ userProfile }) => {
   const [disabledForm, setDisabledForm] = useState(true)
   const [msg, setMsg] = useState('')
+  const [addImg, setAddImg] = useState(false)
   const [formData, setFormData] = useState({
     userId: '',
     username: '',
@@ -24,8 +22,6 @@ const Profile = () => {
     dateOfBirth: '',
     gender: ''
   })
-
-  const { data: userProfile, isLoading, refetch, status } = useGetProfileQuery()
 
   useEffect(() => {
     if (userProfile) {
@@ -76,38 +72,32 @@ const Profile = () => {
 
   const handleSaveEditData = async event => {
     event.preventDefault()
-    setDisabledForm(true)
     try {
       const response = await updateUser(formData).unwrap()
-      refetch()
       setMsg(response.msg)
+      setDisabledForm(true)
       setTimeout(() => {
         setMsg('')
-      }, 4000)
+      }, 3000)
     } catch (error) {
       setDisabledForm(false)
-      setMsg(error.data.msg)
+      setMsg(error?.data?.msg)
     }
   }
 
   return (
     <>
-      {isLoading || updateUserLoading ? <LoadingSpinner /> : null}
+      {updateUserLoading ? <LoadingSpinner /> : null}
       {
         isSuccess && msg !== '' ?
           <ModalSuccess msg={msg} close={() => setMsg('')} />
           : null
       }
+      {
+        addImg ? <AddImageProfile close={() => setAddImg(false)} /> : null
+      }
       <div className='py-3 px-4'>
         <div className='flex flex-wrap gap-3'>
-          <div className='w-1/6'>
-            <div className='flex justify-center'>
-              <FaRegUserCircle className='text-7xl' />
-            </div>
-            <div className='text-center mt-2'>
-              <button className='text-xs text-textPrimary px-3 rounded-md py-1 border text-center font-medium'>Edit Photo</button>
-            </div>
-          </div>
           <div>
             {
               isError && msg !== '' ?

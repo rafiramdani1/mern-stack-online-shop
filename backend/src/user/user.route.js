@@ -43,3 +43,5 @@ userRouter.put('/update-status-shipping',
   verifyTokenAccess,
   userController.updateStatusShippingToTrue
 )
+
+userRouter.post('/upload-image-profile', verifyTokenAccess, userController.addImageProfile)

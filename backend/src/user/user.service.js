@@ -114,6 +114,26 @@ const deleteShippingAddress = async (data) => {
   return deleteShipping
 }
 
+const uploadImageUserProfile = async (data) => {
+  // cek type file
+  if (!(data.allowType).includes((data.ext).toLowerCase())) {
+    throw Error('Format file not valid!')
+  }
+
+  // cek size file
+  if (data.fileSize > 6000000) {
+    throw Error('size image min 5 MB!')
+  }
+
+  // save image
+  data.file.mv(
+    `./public/images/user_profile/${data.fileName}`, async (err) => {
+      const uploadImage = await userRepository.insertImageProfile(data)
+      return uploadImage
+    }
+  )
+}
+
 export const userService = {
   getProfileById,
   addUserDetails,
@@ -121,5 +141,6 @@ export const userService = {
   addShippingAddress,
   updateShippingAddress,
   deleteShippingAddress,
-  updateStatusShippingToTrue
+  updateStatusShippingToTrue,
+  uploadImageUserProfile
 }

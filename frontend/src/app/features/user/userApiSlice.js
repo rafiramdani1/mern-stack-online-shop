@@ -32,6 +32,20 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: 'PUT',
         body: data
       })
+    }),
+    deleteShippingAddress: builder.mutation({
+      query: data => ({
+        url: '/user/delete-shipping',
+        method: 'PUT',
+        body: data
+      })
+    }),
+    uploadImageProfile: builder.mutation({
+      query: data => ({
+        url: '/user/upload-image-profile',
+        method: 'POST',
+        body: data
+      })
     })
   })
 })
@@ -42,4 +56,6 @@ export const {
   useGetShippingAddressByUserQuery,
   useAddShippingAddressMutation,
   useUpdateStatusShippingMutation,
+  useDeleteShippingAddressMutation,
+  useUploadImageProfileMutation,
 } = userApiSlice

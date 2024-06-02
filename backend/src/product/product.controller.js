@@ -96,7 +96,6 @@ const getProductBySubCategorySlug = async (req, res) => {
 
 const addProduct = async (req, res) => {
   try {
-    console.log(req.body)
     if (req.files == null) throw Error("Tidak ada file yang diupload!")
 
     const newProduct = req.body
