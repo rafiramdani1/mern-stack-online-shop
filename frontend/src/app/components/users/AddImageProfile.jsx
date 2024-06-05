@@ -43,7 +43,6 @@ const AddImageProfile = ({ close }) => {
     event.preventDefault()
     try {
       const formData = new FormData()
-      formData.append('userId', user?.userId)
       formData.append('file', file)
 
       const response = await uploadImageUser(formData).unwrap()

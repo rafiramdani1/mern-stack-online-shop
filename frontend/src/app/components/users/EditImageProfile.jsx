@@ -35,7 +35,6 @@ const EditImageProfile = ({ close, currentImg }) => {
     try {
       const formData = new FormData()
       formData.append('imageId', currentImg._id)
-      formData.append('userId', currentImg.userId)
       formData.append('file', file)
 
       const response = await updateImageProfile(formData).unwrap()

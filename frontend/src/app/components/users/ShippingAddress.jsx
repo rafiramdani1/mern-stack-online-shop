@@ -18,7 +18,6 @@ const ShippingAddress = () => {
   const [addShipping, setAddShipping] = useState(false)
   const [msg, setMsg] = useState('')
   const [dataForDelete, setDataForDetele] = useState({
-    userId: '',
     shippingId: ''
   })
   const [modalConfirm, setModalConfirm] = useState(false)
@@ -37,7 +36,6 @@ const ShippingAddress = () => {
   const handleChangeStatusShipping = async shipping => {
     if (shipping.status) return
     const data = {
-      userId: user?.userId,
       addressId: shipping._id,
       status: true
     }
@@ -45,6 +43,9 @@ const ShippingAddress = () => {
       const response = await updateStatusShipping(data).unwrap()
       refetch()
       setMsg(response.msg)
+      setTimeout(() => {
+        setMsg('')
+      }, 3000);
     } catch (error) {
       console.log(error)
     }
@@ -53,7 +54,6 @@ const ShippingAddress = () => {
   const handleConfirmDeleteData = async data => {
     if (data.status) return
     setDataForDetele({
-      userId: user?.userId,
       shippingId: data._id
     })
     setModalConfirm(true)
@@ -95,7 +95,7 @@ const ShippingAddress = () => {
     <>
       {addShipping ? <AddShippingAddress close={() => setAddShipping(false)} /> : null}
       {getShippingLoading || updateStatusShippingLoading || deleteShippingLoading ? <LoadingSpinner /> : null}
-      {isSuccess || isSuccessDelete && msg !== '' ?
+      {isSuccess && msg !== '' || isSuccessDelete && msg !== '' ?
         <ModalSuccess msg={msg} close={() => setMsg('')} /> : null
       }
       {modalConfirm ? <ModalConfirm onConfirm={handleDeleteData} onCancel={() => setModalConfirm(false)} msg={'Are you sure deleted this data?'} /> : null}

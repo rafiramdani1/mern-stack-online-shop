@@ -23,9 +23,20 @@ export const verifyTokenAccess = (req, res, next) => {
   jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
     if (err) return res.status(401).json({ status: false, msg: 'Token tidak valid atau kadaluarsa' })
     req.email = decoded.email
+    req.userId = decoded.userId
     next()
   })
 }
+
+// export const verifyUserAccessEdited = (req, res, next) => {
+//   const authHeader = req.headers['authorization']
+//   const token = authHeader && authHeader.split(' ')[1]
+//   if (token == null) return res.sendStatus(401)
+//   jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+//     if (err) return res.status(401).json({ status: false, msg: 'Token tidak valid atau kadaluarsa' })
+//     console.log(decoded)
+//   })
+// }
 
 export const checkAuthAccessEditedUser = (req, res, next) => {
   const token = req.cookies.refreshToken

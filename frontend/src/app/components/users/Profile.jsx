@@ -14,7 +14,6 @@ const Profile = ({ userProfile }) => {
   const [msg, setMsg] = useState('')
   const [addImg, setAddImg] = useState(false)
   const [formData, setFormData] = useState({
-    userId: '',
     username: '',
     fullname: '',
     email: '',
@@ -27,7 +26,6 @@ const Profile = ({ userProfile }) => {
     if (userProfile) {
       setFormData({
         ...formData,
-        userId: userProfile._id,
         username: userProfile.username,
         email: userProfile.email,
         fullname: userProfile?.user_details?.fullname,

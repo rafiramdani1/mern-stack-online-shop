@@ -27,7 +27,6 @@ const AddShippingAddress = ({ close }) => {
   const { data: shipping, refetch } = useGetShippingAddressByUserQuery()
 
   const [formData, setFormData] = useState({
-    userId: user?.userId,
     recipient_name: '',
     phone: '',
     address_label: '',

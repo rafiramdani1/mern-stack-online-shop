@@ -5,9 +5,8 @@ import path from 'path'
 
 const getProfileById = async (req, res) => {
   try {
-    const token = req.cookies.refreshToken
-    const decode = jwtDecode(token)
-    const user = await userService.getProfileById(decode?.userId)
+    const userId = req.userId
+    const user = await userService.getProfileById(userId)
     res.status(200).json(user)
   } catch (error) {
     res.status(400).json({
@@ -19,7 +18,8 @@ const getProfileById = async (req, res) => {
 
 const addUserDetail = async (req, res) => {
   try {
-    const data = req.body
+    const body = req.body
+    const data = { ...body, userId: req.userId }
     await userService.addUserDetails(data)
     res.status(200).json({
       status: true,
@@ -35,9 +35,8 @@ const addUserDetail = async (req, res) => {
 
 const getShippingAddressByUserId = async (req, res) => {
   try {
-    const token = req.cookies.refreshToken
-    const decode = jwtDecode(token)
-    const shippingAddress = await userService.getShippingAddressByUserId(decode.userId)
+    const userId = req.userId
+    const shippingAddress = await userService.getShippingAddressByUserId(userId)
     res.status(200).json({
       status: true,
       data: shippingAddress
@@ -52,14 +51,14 @@ const getShippingAddressByUserId = async (req, res) => {
 
 const addShippingAddress = async (req, res) => {
   try {
-    const data = req.body
+    const body = req.body
+    const data = { ...body, userId: req.userId }
     await userService.addShippingAddress(data)
     res.status(200).json({
       status: true,
       msg: 'Shipping address added successfully!'
     })
   } catch (error) {
-    console.log(error)
     res.status(400).json({
       status: false,
       msg: error.message
@@ -69,7 +68,8 @@ const addShippingAddress = async (req, res) => {
 
 const updateShippingAddress = async (req, res) => {
   try {
-    const data = req.body
+    const body = req.body
+    const data = { ...body, userId: req.userId }
     await userService.updateShippingAddress(data)
     res.status(200).json({
       status: true,
@@ -85,7 +85,8 @@ const updateShippingAddress = async (req, res) => {
 
 const deleteShippingAddress = async (req, res) => {
   try {
-    const data = req.body
+    const body = req.body
+    const data = { ...body, userId: req.userId }
     await userService.deleteShippingAddress(data)
     res.status(200).json({
       status: true,
@@ -101,8 +102,9 @@ const deleteShippingAddress = async (req, res) => {
 
 const updateStatusShippingToTrue = async (req, res) => {
   try {
-    const data = req.body
-    const shipping = await userService.updateStatusShippingToTrue(data)
+    const body = req.body
+    const data = { ...body, userId: req.userId }
+    await userService.updateStatusShippingToTrue(data)
     res.status(200).json({
       status: true,
       msg: 'The sender address has been successfully changed!',
@@ -117,10 +119,10 @@ const updateStatusShippingToTrue = async (req, res) => {
 }
 
 const addImageProfile = async (req, res) => {
-try {
+  try {
     if (req.files == null) throw Error('File not found')
 
-    const userId = req.body.userId
+    const userId = req.userId
     const files = req.files
     const file = files?.file
     const fileSize = file?.data?.length
@@ -150,7 +152,7 @@ const updateImageProfile = async (req, res) => {
   try {
     if (req.files == null) throw Error('File not found')
 
-    const userId = req.body.userId
+    const userId = req.userId
     const imageId = req.body.imageId
     const files = req.files
     const file = files?.file

@@ -28,7 +28,7 @@ const Users = () => {
 
   const handleEditImage = () => {
     if (userProfile) {
-      if (userProfile.user_profile_images.image_url) {
+      if (userProfile?.user_profile_images?.image_url) {
         setEditImg(true)
       } else {
         setAddImg(true)
