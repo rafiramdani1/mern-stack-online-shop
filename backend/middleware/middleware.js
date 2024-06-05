@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { jwtDecode } from "jwt-decode";
 
 export const verifyTokenAccessAdmin = async (req, res, next) => {
   const authHeader = req.headers['authorization']
@@ -24,4 +25,16 @@ export const verifyTokenAccess = (req, res, next) => {
     req.email = decoded.email
     next()
   })
+}
+
+export const checkAuthAccessEditedUser = (req, res, next) => {
+  const token = req.cookies.refreshToken
+  const user = jwtDecode(token)
+  if (user.userId !== req.body.userId) {
+    return res.status(401).json({
+      status: false,
+      msg: 'unauthorize'
+    })
+  }
+  next()
 }

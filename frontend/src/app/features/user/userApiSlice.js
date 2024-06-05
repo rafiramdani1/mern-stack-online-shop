@@ -46,6 +46,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body: data
       })
+    }),
+    updateImageProfile: builder.mutation({
+      query: data => ({
+        url: `/user/update-image-profile`,
+        method: 'PUT',
+        body: data
+      })
     })
   })
 })
@@ -58,4 +65,5 @@ export const {
   useUpdateStatusShippingMutation,
   useDeleteShippingAddressMutation,
   useUploadImageProfileMutation,
+  useUpdateImageProfileMutation,
 } = userApiSlice

@@ -482,7 +482,6 @@ const insertProduct = async (productData) => {
 }
 
 const updateProduct = async (dataNewProduct) => {
-  console.log(dataNewProduct)
   const product = await Product.updateOne({ _id: dataNewProduct.idProduct }, {
     $set: {
       title: dataNewProduct.title,

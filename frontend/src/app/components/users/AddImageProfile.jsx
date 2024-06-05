@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '../../features/auth/authSlice'
 import AlertErrors from '../layouts/AlertErrors'
 import ModalSuccess from '../layouts/ModalSuccess'
+import LoadingSpinner from '../layouts/LoadingSpinner'
 
 const AddImageProfile = ({ close }) => {
 
@@ -59,6 +60,7 @@ const AddImageProfile = ({ close }) => {
 
   return (
     <>
+      {isLoading ? <LoadingSpinner /> : null}
       {isSuccess && msg !== '' ? <ModalSuccess msg={msg} close={handleCloseModal} /> : null}
       <div
         ref={layoutModalRef}

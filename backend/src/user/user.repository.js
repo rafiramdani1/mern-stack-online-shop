@@ -283,6 +283,11 @@ const deleteShippingAddress = async (data) => {
   return shipping
 }
 
+const findImageUserById = async (id) => {
+  const imageUser = await imageUserProfile.findOne({ _id: id })
+  return imageUser
+}
+
 const insertImageProfile = async (data) => {
   const userProfile = await new imageUserProfile({
     userId: data.userId,
@@ -291,6 +296,19 @@ const insertImageProfile = async (data) => {
   }).save()
 
   return userProfile
+}
+
+const updateImageProfile = async (data) => {
+  const imageUser = await imageUserProfile.updateOne(
+    { _id: data.imageId }, {
+    $set: {
+      userId: data.userId,
+      fileName: data.fileName,
+      image_url: data.image_url
+    }
+  })
+
+  return imageUser
 }
 
 export const userRepository = {
@@ -312,5 +330,7 @@ export const userRepository = {
   deleteShippingAddress,
   updateStatusShippingToFalse,
   updateStatusShippingToTrue,
-  insertImageProfile
+  findImageUserById,
+  insertImageProfile,
+  updateImageProfile
 }

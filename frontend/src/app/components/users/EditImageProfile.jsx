@@ -1,5 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react'
 import anime from 'animejs'
+import { useGetProfileQuery, useUpdateImageProfileMutation } from '../../features/user/userApiSlice'
+import LoadingSpinner from '../layouts/LoadingSpinner'
+import ModalSuccess from '../layouts/ModalSuccess'
+import AlertErrors from '../layouts/AlertErrors'
 
 const EditImageProfile = ({ close, currentImg }) => {
   const layoutModalRef = useRef(null)
@@ -14,13 +18,42 @@ const EditImageProfile = ({ close, currentImg }) => {
   }, [])
 
   const [imagePreview, setImagePreview] = useState('')
+  const [file, setFile] = useState('')
+  const [msg, setMsg] = useState('')
 
   const handleChangeImage = async e => {
     const value = e.target.files[0]
+    setFile(value)
     setImagePreview(URL?.createObjectURL(value))
   }
+
+  const { refetch } = useGetProfileQuery()
+
+  const [updateImageProfile, { isLoading, isError, isSuccess }] = useUpdateImageProfileMutation()
+  const handleUpdateImage = async e => {
+    e.preventDefault()
+    try {
+      const formData = new FormData()
+      formData.append('imageId', currentImg._id)
+      formData.append('userId', currentImg.userId)
+      formData.append('file', file)
+
+      const response = await updateImageProfile(formData).unwrap()
+      setMsg(response.msg)
+      refetch()
+      setTimeout(() => {
+        close()
+        setMsg('')
+      }, 3000);
+    } catch (error) {
+      setMsg(error.data.msg)
+    }
+  }
+
   return (
     <>
+      {isLoading ? <LoadingSpinner /> : null}
+      {isSuccess && msg !== '' ? <ModalSuccess msg={msg} close={() => setMsg('')} /> : null}
       <div
         ref={layoutModalRef}
         className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-[70] outline-none focus:outline-none">
@@ -38,16 +71,16 @@ const EditImageProfile = ({ close, currentImg }) => {
             </div>
             {/*body*/}
             <div className="p-7">
-              {/* {
+              {
                 isError && msg !== '' ?
                   <div>
                     <AlertErrors msg={msg} close={() => setMsg('')} />
                   </div>
                   : null
-              } */}
+              }
               <div>
                 <div className='flex justify-center mb-3'>
-                  <img src={imagePreview ? imagePreview : currentImg} alt='preview' className='w-56 h-56 rounded-full border-2 border-textPrimary' />
+                  <img src={imagePreview ? imagePreview : currentImg.image_url} alt='preview' className='w-56 h-56 rounded-full border-2 border-textPrimary' />
                 </div>
 
                 <div className='flex justify-between'>
@@ -62,7 +95,7 @@ const EditImageProfile = ({ close, currentImg }) => {
                     imagePreview ?
                       <div>
                         <button
-                          // onClick={handleUploadImage}
+                          onClick={handleUpdateImage}
                           className='text-textPrimary px-3 rounded-md py-1 border-2 text-center font-medium hover:bg-bgPrimaryDark hover:text-white'>Save</button>
                       </div>
                       :

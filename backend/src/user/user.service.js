@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import { userRepository } from "./user.repository.js"
+import { unlink } from 'fs'
 
 const getProfileById = async (idUser) => {
   const user = await userRepository.findUserProfile(idUser)
@@ -134,6 +135,39 @@ const uploadImageUserProfile = async (data) => {
   )
 }
 
+const updateImageUserProfile = async (data) => {
+  // cek type file
+  if (!(data.allowType).includes((data.ext).toLowerCase())) {
+    throw Error('Format file not valid!')
+  }
+
+  // cek size file
+  if (data.fileSize > 6000000) {
+    throw Error('size image min 5 MB!')
+  }
+
+  const imageUser = await userRepository.findImageUserById(data.imageId)
+
+  // update image
+  const filePath = `./public/images/user_profile/${imageUser.fileName}`
+  unlink(filePath, (err) => {
+    if (err) {
+      throw Error(err)
+    }
+  })
+
+  data.file.mv(
+    `./public/images/user_profile/${data.fileName}`, async (err) => {
+      if (err) {
+        throw Error(err)
+      }
+
+      const updateImageUser = await userRepository.updateImageProfile(data)
+      return updateImageUser
+    }
+  )
+}
+
 export const userService = {
   getProfileById,
   addUserDetails,
@@ -142,5 +176,6 @@ export const userService = {
   updateShippingAddress,
   deleteShippingAddress,
   updateStatusShippingToTrue,
-  uploadImageUserProfile
+  uploadImageUserProfile,
+  updateImageUserProfile
 }

@@ -117,7 +117,7 @@ const updateStatusShippingToTrue = async (req, res) => {
 }
 
 const addImageProfile = async (req, res) => {
-  try {
+try {
     if (req.files == null) throw Error('File not found')
 
     const userId = req.body.userId
@@ -146,6 +146,45 @@ const addImageProfile = async (req, res) => {
   }
 }
 
+const updateImageProfile = async (req, res) => {
+  try {
+    if (req.files == null) throw Error('File not found')
+
+    const userId = req.body.userId
+    const imageId = req.body.imageId
+    const files = req.files
+    const file = files?.file
+    const fileSize = file?.data?.length
+    const ext = path.extname(file.name)
+    const fileName = file.md5 + ext
+    const image_url = `${req.protocol}://${req.get('host')}/images/user_profile/${fileName}`
+    const allowType = ['.png', '.jpg', '.jpeg']
+
+    const data = {
+      userId, imageId, fileSize, image_url, allowType, fileName, ext, file
+    }
+
+    await userService.updateImageUserProfile(data)
+    res.status(200).json({
+      status: true,
+      msg: 'Image profile updated successfully!'
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
+const deleteImageProfile = async (req, res) => {
+  try {
+
+  } catch (error) {
+
+  }
+}
+
 export const userController = {
   getProfileById,
   addUserDetail,
@@ -154,5 +193,6 @@ export const userController = {
   deleteShippingAddress,
   getShippingAddressByUserId,
   updateStatusShippingToTrue,
-  addImageProfile
+  addImageProfile,
+  updateImageProfile
 }

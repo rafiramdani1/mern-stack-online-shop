@@ -9,6 +9,7 @@ import { useGetProfileQuery } from '../../features/user/userApiSlice'
 import LoadingSpinner from '../layouts/LoadingSpinner'
 import AddImageProfile from './AddImageProfile'
 import EditImageProfile from './EditImageProfile'
+import userProfileDefault from '../../../../public/img/default_user.png'
 
 const Users = () => {
 
@@ -39,7 +40,7 @@ const Users = () => {
     <>
       {isLoading ? <LoadingSpinner /> : null}
       {addImg ? <AddImageProfile close={() => setAddImg(false)} /> : null}
-      {editImg ? <EditImageProfile close={() => setEditImg(false)} currentImg={userProfile?.user_profile_images?.image_url} /> : null}
+      {editImg ? <EditImageProfile close={() => setEditImg(false)} currentImg={userProfile?.user_profile_images} /> : null}
       <div className='px-80 mt-48'>
         <div className='flex flex-wrap gap-3 justify-center'>
           <div className='w-1/5 border rounded-md p-3 bg-white h-fit'>
@@ -48,10 +49,8 @@ const Users = () => {
                 userProfile?.user_profile_images?.image_url ?
                   <img src={userProfile.user_profile_images.image_url} className='bg-cover rounded-full w-48 h-48' />
                   :
-                  <FaCircleUser className='text-3xl' />
+                  <img src={userProfileDefault} className='bg-cover rounded-full w-48 h-48' />
               }
-
-
             </div>
             <div className='flex justify-center'>
               <button onClick={handleEditImage} className='text-xs text-textPrimary px-3 rounded-md py-1 border text-center font-medium hover:bg-bgPrimaryDark hover:text-white'>Edit Photo

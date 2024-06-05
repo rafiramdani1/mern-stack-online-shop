@@ -165,7 +165,6 @@ const editProduct = async (dataProduct) => {
   }
 
   const url = `${dataProduct.reqProtocol}://${dataProduct.reqGetHost}/images/${fileName}`
-  console.log(dataProduct)
   const dataNewProduct = {
     idProduct: dataProduct.idProduct,
     title: dataProduct.body.title,
