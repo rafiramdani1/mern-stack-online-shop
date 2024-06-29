@@ -20,7 +20,9 @@ dotenv.config()
 connectDb().then(() => { console.log('Connected to database') }).catch((error) => { console.log(`Error connecting to database: ${error}`) })
 
 // setup middleware
-app.use(cors({ credentials: true, origin: 'http://localhost:5173' }))
+app.use(cors({
+  credentials: true, origin: 'http://localhost:5173'
+}))
 app.use(express.json())
 app.use(fileUpload())
 app.use(express.static('public'))

@@ -67,8 +67,8 @@ function App() {
             </Route>
 
             {/* Require Login */}
-            <Route path='/users' element={<LayoutAuthUser />}>
-              <Route index element={<Users />} />
+            <Route path='/' element={<LayoutAuthUser />}>
+              <Route path='/users' element={<Users />} />
             </Route>
 
             {/* Require auth admin */}

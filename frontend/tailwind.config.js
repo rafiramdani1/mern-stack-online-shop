@@ -12,6 +12,8 @@ export default {
         textSecondary: '#3f3f46',
         textPrimaryLight: '#d4d4d4',
         textSecondaryLight: '#e5e5e5',
+        colorTealPrimary: '#0f766e',
+        colorTealSecondary: '#0d9488',
         textHoverPrimary: '#18181b',
         bgPrimaryDark: '#171717',
         bgSecondaryDark: '#262626',

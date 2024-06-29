@@ -44,13 +44,12 @@ const Login = () => {
     <>
       <section>
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-          <h1 className='text-2xl text-textPrimary font-bold mb-2 tracking-tighter'>Shoes Store</h1>
-          <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+          <div className='flex self-center items-center gap-3 mb-2'>
+            <img src='/public/img/cart.png' />
+            <h1 className='text-2xl text-textPrimary font-bold mb-2 tracking-tighter'>Shoes Store</h1>
+          </div>
+          <div className="w-full bg-white rounded-lg shadow-sm md:mt-0 sm:max-w-md xl:p-0 border">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-
-              <h1 className="text-base font-medium leading-tight text-textSecondary">
-                Login your account
-              </h1>
 
               {isError ?
                 <AlertErrors msg={error.data.msg} close={reset} />
@@ -91,7 +90,7 @@ const Login = () => {
                 </div>
 
                 <button type="submit"
-                  className="w-full font-medium text-textPrimary hover:text-white hover:bg-hoverBgButton border border-borderButton focus:ring-2 focus:outline-none focus:ring-ringFocusBtn rounded-lg text-sm px-5 py-2.5 text-center mt-5">Login</button>
+                  className="w-full font-medium text-textPrimary hover:text-white hover:bg-bgSecondaryDark border border-borderButton focus:ring-2 focus:outline-none focus:ring-ringFocusBtn rounded-lg text-sm px-5 py-2.5 text-center mt-5">Login</button>
 
                 <p className="text-sm font-light text-textSecondary">
                   Don't have an account yet? <Link to={'/register'}

@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { CiUser } from 'react-icons/ci'
-import { FaCircleUser } from 'react-icons/fa6'
 import { Link, Outlet } from 'react-router-dom'
 import Profile from './Profile'
 import ShippingAddress from './ShippingAddress'
@@ -10,6 +8,7 @@ import LoadingSpinner from '../layouts/LoadingSpinner'
 import AddImageProfile from './AddImageProfile'
 import EditImageProfile from './EditImageProfile'
 import userProfileDefault from '../../../../public/img/default_user.png'
+import Header from '../layouts/Header'
 
 const Users = () => {
 

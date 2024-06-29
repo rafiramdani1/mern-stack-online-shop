@@ -150,7 +150,7 @@ const ShippingAddress = () => {
       }
       {modalConfirm ? <ModalConfirm onConfirm={handleDeleteData} onCancel={() => setModalConfirm(false)} msg={'Are you sure deleted this data?'} /> : null}
       <div className='overflow-y-scroll h-[40rem] relative'>
-        <div className='fixed w-[56.7rem] border-2 bg-white ml-4 self-center rounded-md z-50'>
+        <div className='fixed w-[56.7rem] border-2 bg-white ml-4 self-center rounded-md z-10'>
           <div className='flex justify-start px-2 py-2 self-center'>
             <button
               onClick={() => setAddShipping(true)}

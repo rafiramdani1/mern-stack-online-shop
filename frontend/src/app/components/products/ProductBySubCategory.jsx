@@ -37,7 +37,6 @@ const ProductBySubCategory = () => {
 
   const { data: sizes } = useGetSizesQuery()
 
-
   const queryOptions = {
     page,
     limit,

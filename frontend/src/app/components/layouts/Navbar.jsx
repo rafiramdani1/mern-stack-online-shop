@@ -334,7 +334,7 @@ const Navbar = () => {
                   onMouseLeave={() => setOpenDropdowmSubCategory(false)}>
                   {category.title !== 'Others' && category.title !== 'Women Collections' && category.title !== 'Kids Collections' ?
                     <Link
-                      to={`products/${category.slug}`}
+                      to={`/products/${category.slug}`}
                       onClick={() => handleClikToProductByCategory(category.slug)}
                       className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center cursor-pointer'>
                       {category.title}
@@ -342,7 +342,7 @@ const Navbar = () => {
                     </Link>
                     :
                     <Link
-                      to={`products/${category.slug}`}
+                      to={`/products/${category.slug}`}
                       onClick={() => handleClikToProductByCategory(category.slug)}
                       className='text-textSecondary hover:text-textPrimary font-bold text-sm flex items-center cursor-pointer'>
                       {category.title}
@@ -353,7 +353,7 @@ const Navbar = () => {
                       {subCategories?.map(item => (
                         <Link
                           key={item._id}
-                          to={`products/${category.slug}/${item.slug}`}
+                          to={`/products/${category.slug}/${item.slug}`}
                           onClick={() => handleClickToProductBySubCategory({ category: category.slug, subCategory: item.slug })}
                           className='block text-textSecondary cursor-pointer hover:text-textPrimary hover:font-medium text-sm p-2'>
                           {item.title}

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom';
 import { useGetProductsQuery } from '../../features/products/productsApiSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import LoadingSpinner from '../layouts/LoadingSpinner'
-import { RiArrowDropDownLine } from "react-icons/ri";
 import { resetPaginationProduct, selectCurrentColumnProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct, selectCurrentSortProduct, setFilterProduct, setPaginationProduct, setSortProduct } from '../../features/products/productsSlice';
 import SidebarProductFIlter from '../layouts/SidebarProductFIlter';
 import { CiHeart, CiMail, CiShoppingCart } from 'react-icons/ci';
@@ -17,7 +15,6 @@ const ProductsSearchResults = () => {
   const dispatch = useDispatch()
   const searchParams = new URLSearchParams(location.search);
   const q = searchParams.get('q');
-  const [searchQuery, setSearchQuery] = useState('')
   const [isHoveredCardIcons, setisHoveredCardIcons] = useState(null)
   const [openDropdownSort, setOpenDropdownSort] = useState(false)
 
@@ -54,7 +51,7 @@ const ProductsSearchResults = () => {
 
   const { data: products, isLoading, status, refetch } = useGetProductsQuery({
     ...queryOptions,
-    limit: 3,
+    limit: 6,
     searchKeyword: q,
     product_realese: 'realese',
     // searchKeyword: debouncedSearchQuery,
@@ -146,7 +143,7 @@ const ProductsSearchResults = () => {
           <div className='w-full'>
             <div className='flex justify-between text-sm text-textSecondary font-medium my-2 self-center'>
               <div>
-                <h1>Home / Nike</h1>
+                <h1 className='font-medium text-textPrimary pl-3'>Search results : {q}</h1>
               </div>
               <div className=''>
                 <button

@@ -1,0 +1,16 @@
+// dashboard template
+https://www.creative-tim.com/product/material-tailwind-kit-react#
+
+// DEV 
+  Set exp token 1 d
+
+// BUG : 
+1. bug slug product http://localhost:5173/product/nike-air-jordan-1-high-court-purple-2.0
+
+featured
+
+Profile user
+  - update shipping
+  - add / update image Profile
+  - change password
+  - purchase history

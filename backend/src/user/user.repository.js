@@ -66,6 +66,20 @@ const findUserProfile = async (id) => {
       }
     },
     {
+      $lookup: {
+        from: 'shipping_addresses',
+        localField: '_id',
+        foreignField: 'user_id',
+        as: 'shipping_address'
+      }
+    },
+    {
+      $unwind: {
+        path: '$shipping_address',
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
       $match: {
         _id: new ObjectId(id)
       }
@@ -77,6 +91,7 @@ const findUserProfile = async (id) => {
         email: 1,
         user_details: 1,
         user_profile_images: 1,
+        shipping_address: 1,
       }
     }
   ]);

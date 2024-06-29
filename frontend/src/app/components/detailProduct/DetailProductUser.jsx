@@ -11,6 +11,9 @@ import { useAddCartMutation, useGetCartsQuery } from '../../features/cart/cartAp
 import LoadingSpinner from '../layouts/LoadingSpinner'
 import ModalSuccess from '../layouts/ModalSuccess'
 import axios from 'axios'
+import { useGetProfileQuery, useGetShippingAddressByUserQuery } from '../../features/user/userApiSlice'
+import Checkout from '../checkout/Checkout'
+import ModalConfirm from '../layouts/ModalConfirm'
 
 const sanitazeHTML = (html) => {
   return DOMPurify.sanitize(html)
@@ -44,6 +47,8 @@ const DetailProductUser = () => {
   const [activeSize, setActiveSize] = useState(false)
   const [msgSuccess, setMsgSuccess] = useState('')
   const [errors, setErrors] = useState('')
+  const [modalCheckout, setModalCheckout] = useState(false)
+  const [dataCheckout, setDataCheckout] = useState({})
 
   // state cart
   const [cartSizeId, setCartSizeId] = useState('')
@@ -139,84 +144,57 @@ const DetailProductUser = () => {
     }
   }
 
+  const handleConfirmAddShipping = async () => {
+    localStorage.setItem('activeMenuUserProfile', 'shipping_address')
+    navigate('/users')
+  }
+
+  // use get shipping user
+  const { data: userShippingAddress } = useGetShippingAddressByUserQuery()
+  const { data: getProfile } = useGetProfileQuery()
+
   const handleBuy = async () => {
     if (!token || !user) {
       navigate('/login')
       return
     }
 
-    console.log(user)
+    if (userShippingAddress?.data === null) {
+      setErrors("You haven't added shipping data yet")
+      return
+    }
+
     if (!activeSize) return setErrors('Pilih ukuran!')
     if (qty === 0) return setErrors('Masukkan jumlah!')
 
-    const data = {
+    setDataCheckout({
       transaction_details: {
         gross_amount: subTotalCart
       },
       item_details: {
-        id: product?.product?._id,
+        idProduct: product?.product?._id,
         price: product?.product?.price,
         name: product?.product?.title,
         quantity: qty,
+        productImage: product?.product?.url,
+        size: cartSize
       },
       customer_details: {
-        first_name: user?.username,
+        first_name: getProfile?.username,
         last_name: '-',
-        email: user?.email,
-        phone: '081382207072',
-        billing_address: {
-          first_name: user?.username,
-          last_name: '-',
-          email: user?.email,
-          phone: '081382207072',
-          address: 'KP KAUM PANGKALAN',
-          city: 'Karawang',
-          postal_code: '123123',
-          country_code: 'IDN'
-        }
+        email: getProfile?.email,
+        phone: getProfile?.user_details?.phone,
       },
-      shipping_address: {
-        first_name: user?.username,
-        last_name: '-',
-        email: user?.email,
-        phone: '081382207072',
-        address: 'KP KAUM PANGKALAN',
-        city: 'Karawang',
-        postal_code: '123123',
-        country_code: 'IDN'
-      }
-    }
-
-    try {
-      const response = await axios.post('http://localhost:3001/api/payment/token', data)
-      window.snap.pay(response.data, {
-        onSuccess: function (result) {
-          /* You may add your own implementation here */
-          alert("payment success!"); console.log(result);
-        },
-        onPending: function (result) {
-          /* You may add your own implementation here */
-          alert("wating your payment!"); console.log(result);
-        },
-        onError: function (result) {
-          /* You may add your own implementation here */
-          alert("payment failed!"); console.log(result);
-        },
-        onClose: function () {
-          /* You may add your own implementation here */
-          alert('you closed the popup without finishing the payment');
-        }
-      });
-    } catch (error) {
-      console.log(error)
-    }
+    })
+    setModalCheckout(true)
   }
 
   return (
     <>
       {loadingAddCart ? <LoadingSpinner /> : null}
-
       {isSuccess && msgSuccess !== '' ? <ModalSuccess msg={msgSuccess} close={handleCloseModalSuccess} /> : null}
+      {modalCheckout ? <Checkout close={() => setModalCheckout(false)} dataCheckout={dataCheckout} userShippingAddress={userShippingAddress} /> : null}
+      {errors !== '' ? <ModalConfirm msg={errors} onCancel={() => setErrors('')} onConfirm={handleConfirmAddShipping} /> : null}
 
       <section className='mt-52 mb-96 px-36'>
         <div className='flex w-full'>
@@ -260,8 +238,6 @@ const DetailProductUser = () => {
               <h2 className='text-slate-700 font-medium text-base'>Deskripsi</h2>
               <div className='mt-2 text-slate-800 text-sm font-normal' dangerouslySetInnerHTML={{ __html: sanitazeHTML(product?.product.description) }} />
             </div>
-
-            <div id='snap-container'></div>
           </div>
 
           {/* ADD CART */}
