@@ -101,7 +101,7 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
       <div
         ref={layoutModalRef}
         className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-[70] outline-none focus:outline-none">
-        <div className="relative my-6 mx-auto">
+        <div className="relative my-6 mx-auto w-fit">
           {/*content*/}
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             {/*header*/}
@@ -218,7 +218,7 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
                   <button onClick={handleCheckout} className={`${tokenReqMidtrans ? 'hidden' : 'border bg-bgSecondaryDark text-white rounded-md py-1.5 px-3 hover:bg-bgPrimaryDark'} `}>Checkout</button>
                 </div>
               </div>
-              <div className='w-1/2'>
+              <div className={tokenReqMidtrans ? 'w-1/2' : ''}>
                 <div className={tokenReqMidtrans ? 'w-full' : ''} id='snap-container'></div>
               </div>
             </div>
