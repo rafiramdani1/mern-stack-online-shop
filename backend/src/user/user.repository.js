@@ -194,11 +194,11 @@ const findShippingAddressByUserId = async (userId) => {
   return userShippingAddress
 }
 
-const findShippingAddressById = async (userId, shippingId) => {
+const findShippingAddressById = async (data) => {
   const shipping = await ShippingAddress.findOne(
     {
-      user_id: userId,
-      'addresses._id': shippingId
+      user_id: data.userId,
+      'addresses._id': data.shippingId
     }, { 'addresses.$': 1 }
   )
   return shipping
@@ -234,7 +234,6 @@ const updateStatusShippingToTrue = async (data) => {
 
   return shippingAddress;
 }
-
 
 const insertShippingAddress = async (data) => {
 

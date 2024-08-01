@@ -140,7 +140,7 @@ const DetailProductUser = () => {
         setMsgSuccess('')
       }, 2000)
     } catch (error) {
-      return
+      console.log(error)
     }
   }
 
@@ -180,6 +180,7 @@ const DetailProductUser = () => {
         size: cartSize
       },
       customer_details: {
+        user_id: user?.userId,
         first_name: getProfile?.username,
         last_name: '-',
         email: getProfile?.email,

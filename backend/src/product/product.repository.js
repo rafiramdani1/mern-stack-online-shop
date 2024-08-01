@@ -153,6 +153,13 @@ const findProductById = async (id) => {
   return { product, sizesProduct }
 }
 
+const findProductByIds = async (ids) => {
+  const products = await Product.find({ _id: { $in: ids } })
+    .populate('id_category').populate('id_sub_category')
+
+  return products
+}
+
 const findProductByTitle = async (title) => {
   const product = await Product.findOne({ title, product_status: true })
   return product
@@ -597,4 +604,5 @@ export const productsRepository = {
   findProductStatusRealeseById,
   updateProductStatusToRealese,
   updateProductStatusToUnrealese,
+  findProductByIds
 }

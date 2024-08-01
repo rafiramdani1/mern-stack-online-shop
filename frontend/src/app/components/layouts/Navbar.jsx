@@ -80,7 +80,7 @@ const Navbar = () => {
     e.preventDefault()
     if (searchQuery === '') {
       refInputSearch.current.focus()
-      return
+      retur
     }
     setShowHistorySearch(false)
     try {

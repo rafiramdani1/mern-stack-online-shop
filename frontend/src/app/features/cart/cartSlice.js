@@ -11,12 +11,12 @@ const cartSlice = createSlice({
     setIncrementQty: (state, action) => {
       state.quantity++
       const countTotal = state.price * state.quantity
-      state.subTotal = countTotal.toLocaleString("id-ID")
+      state.subTotal = countTotal
     },
     setDecrementQty: (state, action) => {
       state.quantity--
       const countTotal = parseInt(state.subTotal.replace(/\./g, "")) - state.price
-      state.subTotal = countTotal.toLocaleString("id-ID")
+      state.subTotal = countTotal
     },
     setPrice: (state, action) => {
       state.quantity = 1

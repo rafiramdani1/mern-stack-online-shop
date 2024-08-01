@@ -5,12 +5,16 @@ import { IoMdArrowDown, IoMdArrowDropdown } from 'react-icons/io'
 import LoadingSpinner from '../layouts/LoadingSpinner'
 import ModalSuccess from '../layouts/ModalSuccess'
 import axios from 'axios'
-import { useGetPaymentTokenMutation } from '../../features/payments/paymentApiSlice'
-import { useLocation } from 'react-router-dom'
+import { useCreateTrasactionMutation } from '../../features/transaction/transactionApiSlice'
+import { useLocation, useNavigate } from 'react-router-dom'
+import useSnap from '../hooks/useSnap'
+import { useGetCartsQuery } from '../../features/cart/cartApiSlice'
 
 const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
 
   const layoutModalRef = useRef(null)
+  const navigate = useNavigate()
+
   useEffect(() => {
     anime({
       targets: layoutModalRef.current,
@@ -20,6 +24,8 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
       easing: 'easeInOutSine'
     })
   }, [])
+
+  const { snapEmbed } = useSnap()
 
   // use get shipping user
   const { refetch } = useGetShippingAddressByUserQuery()
@@ -33,6 +39,7 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
 
   const [updateStatusShipping, { isLoading, isSuccess, isError }] = useUpdateStatusShippingMutation()
   const handleChangeStatusShipping = async (address) => {
+    setDropdownShipping(false)
     if (address.status) return
     const data = {
       addressId: address._id,
@@ -42,6 +49,9 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
       const response = await updateStatusShipping(data).unwrap()
       refetch()
       setMsg(response.msg)
+      setTimeout(() => {
+        setMsg('')
+      }, 2000)
     } catch (error) {
       console.log(error)
     }
@@ -52,43 +62,36 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
     close()
   }
 
-  const [paymentToken, { isLoading: isLoadingPayment, isError: isErrorPayment, isSuccess: isSuccessPayment }] = useGetPaymentTokenMutation()
+  const { refetch: refetchGetCarts } = useGetCartsQuery()
+
+  const [createTrasaction, { isLoading: isLoadingPayment, isError: isErrorPayment, isSuccess: isSuccessPayment }] = useCreateTrasactionMutation()
   const handleCheckout = async () => {
     setDropdownShipping(false)
     dataCheckout = {
       ...dataCheckout,
       shipping_address: {
-        first_name: shippingStatusTrue?.recipient_name,
-        address_label: shippingStatusTrue?.address_label,
-        phone: shippingStatusTrue?.phone,
-        address: shippingStatusTrue?.complete_address,
-        city: shippingStatusTrue?.city,
-        note_to_courier: shippingStatusTrue?.note_to_courier
+        addressId: shippingStatusTrue?._id
       }
     }
     try {
-      const response = await paymentToken(dataCheckout)
-      setTokenReqMidtrans(response.data)
-      window.snap.embed(response.data,
-        {
-          embedId: 'snap-container',
+      const response = await createTrasaction(dataCheckout)
+      if (response && response.data.status === 'success') {
+        await refetchGetCarts()
+        setTokenReqMidtrans(response.data.data.snap_token)
+        snapEmbed(response.data.data.snap_token, 'snap-container', {
           onSuccess: function (result) {
-            /* You may add your own implementation here */
-            alert("payment success!"); console.log(result);
+            console.log('success', result)
+            navigate(`/users/order-status?transaction_id=${response.data.data.id}`)
           },
           onPending: function (result) {
-            /* You may add your own implementation here */
-            alert("wating your payment!"); console.log(result);
-          },
-          onError: function (result) {
-            /* You may add your own implementation here */
-            alert("payment failed!"); console.log(result);
+            console.log('pending', result)
+            navigate(`/users/order-status?transaction_id=${response.data.data.id}`)
           },
           onClose: function () {
-            /* You may add your own implementation here */
-            alert('you closed the popup without finishing the payment');
+            navigate(`/users/order-status?transaction_id=${response.data.data.id}`)
           }
         })
+      }
     } catch (error) {
       console.log(error)
     }
@@ -100,7 +103,7 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
       {isSuccess && msg !== '' ? <ModalSuccess msg={msg} close={() => setMsg('')} /> : null}
       <div
         ref={layoutModalRef}
-        className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-[70] outline-none focus:outline-none">
+        className="justify-center flex h-[80vh] overflow-auto fixed inset-0 z-[70] outline-none focus:outline-none">
         <div className="relative my-6 mx-auto w-fit">
           {/*content*/}
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
@@ -118,28 +121,38 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
             <div className="flex p-5 gap-5">
               <div>
                 <h1 className='text-textPrimary font-medium mb-3'>Product Info</h1>
-                <div className='flex gap-2'>
-                  <div>
-                    <img src={dataCheckout?.item_details?.productImage} className='w-32' />
-                  </div>
-                  <div>
-                    <h2 className='text-textPrimary tracking-tighter'>{dataCheckout?.item_details?.name}</h2>
-                    <div className='flex gap-2 mt-1'>
+                {
+                  dataCheckout?.item_details.map((item, i) => (
+                    <div className='flex justify-between self-center gap-4 mt-4 border p-4 rounded-sm' key={i}>
                       <div>
-                        <h3 className='text-textPrimary font-medium'>Rp {(dataCheckout?.item_details?.price).toLocaleString('ID-id')}</h3>
+                        <img src={item.productImage} className='w-24' />
                       </div>
                       <div>
-                        <h3 className='text-sm mt-1'>Size : {dataCheckout?.item_details?.size}</h3>
+                        <h2 className='text-textPrimary tracking-tighter'>{item.name}</h2>
+                        <div className='flex gap-2 mt-1'>
+                          <div>
+                            <h3 className='text-textPrimary font-medium'>Rp {(item.price).toLocaleString('ID-id')}</h3>
+                          </div>
+                          <div>
+                            <h3 className='text-sm mt-1'>Size : {item.size.size}</h3>
+                          </div>
+                        </div>
+                        <div className='border w-fit px-2 rounded-md mt-2'>
+                          <div className='flex'>
+                            <button className={'cursor-auto text-base text-neutral-400 font-medium pr-4'}>-</button>
+                            <input type='text' className={`text-base font-medium text-slate-500 w-7 text-center focus:outline-none`} value={item.quantity} readOnly />
+                            <button className={'text-base cursor-auto text-neutral-400 font-medium pl-4'}>+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className='justify-end'>
+                        <h1 className='text-sm font-medium text-textSecondary'>Total : Rp{item.total.toLocaleString('id', 'ID')}</h1>
                       </div>
                     </div>
-                    <div className='border w-fit px-2 rounded-md mt-2'>
-                      <div className='flex'>
-                        <button className={'cursor-auto text-base text-neutral-400 font-medium pr-4'}>-</button>
-                        <input type='text' className={`text-base font-medium text-slate-500 w-7 text-center focus:outline-none`} value={dataCheckout?.item_details?.quantity} readOnly />
-                        <button className={'text-base cursor-auto text-neutral-400 font-medium pl-4'}>+</button>
-                      </div>
-                    </div>
-                  </div>
+                  ))
+                }
+                <div className='flex justify-end mt-3'>
+                  <h1 className='text-textSecondary font-bold'>Subtotal : Rp{(dataCheckout?.transaction_details?.gross_amount).toLocaleString('id', 'ID')}</h1>
                 </div>
                 <h1 className='text-textPrimary font-medium mb-3 mt-3'>Shipping Address</h1>
                 <div className='border p-4 rounded-md flex justify-between'>

@@ -49,6 +49,26 @@ const getShippingAddressByUserId = async (req, res) => {
   }
 }
 
+const getAddressByUserIdAndAddressId = async (req, res) => {
+  try {
+    const data = {
+      userId: req.query.userId,
+      shippingId: req.query.shippingId
+    }
+
+    const response = await userService.getShippingAddressById(data)
+    res.status(200).json({
+      status: true,
+      data: response
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
 const addShippingAddress = async (req, res) => {
   try {
     const body = req.body
@@ -196,5 +216,6 @@ export const userController = {
   getShippingAddressByUserId,
   updateStatusShippingToTrue,
   addImageProfile,
-  updateImageProfile
+  updateImageProfile,
+  getAddressByUserIdAndAddressId
 }

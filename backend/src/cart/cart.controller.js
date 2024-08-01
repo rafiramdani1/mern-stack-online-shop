@@ -25,6 +25,7 @@ const addCartProduct = async (req, res) => {
       msg: 'Product berhasil ditambahkan ke keranjang!'
     })
   } catch (error) {
+    console.log(error)
     res.status(400).json({
       status: false,
       msg: error.message

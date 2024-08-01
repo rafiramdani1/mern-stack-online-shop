@@ -46,6 +46,17 @@ const getShippingAddressByUserId = async (userId) => {
   return shippingAddress
 }
 
+const getShippingAddressById = async (data) => {
+  await getProfileById(data.userId)
+  const shippingAddress = await userRepository.findShippingAddressById(data)
+
+  if (!shippingAddress) {
+    throw Error('Data shipping not found!')
+  }
+
+  return shippingAddress
+}
+
 const addShippingAddress = async (data) => {
 
   // cek user id
@@ -177,5 +188,6 @@ export const userService = {
   deleteShippingAddress,
   updateStatusShippingToTrue,
   uploadImageUserProfile,
-  updateImageUserProfile
+  updateImageUserProfile,
+  getShippingAddressById
 }
