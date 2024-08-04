@@ -34,6 +34,7 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
   const [dropdownShipping, setDropdownShipping] = useState(false)
   const [msg, setMsg] = useState('')
   const [tokenReqMidtrans, setTokenReqMidtrans] = useState('')
+  const [idTrx, setIdTrx] = useState('')
 
   const shippingStatusTrue = userShippingAddress?.data?.addresses.find(address => address.status === true)
 
@@ -58,8 +59,12 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
   }
 
   const handleCloseModalCheckout = async () => {
-    window.location.reload()
-    close()
+    if (tokenReqMidtrans) {
+      navigate(`/users/order_status?transaction_id=${idTrx}`)
+    } else {
+      window.location.reload()
+      close()
+    }
   }
 
   const { refetch: refetchGetCarts } = useGetCartsQuery()
@@ -76,19 +81,20 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
     try {
       const response = await createTrasaction(dataCheckout)
       if (response && response.data.status === 'success') {
+        setIdTrx(response.data.data.id)
         await refetchGetCarts()
         setTokenReqMidtrans(response.data.data.snap_token)
         snapEmbed(response.data.data.snap_token, 'snap-container', {
           onSuccess: function (result) {
             console.log('success', result)
-            navigate(`/users/order-status?transaction_id=${response.data.data.id}`)
+            navigate(`/users/order_status?transaction_id=${response.data.data.id}`)
           },
           onPending: function (result) {
             console.log('pending', result)
-            navigate(`/users/order-status?transaction_id=${response.data.data.id}`)
+            navigate(`/users/order_status?transaction_id=${response.data.data.id}`)
           },
           onClose: function () {
-            navigate(`/users/order-status?transaction_id=${response.data.data.id}`)
+            navigate(`/users/order_status?transaction_id=${response.data.data.id}`)
           }
         })
       }

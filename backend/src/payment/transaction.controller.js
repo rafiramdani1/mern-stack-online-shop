@@ -187,6 +187,6 @@ export const transactionNotification = async (req, res) => {
       msg: 'OK'
     })
   } catch (error) {
-
+    console.log(error)
   }
 }

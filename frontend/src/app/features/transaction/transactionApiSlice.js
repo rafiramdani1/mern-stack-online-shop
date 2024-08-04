@@ -8,8 +8,17 @@ export const transactionApiSLice = apiSlice.injectEndpoints({
         method: 'POST',
         body: data
       })
+    }),
+    getOrderSnapBySnapToken: builder.query({
+      query: snapToken => ({
+        url: `/transaction/snap/${snapToken}`,
+        method: 'GET'
+      })
     })
   })
 })
 
-export const { useCreateTrasactionMutation } = transactionApiSLice
+export const {
+  useCreateTrasactionMutation,
+  useGetOrderSnapBySnapTokenQuery,
+} = transactionApiSLice

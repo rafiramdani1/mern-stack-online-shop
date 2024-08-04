@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '../../features/auth/authSlice'
 import { useGetProfileQuery, useGetShippingAddressByUserQuery } from '../../features/user/userApiSlice'
 import Checkout from '../checkout/Checkout'
+import LoadingSpinner from '../layouts/LoadingSpinner'
 
 const Carts = ({ open, close, carts }) => {
 
@@ -70,38 +71,11 @@ const Carts = ({ open, close, carts }) => {
     })
 
     setModalCheckout(true)
-
-    // const itemsCarts = carts.data.map(item => ({
-    //   product_id: item.productId._id,
-    //   price: item.productId.price,
-    //   name: item.productId.title,
-    //   quantity: item.qty,
-    //   productImage: item.productId.url,
-    //   total: item.total,
-    //   size: {
-    //     size: item.size.size,
-    //     sizeId: item.size._id
-    //   }
-    // }))
-
-    // setDataCheckout({
-    //   ...dataCheckout,
-    //   transaction_details: {
-    //     gross_amount: totalPrice
-    //   },
-    //   item_details: itemsCarts,
-    //   customer_details: {
-    //     user_id: user?.userId,
-    //     first_name: getProfile?.username,
-    //     last_name: '',
-    //     email: getProfile?.email,
-    //     phone: getProfile?.user_details?.phone
-    //   }
-    // })
   }
 
   return (
     <>
+      {isLoading ? <LoadingSpinner /> : null}
       {modalCheckout ? <Checkout close={() => setModalCheckout(false)} dataCheckout={dataCheckout} userShippingAddress={userShippingAddress} /> : null}
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={close}>

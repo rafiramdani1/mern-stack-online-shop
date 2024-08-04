@@ -49,6 +49,7 @@ const DetailProductUser = () => {
   const [errors, setErrors] = useState('')
   const [modalCheckout, setModalCheckout] = useState(false)
   const [dataCheckout, setDataCheckout] = useState({})
+  const [isLoadingSelectSize, setIsLoadingSelectSize] = useState(false)
 
   // state cart
   const [cartSizeId, setCartSizeId] = useState('')
@@ -58,6 +59,7 @@ const DetailProductUser = () => {
 
   // handle select size product
   const selectSize = async (id) => {
+    setIsLoadingSelectSize(true)
     setErrors('')
     dispatch(setPrice(product?.product.price))
     setIncrementCount(false)
@@ -69,11 +71,15 @@ const DetailProductUser = () => {
     setCartNote('')
     try {
       const response = await dispatch(getSizeProductById(id))
-      setCartSizeId(response.data._id)
-      setCartSize(response.data.size)
-      setCartStock(response.data.stock)
-      setActiveBoxSize(id)
+      if (response.status) {
+        setCartSizeId(response.data._id)
+        setCartSize(response.data.size)
+        setCartStock(response.data.stock)
+        setActiveBoxSize(id)
+        setIsLoadingSelectSize(false)
+      }
     } catch (error) {
+      setIsLoadingSelectSize(false)
       console.log(error)
     }
   }
@@ -192,7 +198,7 @@ const DetailProductUser = () => {
 
   return (
     <>
-      {loadingAddCart || isLoading ? <LoadingSpinner /> : null}
+      {loadingAddCart || isLoading || isLoadingSelectSize ? <LoadingSpinner /> : null}
       {isSuccess && msgSuccess !== '' ? <ModalSuccess msg={msgSuccess} close={handleCloseModalSuccess} /> : null}
       {modalCheckout ? <Checkout close={() => setModalCheckout(false)} dataCheckout={dataCheckout} userShippingAddress={userShippingAddress} /> : null}
       {errors !== '' ? <ModalConfirm msg={errors} onCancel={() => setErrors('')} onConfirm={handleConfirmAddShipping} /> : null}
