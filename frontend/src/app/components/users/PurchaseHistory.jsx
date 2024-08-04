@@ -15,12 +15,12 @@ const PurchaseHistory = () => {
     <div className='px-3'>
 
       {orders?.data?.length > 0 ? orders?.data.map(item => (
-        <div className='border rounded-md p-4 mb-3'>
+        <div className='border rounded-md p-4 mb-3' key={item._id}>
           <div className='flex mb-5'>
             <h2 className='text-textSecondary text-sm'>{format(item.created_at, "MMMM d, yyyy HH:mm:ss")}</h2>
           </div>
           {item.order_items[0].items.map(item => (
-            <div className='flex justify-between self-center items-center'>
+            <div className='flex justify-between self-center items-center' key={item._id}>
               <div className='flex mb-4 gap-3 self-center items-center'>
                 <div className='w-24'>
                   <img src={item.product_info.url} />

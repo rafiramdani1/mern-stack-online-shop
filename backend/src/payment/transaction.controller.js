@@ -3,6 +3,8 @@ import { FRONT_END_URL, MIDTRANS_APP_URL, MIDTRANS_SERVER_KEY, PENDING_PAYMENT }
 import { transactionRepository } from './trasaction.repository.js'
 import { userService } from '../user/user.service.js'
 import { cartRepository } from '../cart/cart.repository.js'
+import crypto from 'crypto'
+import { orderService } from '../order/order.service.js'
 
 export const createTrasaction = async (req, res) => {
   try {
@@ -135,5 +137,56 @@ export const getSnapRedirectUrl = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
+  }
+}
+
+const updateStatusBaseOnMidtransResponse = async (transaction_id, data) => {
+  const hash = crypto.createHash('sha512').update(`${transaction_id}${data.status_code}${data.gross_amount}${MIDTRANS_SERVER_KEY}`).digest('hex')
+  if (data.signature_key !== hash) {
+    return {
+      status: false,
+      msg: 'Invalid Signature Key'
+    }
+  }
+
+  let response = null
+  let transactionStatus = data.transaction_status
+  let fraudStatus = data.fraud_status
+
+  if (transactionStatus == 'capture') {
+    if (fraudStatus == 'accept') {
+      // ubah status menjadi dikemas
+    }
+  } else if (transactionStatus == 'settlement') {
+    // ubah status menjadi dikemas
+  } else if (transactionStatus == 'cancel' ||
+    transactionStatus == 'deny' ||
+    transactionStatus == 'expire') {
+    // ubah status menjadi cancelled
+  } else if (transactionStatus == 'pending') {
+    // ubah status menjadi pending
+  }
+
+  return {
+    status: true,
+    response: response
+  }
+}
+
+export const transactionNotification = async (req, res) => {
+  try {
+    const data = req.body
+
+    const getOrderByTransactionId = await orderService.getOrderByTransactionId(data.order_id)
+    if (getOrderByTransactionId) {
+      console.log(getOrderByTransactionId)
+    }
+
+    res.status(200).json({
+      status: true,
+      msg: 'OK'
+    })
+  } catch (error) {
+
   }
 }

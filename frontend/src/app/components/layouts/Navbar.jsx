@@ -6,17 +6,18 @@ import { useLogoutMutation } from '../../features/auth/authApiSlice'
 import { useGetCategoriesQuery } from '../../features/categories/categoriesApiSlice'
 import { useGetCartsQuery } from '../../features/cart/cartApiSlice'
 import Carts from '../cart/Carts'
-import { resetFilterProduct, resetPaginationProduct, resetSearchKeyword, resetSortProduct, selectCurrentPageProduct, setPaginationProduct } from '../../features/products/productsSlice'
+import { resetFilterProduct, resetPaginationProduct, resetSearchKeyword, resetSortProduct, setPaginationProduct } from '../../features/products/productsSlice'
 import anime from 'animejs'
 import { fetchSubCategoriesByCategoryId } from '../../features/sub-categories/subCategoriesSlice'
 import { selectCurrentColumnCategories, selectCurrentFilterSearchCategories, selectCurrentLimitCategories, selectCurrentPageCategories, selectCurrentSearchKeywordCategories, selectCurrentSortDirectionCategories } from '../../features/categories/categoriesSlice'
 import { IoCartOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa6";
-import { IoIosNotificationsOutline, IoMdArrowDropdown, IoMdArrowRoundDown } from "react-icons/io";
+import { IoIosNotificationsOutline, IoMdArrowDropdown } from "react-icons/io";
 import { CiSettings, CiHeart, CiLogout } from "react-icons/ci";
 import { FaRegUserCircle } from 'react-icons/fa'
 import { TiClipboard } from "react-icons/ti";
 import 'animate.css/animate.min.css';
+import LoadingSpinner from './LoadingSpinner'
 
 const Navbar = () => {
   const dispatch = useDispatch()
@@ -72,9 +73,6 @@ const Navbar = () => {
     }
     setShowCarts(!showCarts)
   }
-
-  // global state
-  const pageProduct = useSelector(selectCurrentPageProduct)
 
   const handleSearch = async (e) => {
     e.preventDefault()
@@ -136,6 +134,7 @@ const Navbar = () => {
 
   return (
     <>
+      {isLoading ? <LoadingSpinner /> : null}
       <div className=''>
         <div className='flex'>
           <div className='flex w-1/3 justify-start self-center'>
@@ -365,8 +364,8 @@ const Navbar = () => {
               </div>
             ))}
           </ul>
-        </div >
-      </div >
+        </div>
+      </div>
     </>
   )
 }

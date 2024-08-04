@@ -9,6 +9,7 @@ import ReactPaginate from 'react-paginate';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { useGetSizesQuery } from '../../features/sizes/sizesApiSlice';
 import { useDebounce } from 'use-debounce';
+import LoadingSpinner from '../layouts/LoadingSpinner';
 
 const ProductsSearchResults = () => {
   const location = useLocation();
@@ -125,6 +126,7 @@ const ProductsSearchResults = () => {
 
   return (
     <>
+      {isLoading ? <LoadingSpinner /> : null}
       <div className='mt-48 px-56 mb-40'>
         <div className='flex gap-3'>
           <div className='w-1/4'>

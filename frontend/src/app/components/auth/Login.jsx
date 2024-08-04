@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 import AlertErrors from '../layouts/AlertErrors'
 import { useLoginMutation } from '../../features/auth/authApiSlice'
 import { setCredentials } from '../../features/auth/authSlice'
+import LoadingSpinner from '../layouts/LoadingSpinner'
 
 const Login = () => {
 
@@ -42,6 +43,7 @@ const Login = () => {
 
   return (
     <>
+      {isLoading ? <LoadingSpinner /> : null}
       <section>
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className='flex self-center items-center gap-3 mb-2'>

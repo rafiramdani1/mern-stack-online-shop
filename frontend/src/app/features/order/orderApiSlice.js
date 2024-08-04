@@ -7,7 +7,7 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         url: `/order/${userId}`
       })
     }),
-    getOrderByTransactionId: builder.query({
+    getSnapOrderByTransactionId: builder.query({
       query: transactionId => ({
         url: `/order?transaction_id=${transactionId}`
       })
@@ -17,5 +17,5 @@ export const orderApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetOrderByUserIdQuery,
-  useGetOrderByTransactionIdQuery,
+  useGetSnapOrderByTransactionIdQuery,
 } = orderApiSlice

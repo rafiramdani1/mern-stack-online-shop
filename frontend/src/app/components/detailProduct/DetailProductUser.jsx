@@ -192,7 +192,7 @@ const DetailProductUser = () => {
 
   return (
     <>
-      {loadingAddCart ? <LoadingSpinner /> : null}
+      {loadingAddCart || isLoading ? <LoadingSpinner /> : null}
       {isSuccess && msgSuccess !== '' ? <ModalSuccess msg={msgSuccess} close={handleCloseModalSuccess} /> : null}
       {modalCheckout ? <Checkout close={() => setModalCheckout(false)} dataCheckout={dataCheckout} userShippingAddress={userShippingAddress} /> : null}
       {errors !== '' ? <ModalConfirm msg={errors} onCancel={() => setErrors('')} onConfirm={handleConfirmAddShipping} /> : null}

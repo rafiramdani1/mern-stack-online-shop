@@ -34,7 +34,7 @@ const login = async (req, res) => {
     const user = await authService.loginUser(userData)
 
     res.cookie('refreshToken', user.refreshToken, {
-      httpOnly: true, maxAge: 24 * 60 * 60 * 1000
+      httpOnly: true, maxAge: 24 * 60 * 60 * 1000, secure: true, sameSite: 'none'
     })
     res.status(200).json({
       status: true,
@@ -73,7 +73,11 @@ const verifyEmail = async (req, res) => {
 const refreshToken = async (req, res) => {
   // cek token
   const refreshToken = req.cookies.refreshToken
-  if (!refreshToken) return res.sendStatus(401)
+
+  if (!refreshToken) return res.status(401).json({
+    status: 401,
+    msg: 'error disini'
+  })
 
   // cek user
   const user = await userRepository.findUserByRefreshToken(refreshToken)
