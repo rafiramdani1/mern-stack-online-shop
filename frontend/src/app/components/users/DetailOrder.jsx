@@ -7,6 +7,7 @@ import { BsArrowDown } from "react-icons/bs";
 import LoadingSpinner from '../layouts/LoadingSpinner'
 import { useDispatch } from 'react-redux'
 import { getSnapBySnapToken } from '../../features/transaction/transactionSlice'
+import { BEING_PACKED, BEING_SENT, CANCELED, PENDING_PAYMENT } from '../../utils/const'
 
 const DetailOrder = () => {
   const location = useLocation()
@@ -107,12 +108,18 @@ const DetailOrder = () => {
                   </div>
                 </div>
                 <div className='flex justify-between mt-5'>
-                  <h1 className='text-white bg-red-500 font-bold'>{order?.data[0]?.status}</h1>
+                  <h1 className={`text-white font-bold 
+                      ${order?.data[0]?.status === PENDING_PAYMENT || order?.data[0]?.status === CANCELED ? 'bg-red-500'
+                      : order?.data[0]?.status === BEING_PACKED || order?.data[0]?.status === BEING_SENT ? 'bg-green-500'
+                        : 'bg-red-500'}`
+                  }>
+                    {order?.data[0]?.status}
+                  </h1>
                   <h1 className='text-textSecondary font-bold text-xl'>Subtotal : Rp{(order?.data[0]?.total)?.toLocaleString('id', 'ID')}</h1>
                 </div>
               </div>
               {
-                btnPay ?
+                btnPay && order?.data[0]?.status === PENDING_PAYMENT ?
                   <>
                     <div className='flex justify-center mt-10'>
                       <BsArrowDown className='text-4xl text-textSecondary' />
@@ -129,7 +136,7 @@ const DetailOrder = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div >
     </>
   )
 }

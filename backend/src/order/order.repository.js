@@ -340,7 +340,19 @@ const findOrderByTransactionId = async (transactionId) => {
   return order
 }
 
+const updateStatusOrderByTransactionId = async (transaction_id, status) => {
+  const order = await Orders.updateOne(
+    { transaction_id }, {
+    $set: {
+      status
+    }
+  }
+  )
+  return order
+}
+
 export const orderRepository = {
   findAllOrderByUserId,
   findOrderByTransactionId,
+  updateStatusOrderByTransactionId
 }

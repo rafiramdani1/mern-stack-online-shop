@@ -5,6 +5,7 @@ import { useGetOrderByUserIdQuery } from '../../features/order/orderApiSlice'
 import { format } from 'date-fns'
 import { Link } from 'react-router-dom'
 import LoadingSpinner from '../layouts/LoadingSpinner'
+import { BEING_PACKED, BEING_SENT, CANCELED, PENDING_PAYMENT } from '../../utils/const'
 
 const PurchaseHistory = () => {
 
@@ -44,7 +45,9 @@ const PurchaseHistory = () => {
               <h2 className='my-3 text-textPrimary font-medium text-base'>Subtotal : Rp{item.total.toLocaleString('id', 'ID')}</h2>
             </div>
             <div className='flex justify-between'>
-              <h1 className='font-medium text-base bg-red-500 self-center text-white'>{item.status}</h1>
+              <h1 className={`font-medium text-base self-center text-white ${item.status === PENDING_PAYMENT || item.status === CANCELED ? 'bg-red-500'
+                : item.status === BEING_PACKED || item.status === BEING_SENT ? 'bg-green-500'
+                  : 'bg-red-500'}`}>{item.status}</h1>
               <Link to={`/users/order_status?transaction_id=${item.transaction_id}`} className='border px-2 py-1 rounded-md bg-bgSecondaryDark text-white hover:bg-bgPrimaryDark'>Detail</Link>
             </div>
           </div>

@@ -1,10 +1,11 @@
 import { nanoid } from 'nanoid'
-import { FRONT_END_URL, MIDTRANS_APP_URL, MIDTRANS_SERVER_KEY, PENDING_PAYMENT } from '../../utils/constant.js'
+import { BEING_PACKED, CANCELED, FRONT_END_URL, MIDTRANS_APP_URL, MIDTRANS_SERVER_KEY, PENDING_PAYMENT } from '../../utils/constant.js'
 import { transactionRepository } from './trasaction.repository.js'
 import { userService } from '../user/user.service.js'
 import { cartRepository } from '../cart/cart.repository.js'
 import crypto from 'crypto'
 import { orderService } from '../order/order.service.js'
+import { orderRepository } from '../order/order.repository.js'
 
 export const createTrasaction = async (req, res) => {
   try {
@@ -155,16 +156,20 @@ const updateStatusBaseOnMidtransResponse = async (transaction_id, data) => {
 
   if (transactionStatus == 'capture') {
     if (fraudStatus == 'accept') {
-      // ubah status menjadi dikemas
+      const transaction = await orderRepository.updateStatusOrderByTransactionId(transaction_id, BEING_PACKED)
+      response = transaction
     }
   } else if (transactionStatus == 'settlement') {
-    // ubah status menjadi dikemas
+    const transaction = await orderRepository.updateStatusOrderByTransactionId(transaction_id, BEING_PACKED)
+    response = transaction
   } else if (transactionStatus == 'cancel' ||
     transactionStatus == 'deny' ||
     transactionStatus == 'expire') {
-    // ubah status menjadi cancelled
+    const transaction = await orderRepository.updateStatusOrderByTransactionId(transaction_id, CANCELED)
+    response = transaction
   } else if (transactionStatus == 'pending') {
-    // ubah status menjadi pending
+    const transaction = await orderRepository.updateStatusOrderByTransactionId(transaction_id, PENDING_PAYMENT)
+    response = transaction
   }
 
   return {
@@ -178,15 +183,19 @@ export const transactionNotification = async (req, res) => {
     const data = req.body
 
     const getOrderByTransactionId = await orderService.getOrderByTransactionId(data.order_id)
-    if (getOrderByTransactionId) {
-      console.log(getOrderByTransactionId)
-    }
+
+    const updateStatusOrder = await updateStatusBaseOnMidtransResponse(getOrderByTransactionId[0].transaction_id, data)
 
     res.status(200).json({
       status: true,
-      msg: 'OK'
+      msg: 'OK',
+      response: updateStatusOrder
     })
   } catch (error) {
     console.log(error)
+    res.status(500).json({
+      status: false,
+      msg: error.message
+    })
   }
 }
