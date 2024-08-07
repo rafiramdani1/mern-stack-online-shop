@@ -65,7 +65,7 @@ const Navbar = () => {
 
   const [logout, { isLoading }] = useLogoutMutation()
   const { data: categories } = useGetCategoriesQuery(queryOptionsCategories)
-  const { data: carts } = useGetCartsQuery()
+  const { data: carts, isLoading: isLoadingGetCarts, isSuccess: isSuccessGetCarts } = useGetCartsQuery()
 
   const handleShowCarts = () => {
     if (!isAuth || !token || !user) {
@@ -208,7 +208,7 @@ const Navbar = () => {
                       {isAuth ?
                         <input
                           className={carts?.data?.length === 0 ? 'hidden' : 'absolute w-4 text-center left-5 bg-bgPrimaryDark rounded-md font-semibold text-textPrimaryLight text-xs focus: outline-none cursor-pointer'}
-                          defaultValue={carts?.data?.length}
+                          defaultValue={carts?.data?.length !== 0 ? carts?.data?.length : ''}
                         />
                         : ''
                       }
