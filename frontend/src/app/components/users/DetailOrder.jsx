@@ -8,6 +8,7 @@ import LoadingSpinner from '../layouts/LoadingSpinner'
 import { useDispatch } from 'react-redux'
 import { getSnapBySnapToken } from '../../features/transaction/transactionSlice'
 import { BEING_PACKED, BEING_SENT, CANCELED, PENDING_PAYMENT } from '../../utils/const'
+import { useCancelTransactionByTransactionIdMutation } from '../../features/transaction/transactionApiSlice'
 
 const DetailOrder = () => {
   const location = useLocation()
@@ -18,6 +19,15 @@ const DetailOrder = () => {
   const [isLoadingGetSnap, setIsloadingGetSnap] = useState(false)
 
   const { data: order, isLoading } = useGetSnapOrderByTransactionIdQuery(transactionId)
+
+  const [cancelTransaction, { isLoading: isLoadingCancelTrx, isSuccess }] = useCancelTransactionByTransactionIdMutation()
+  const handleCancelTransaction = async (transaction_id) => {
+    try {
+      const response = await cancelTransaction({ transactionId: transaction_id }).unwrap()
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const { snapEmbed } = useSnap()
 
@@ -57,9 +67,16 @@ const DetailOrder = () => {
         <div className='flex justify-center'>
           <div className='flex justify-between gap-5'>
             <div>
-              <h2 className='text-textSecondary font-bold text-xl'>Product Information</h2>
-              <div>
-                <h2 className='text-textPrimary text-sm font-medium'>Transaction ID : {order?.data[0]?.transaction_id}</h2>
+              <div className='flex justify-between'>
+                <div>
+                  <h2 className='text-textSecondary font-bold text-xl'>Product Information</h2>
+                  <h2 className='text-textPrimary text-sm font-medium'>Transaction ID : {order?.data[0]?.transaction_id}</h2>
+                </div>
+                <div>
+                  <button onClick={() => handleCancelTransaction(order?.data[0]?.transaction_id)} className={`${!btnPay && order?.data[0]?.status === PENDING_PAYMENT && !isLoadingGetSnap ? 'border bg-red-500 px-2 py-1 rounded-sm font-semibold text-white hover:bg-red-600 text-sm' : 'hidden'} `}>Cancel Transaction</button>
+                </div>
+              </div>
+              <div className='mt-5'>
                 {
                   order?.data[0]?.order_items[0]?.items.map(item => (
                     <div className='mb-2' key={item._id}>
@@ -128,7 +145,8 @@ const DetailOrder = () => {
                       <button onClick={getSnap} className={`border bg-bgSecondaryDark px-2 py-1 text-white rounded-md hover:bg-bgPrimaryDark`}>Continue Payment</button>
                     </div>
                   </>
-                  : ''
+                  :
+                  ''
               }
             </div>
             <div>
@@ -136,7 +154,7 @@ const DetailOrder = () => {
             </div>
           </div>
         </div>
-      </div >
+      </div>
     </>
   )
 }

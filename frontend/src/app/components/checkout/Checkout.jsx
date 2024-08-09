@@ -28,7 +28,7 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
   const { snapEmbed } = useSnap()
 
   // use get shipping user
-  const { refetch } = useGetShippingAddressByUserQuery()
+  const { refetch, isLoading: isLoadingGetShippingAddress } = useGetShippingAddressByUserQuery()
 
   // local state
   const [dropdownShipping, setDropdownShipping] = useState(false)
@@ -105,7 +105,7 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
 
   return (
     <>
-      {isLoading || isLoadingPayment ? <LoadingSpinner /> : null}
+      {isLoading || isLoadingPayment || isLoadingGetShippingAddress ? <LoadingSpinner /> : null}
       {isSuccess && msg !== '' ? <ModalSuccess msg={msg} close={() => setMsg('')} /> : null}
       <div
         ref={layoutModalRef}

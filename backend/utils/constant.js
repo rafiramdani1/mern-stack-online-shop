@@ -6,3 +6,4 @@ export const BEING_SENT = 'BEING_SENT'
 export const MIDTRANS_SERVER_KEY = process.env.SERVER_KEY_MIDTRANS
 export const FRONT_END_URL = process.env.base_url
 export const MIDTRANS_APP_URL = process.env.MIDTRANS_APP_URL
+export const MIDTRANS_API_URL = process.env.MIDTRANS_API_URL

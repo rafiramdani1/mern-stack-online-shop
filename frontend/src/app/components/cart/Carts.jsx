@@ -31,8 +31,8 @@ const Carts = ({ open, close, carts }) => {
     }
   }, [carts]);
 
-  const [deleteCart, { isLoading, isSuccess }] = useDeleteCartMutation()
-  const { refetch } = useGetCartsQuery()
+  const [deleteCart, { isLoading: isLoadingDeleteCart, isSuccess }] = useDeleteCartMutation()
+  const { refetch, isLoading: isLoadingGetCarts } = useGetCartsQuery()
 
   const deleteCartProduct = async (idCart) => {
     try {
@@ -75,7 +75,7 @@ const Carts = ({ open, close, carts }) => {
 
   return (
     <>
-      {isLoading ? <LoadingSpinner /> : null}
+      {isLoadingDeleteCart || isLoadingGetCarts ? <LoadingSpinner /> : null}
       {modalCheckout ? <Checkout close={() => setModalCheckout(false)} dataCheckout={dataCheckout} userShippingAddress={userShippingAddress} /> : null}
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={close}>

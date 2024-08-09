@@ -1,11 +1,12 @@
 import { nanoid } from 'nanoid'
-import { BEING_PACKED, CANCELED, FRONT_END_URL, MIDTRANS_APP_URL, MIDTRANS_SERVER_KEY, PENDING_PAYMENT } from '../../utils/constant.js'
+import { BEING_PACKED, CANCELED, FRONT_END_URL, MIDTRANS_API_URL, MIDTRANS_APP_URL, MIDTRANS_SERVER_KEY, PENDING_PAYMENT } from '../../utils/constant.js'
 import { transactionRepository } from './trasaction.repository.js'
 import { userService } from '../user/user.service.js'
 import { cartRepository } from '../cart/cart.repository.js'
 import crypto from 'crypto'
 import { orderService } from '../order/order.service.js'
 import { orderRepository } from '../order/order.repository.js'
+import fetch from 'node-fetch'
 
 export const createTrasaction = async (req, res) => {
   try {
@@ -197,5 +198,25 @@ export const transactionNotification = async (req, res) => {
       status: false,
       msg: error.message
     })
+  }
+}
+
+export const cancelTransactionByTransactionId = async (req, res) => {
+  try {
+    const transactionId = req.body.transactionId
+
+    const authString = btoa(`${MIDTRANS_SERVER_KEY}`)
+    const response = await fetch(`${MIDTRANS_API_URL}/v2/${transactionId}/cancel`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Basic ${authString}`
+      }
+    })
+
+    console.log(response)
+  } catch (error) {
+    console.log(error)
   }
 }

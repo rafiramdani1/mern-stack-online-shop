@@ -14,6 +14,13 @@ export const transactionApiSLice = apiSlice.injectEndpoints({
         url: `/transaction/snap/${snapToken}`,
         method: 'GET'
       })
+    }),
+    cancelTransactionByTransactionId: builder.mutation({
+      query: transactionId => ({
+        url: '/transaction/cancel',
+        method: 'POST',
+        body: transactionId
+      })
     })
   })
 })
@@ -21,4 +28,5 @@ export const transactionApiSLice = apiSlice.injectEndpoints({
 export const {
   useCreateTrasactionMutation,
   useGetOrderSnapBySnapTokenQuery,
+  useCancelTransactionByTransactionIdMutation
 } = transactionApiSLice
