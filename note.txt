@@ -3,12 +3,9 @@ https://www.creative-tim.com/product/material-tailwind-kit-react#
 
 GITHUB: https://github.com/rafiramdani1/mern-stack-online-shop
 
-// DEV 
-  Set exp token 1 d
-
 // BUG : 
 1. bug slug product http://localhost:5173/product/nike-air-jordan-1-high-court-purple-2.0
-2. bug cart -> if have done checkout
+2. bug finish redirect_url payment success
 
 featured
-- change status order 
+- decrement qty product if payment success 

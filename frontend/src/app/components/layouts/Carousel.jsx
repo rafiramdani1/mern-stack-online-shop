@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules'
 import 'swiper/css';
 import 'swiper/css/pagination';
-// import 'swiper/css/navigation';
 import { GrPrevious, GrNext } from "react-icons/gr";
 
-// modules = { [Autoplay, Pagination, Navigation]}
 const Carousel = () => {
   const [isHovered, setIsHovered] = React.useState(false);
   const swiperRef = useRef(null);
@@ -75,15 +73,14 @@ const Carousel = () => {
             }}
           >
             <SwiperSlide>
-              <img className='w-[100%] h-[28vh] rounded-md' src='/img/banner/2.jpg' alt='Banner 2' />
+              <img className='w-full h-[28vh] rounded-md' srcSet='/img/banner/2.webp' alt='Banner 2' loading='lazy' />
             </SwiperSlide>
             <SwiperSlide>
-              <img className='w-[100%] h-[28vh] rounded-md' src='/img/banner/3.jpg' alt='Banner 3' />
+              <img className='w-full h-[28vh] rounded-md' srcSet='/img/banner/3.webp' alt='Banner 3' loading='lazy' />
             </SwiperSlide>
             <SwiperSlide>
-              <img className='w-[100%] h-[28vh] rounded-md' src='/img/banner/1.jpg' alt='Banner 1' />
+              <img className='w-full h-[28vh] rounded-md' srcSet='/img/banner/1.webp' alt='Banner 1' loading='lazy' />
             </SwiperSlide>
-            {/* Custom navigation buttons */}
           </Swiper>
           <div ref={prevRef} className={isHovered ? 'swiper-button-prev absolute top-[34.4%] z-10 left-44' : 'hidden'} onClick={handlePrevClick}>
             <GrPrevious className='text-4xl text-neutral-500 hover:text-textSecondary cursor-pointer' />

@@ -303,6 +303,7 @@ const findOrderByTransactionId = async (transactionId) => {
           $push: {
             product_id: '$order_items.items.product_id',
             qty: '$order_items.items.qty',
+            sizeOrder: '$order_items.items.sizeOrder',
             size: '$order_items.items.size',
             size_info: '$size_info',
             total: '$order_items.items.total',
@@ -351,8 +352,13 @@ const updateStatusOrderByTransactionId = async (transaction_id, status) => {
   return order
 }
 
+const updateQuantityProduct = async (data) => {
+  console.log(data)
+}
+
 export const orderRepository = {
   findAllOrderByUserId,
   findOrderByTransactionId,
-  updateStatusOrderByTransactionId
+  updateStatusOrderByTransactionId,
+  updateQuantityProduct
 }

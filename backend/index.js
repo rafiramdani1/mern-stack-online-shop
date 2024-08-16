@@ -13,6 +13,7 @@ import { cartRouter } from "./src/cart/cart.route.js";
 import { userRouter } from './src/user/user.route.js'
 import routerTrasaction from "./src/payment/transaction.route.js";
 import routerOrder from "./src/order/order.route.js";
+import compression from 'compression'
 
 export const app = express()
 dotenv.config()
@@ -21,6 +22,7 @@ dotenv.config()
 connectDb().then(() => { console.log('Connected to database') }).catch((error) => { console.log(`Error connecting to database: ${error}`) })
 
 // setup middleware
+app.use(compression())
 app.use(cors({
   credentials: true, origin: 'http://localhost:5173'
 }))

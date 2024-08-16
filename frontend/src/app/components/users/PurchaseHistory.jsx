@@ -52,7 +52,7 @@ const PurchaseHistory = () => {
             </div>
           </div>
         )) :
-          <div>
+          <div className='flex justify-center font-medium text-neutral-500 py-3'>
             <h2>no transaction data yet</h2>
           </div>
         }

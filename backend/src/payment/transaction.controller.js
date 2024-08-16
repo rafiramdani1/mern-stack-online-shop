@@ -7,6 +7,7 @@ import crypto from 'crypto'
 import { orderService } from '../order/order.service.js'
 import { orderRepository } from '../order/order.repository.js'
 import fetch from 'node-fetch'
+import { productsRepository } from '../product/product.repository.js'
 
 export const createTrasaction = async (req, res) => {
   try {
@@ -50,9 +51,9 @@ export const createTrasaction = async (req, res) => {
         }
       },
       "callbacks": {
-        finish: `${FRONT_END_URL}/order_status?transation_id=${transaction_id}`,
-        error: `${FRONT_END_URL}/order_status?transation_id=${transaction_id}`,
-        pending: `${FRONT_END_URL}/order_status?transation_id=${transaction_id}`
+        finish: `${FRONT_END_URL}/users/order_status?transation_id=${transaction_id}`,
+        error: `${FRONT_END_URL}/users/order_status?transation_id=${transaction_id}`,
+        pending: `${FRONT_END_URL}/users/order_status?transation_id=${transaction_id}`
       }
     }
 
@@ -93,6 +94,7 @@ export const createTrasaction = async (req, res) => {
     const orderItems = item_details.map(item => ({
       product_id: item.product_id,
       qty: item.quantity,
+      sizeOrder: item.size.size,
       size: item.size.sizeId,
       total: item.total
     }))
@@ -104,6 +106,7 @@ export const createTrasaction = async (req, res) => {
 
     if (createOrder) {
       await transactionRepository.createOrderItems(payloadOrderItems)
+      await productsRepository.updateQuantitySizeProduct(orderItems)
     }
 
     res.status(201).json({

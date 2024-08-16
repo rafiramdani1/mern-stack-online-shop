@@ -181,6 +181,21 @@ const deleteProduct = async (req, res) => {
   }
 }
 
+const getSizesProduct = async (req, res) => {
+  try {
+    const sizeProduct = await productsService.getSizesProduct()
+    res.status(200).json({
+      status: true,
+      data: sizeProduct
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      msg: error.message
+    })
+  }
+}
+
 const getSizeProductById = async (req, res) => {
   try {
     const idSizeProduct = req.params.id
@@ -295,4 +310,5 @@ export const productContollers = {
   deleteSizeProductById,
   getProductStatusRealese,
   editProductRealese,
+  getSizesProduct
 }

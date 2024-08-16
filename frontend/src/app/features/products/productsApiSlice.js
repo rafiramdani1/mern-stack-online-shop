@@ -111,6 +111,12 @@ export const productsSlice = apiSlice.injectEndpoints({
         method: 'PUT',
         body: data
       })
+    }),
+    getSizesProduct: builder.query({
+      query: () => ({
+        url: 'products/sizes',
+        method: 'GET'
+      })
     })
   })
 })
@@ -133,4 +139,5 @@ export const {
   useDeleteSizeProductByIdMutation,
   useGetRealeseStatusQuery,
   useUpdateProductRealeseMutation,
+  useGetSizesProductQuery,
 } = productsSlice

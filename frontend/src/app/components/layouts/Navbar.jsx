@@ -65,7 +65,7 @@ const Navbar = () => {
 
   const [logout, { isLoading }] = useLogoutMutation()
   const { data: categories } = useGetCategoriesQuery(queryOptionsCategories)
-  const { data: carts, isLoading: isLoadingGetCarts, isSuccess: isSuccessGetCarts } = useGetCartsQuery()
+  const { data: carts } = useGetCartsQuery()
 
   const handleShowCarts = () => {
     if (!isAuth || !token || !user) {
@@ -165,7 +165,6 @@ const Navbar = () => {
                 </div>
                 <input
                   ref={refInputSearch}
-                  // onClick={() => setShowHistorySearch(true)}
                   type="search"
                   autoComplete='off'
                   id="default-search"

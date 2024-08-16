@@ -21,6 +21,7 @@ productRouter.put('/:id',
 productRouter.delete('/:id', productContollers.deleteProduct)
 
 // size product
+productRouter.get('/sizes', productContollers.getSizesProduct)
 productRouter.get('/sizes/:id', productContollers.getSizeProductById)
 productRouter.post('/sizes',
   addSizeProductValidation, validationResults,

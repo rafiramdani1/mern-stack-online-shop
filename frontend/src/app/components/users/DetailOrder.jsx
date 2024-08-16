@@ -42,15 +42,15 @@ const DetailOrder = () => {
         snapEmbed(response.data.data.token, 'snap-container', {
           onSuccess: function (result) {
             console.log('success', result)
-            navigate(`/users/order_status?transaction_id=${response.data.data.transaction_details.order_id}`)
+            // navigate(`/users/order_status?transaction_id=${response.data.data.transaction_details.order_id}`)
           },
           onPending: function (result) {
             console.log('pending', result)
             setBtnPay(true)
-            navigate(`/users/order_status?transaction_id=${response.data.data.transaction_details.order_id}`)
+            // navigate(`/users/order_status?transaction_id=${response.data.data.transaction_details.order_id}`)
           },
           onClose: function () {
-            navigate(`/users/order_status?transaction_id=${response.data.data.transaction_details.order_id}`)
+            // navigate(`/users/order_status?transaction_id=${response.data.data.transaction_details.order_id}`)
           }
         })
       }
@@ -84,7 +84,7 @@ const DetailOrder = () => {
                         <img className='w-48' src={item.product_info.url} />
                         <div>
                           <h3 className='text-textPrimary font-medium tracking-tighter'>{item.product_info.title}</h3>
-                          <h3 className='text-textSecondary font-medium text-sm'>Size : {item.size_info.size}</h3>
+                          <h3 className='text-textSecondary font-medium text-sm'>Size : {item?.sizeOrder}</h3>
                           <div className='flex gap-5'>
                             <h3 className='text-textSecondary font-medium text-sm'>Rp{(item.product_info.price).toLocaleString('id', 'ID')}</h3>
                             <h3 className='text-textSecondary font-medium text-sm'>x {item.qty}</h3>

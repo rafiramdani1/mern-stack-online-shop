@@ -583,6 +583,21 @@ const updateProductStatusToUnrealese = async (data) => {
   }
 }
 
+const findAllSizeProduct = async () => {
+  const sizeProducts = await sizeProductModel.find()
+  return sizeProducts
+}
+
+const updateQuantitySizeProduct = async (data) => {
+  for (const item of data) {
+    const sizeProduct = await sizeProductModel.findById(item.size)
+    if (sizeProduct) {
+      sizeProduct.stock -= item.qty
+      await sizeProduct.save()
+    }
+  }
+}
+
 export const productsRepository = {
   findAllProducts,
   findProductById,
@@ -604,5 +619,7 @@ export const productsRepository = {
   findProductStatusRealeseById,
   updateProductStatusToRealese,
   updateProductStatusToUnrealese,
-  findProductByIds
+  findProductByIds,
+  updateQuantitySizeProduct,
+  findAllSizeProduct
 }

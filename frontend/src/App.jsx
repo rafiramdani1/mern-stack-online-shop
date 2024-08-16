@@ -32,8 +32,6 @@ function App() {
 
       <BrowserRouter>
         <Routes>
-
-          {/* ROUTE AUTH */}
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/user/verify/:id/:token' element={<VerifyEmail />} />

@@ -9,6 +9,7 @@ import { useCreateTrasactionMutation } from '../../features/transaction/transact
 import { useLocation, useNavigate } from 'react-router-dom'
 import useSnap from '../hooks/useSnap'
 import { useGetCartsQuery } from '../../features/cart/cartApiSlice'
+import { useGetProductsQuery, useGetSizesProductQuery } from '../../features/products/productsApiSlice'
 
 const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
 
@@ -68,6 +69,7 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
   }
 
   const { refetch: refetchGetCarts } = useGetCartsQuery()
+  const { refetch: refetchGetSizeProduct } = useGetSizesProductQuery()
 
   const [createTrasaction, { isLoading: isLoadingPayment, isError: isErrorPayment, isSuccess: isSuccessPayment }] = useCreateTrasactionMutation()
   const handleCheckout = async () => {
@@ -83,6 +85,7 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
       if (response && response.data.status === 'success') {
         setIdTrx(response.data.data.id)
         await refetchGetCarts()
+        await refetchGetSizeProduct()
         setTokenReqMidtrans(response.data.data.snap_token)
         snapEmbed(response.data.data.snap_token, 'snap-container', {
           onSuccess: function (result) {

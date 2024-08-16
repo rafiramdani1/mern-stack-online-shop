@@ -8,7 +8,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { GrPrevious, GrNext } from "react-icons/gr";
 import LoadingSpinner from '../layouts/LoadingSpinner'
-import { resetPaginationProduct, selectCurrentColumnProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct } from '../../features/products/productsSlice'
+import { resetPaginationProduct, selectCurrentFilterSearchProduct, selectCurrentLimitProduct, selectCurrentMaxPriceProduct, selectCurrentMinPriceProduct, selectCurrentPageProduct, selectCurrentProductRealese, selectCurrentSearchKeywordProduct, selectCurrentSizesProduct, selectCurrentSortDirectionProduct } from '../../features/products/productsSlice'
 import 'swiper/css/pagination';
 import { CiHeart, CiMail, CiShoppingCart } from 'react-icons/ci'
 
@@ -28,7 +28,6 @@ const ProductsLists = ({ category, limitParams }) => {
   // global state
   const page = useSelector(selectCurrentPageProduct)
   const limit = useSelector(selectCurrentLimitProduct)
-  const column = useSelector(selectCurrentColumnProduct)
   const sortDirection = useSelector(selectCurrentSortDirectionProduct)
   const filter_search = useSelector(selectCurrentFilterSearchProduct)
   const searchKeyword = useSelector(selectCurrentSearchKeywordProduct)

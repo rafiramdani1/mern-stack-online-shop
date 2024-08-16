@@ -276,6 +276,11 @@ const updateProductRealese = async (data) => {
   return productRealese
 }
 
+const getSizesProduct = async () => {
+  const sizeProducts = await productsRepository.findAllSizeProduct()
+  return sizeProducts
+}
+
 export const productsService = {
   getAllProducts,
   getProductById,
@@ -292,4 +297,5 @@ export const productsService = {
   deleteSizeProductById,
   getProductStatusRealese,
   updateProductRealese,
+  getSizesProduct,
 }
