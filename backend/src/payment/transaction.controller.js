@@ -24,6 +24,13 @@ export const createTrasaction = async (req, res) => {
 
     const user = await userService.getProfileById(customer_details.user_id)
 
+    if (!user.user_details) {
+      return res.status(400).json({
+        errorDetail: 'error_incomplete_profile',
+        msg: 'please complete your profile'
+      })
+    }
+
     const payloadReqToken = {
       "transaction_details": {
         "order_id": transaction_id,
@@ -39,7 +46,7 @@ export const createTrasaction = async (req, res) => {
         "name": item.name.length > 50 ? item.name.substring(0, 50) : item.name
       })),
       "customer_details": {
-        "first_name": user.user_details.fullname,
+        "first_name": user?.user_details.fullname,
         "last_name": "",
         "email": user.email,
         "phone": user.user_details.phone,

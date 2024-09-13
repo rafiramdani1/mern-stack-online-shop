@@ -10,10 +10,11 @@ import { selectCurrentToken, selectCurrentUser } from '../../features/auth/authS
 import { useAddCartMutation, useGetCartsQuery } from '../../features/cart/cartApiSlice'
 import LoadingSpinner from '../layouts/LoadingSpinner'
 import ModalSuccess from '../layouts/ModalSuccess'
-import axios from 'axios'
 import { useGetProfileQuery, useGetShippingAddressByUserQuery } from '../../features/user/userApiSlice'
 import Checkout from '../checkout/Checkout'
 import ModalConfirm from '../layouts/ModalConfirm'
+import axios from 'axios'
+import { apiSlice } from '../../api/apiSlice'
 
 const sanitazeHTML = (html) => {
   return DOMPurify.sanitize(html)
@@ -57,6 +58,8 @@ const DetailProductUser = () => {
   const [cartStock, setCartStock] = useState('')
   const [cartNote, setCartNote] = useState('')
 
+  // refetch size product
+
   // handle select size product
   const selectSize = async (id) => {
     setIsLoadingSelectSize(true)
@@ -69,8 +72,13 @@ const DetailProductUser = () => {
     setCartSize('')
     setCartStock('')
     setCartNote('')
+
+    // Reset cache for the size product before fetching
+    dispatch(apiSlice.util.resetApiState());
+
     try {
       const response = await dispatch(getSizeProductById(id))
+      // const response = await axios.get(`http://localhost:3001/api/products/sizes/${id}`)
       if (response.status) {
         setCartSizeId(response.data._id)
         setCartSize(response.data.size)
@@ -128,7 +136,6 @@ const DetailProductUser = () => {
     try {
       const response = await addCart(data).unwrap()
       setMsgSuccess(response.msg)
-      console.log(response)
       // call refetch carts
       await refetch()
 

@@ -12,7 +12,6 @@ export const getSizeProductById = (id) => async (dispatch, getState) => {
 
 export const searchProductQuery = (data) => async (dispatch, getState) => {
   try {
-    console.log(data)
     const response = await dispatch(apiSlice.endpoints.getProducts.initiate(data))
     return response
   } catch (error) {

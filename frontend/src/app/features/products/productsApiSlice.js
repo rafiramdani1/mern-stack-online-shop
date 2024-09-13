@@ -68,8 +68,8 @@ export const productsSlice = apiSlice.injectEndpoints({
     getSizeProductById: builder.query({
       query: (idSize) => ({
         url: `products/sizes/${idSize}`,
-        method: 'GET'
-      })
+        method: 'GET',
+      }),
     }),
     addSizeProduct: builder.mutation({
       query: (sizesProduct) => ({

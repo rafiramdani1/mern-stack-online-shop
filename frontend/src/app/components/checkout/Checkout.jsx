@@ -9,12 +9,13 @@ import { useCreateTrasactionMutation } from '../../features/transaction/transact
 import { useLocation, useNavigate } from 'react-router-dom'
 import useSnap from '../hooks/useSnap'
 import { useGetCartsQuery } from '../../features/cart/cartApiSlice'
-import { useGetProductsQuery, useGetSizesProductQuery } from '../../features/products/productsApiSlice'
+import ModalConfirm from '../layouts/ModalConfirm'
 
 const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
 
   const layoutModalRef = useRef(null)
   const navigate = useNavigate()
+  const [modalConfirm, setModalConfirm] = useState(false)
 
   useEffect(() => {
     anime({
@@ -69,7 +70,6 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
   }
 
   const { refetch: refetchGetCarts } = useGetCartsQuery()
-  const { refetch: refetchGetSizeProduct } = useGetSizesProductQuery()
 
   const [createTrasaction, { isLoading: isLoadingPayment, isError: isErrorPayment, isSuccess: isSuccessPayment }] = useCreateTrasactionMutation()
   const handleCheckout = async () => {
@@ -82,10 +82,13 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
     }
     try {
       const response = await createTrasaction(dataCheckout)
+      if (response.error.data.errorDetail === 'error_incomplete_profile') {
+        setModalConfirm(true)
+        return
+      }
       if (response && response.data.status === 'success') {
         setIdTrx(response.data.data.id)
         await refetchGetCarts()
-        await refetchGetSizeProduct()
         setTokenReqMidtrans(response.data.data.snap_token)
         snapEmbed(response.data.data.snap_token, 'snap-container', {
           onSuccess: function (result) {
@@ -106,10 +109,17 @@ const Checkout = ({ close, dataCheckout, userShippingAddress }) => {
     }
   }
 
+  const handleConfirmModal = async () => {
+    close()
+    setModalConfirm(false)
+    navigate('/users')
+  }
+
   return (
     <>
       {isLoading || isLoadingPayment || isLoadingGetShippingAddress ? <LoadingSpinner /> : null}
       {isSuccess && msg !== '' ? <ModalSuccess msg={msg} close={() => setMsg('')} /> : null}
+      {modalConfirm ? <ModalConfirm onCancel={() => setModalConfirm(false)} msg={'Please complete your profile'} onConfirm={handleConfirmModal} /> : null}
       <div
         ref={layoutModalRef}
         className="justify-center flex h-[80vh] overflow-auto fixed inset-0 z-[70] outline-none focus:outline-none">

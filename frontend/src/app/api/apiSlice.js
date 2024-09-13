@@ -2,8 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { setCredentials, setLogOut } from '../features/auth/authSlice'
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: 'https://b3ed-103-180-167-10.ngrok-free.app/api', // problem refresh token unauthorized
-  // baseUrl: 'http://localhost:3001/api',
+  // baseUrl: 'https://9622-103-191-155-238.ngrok-free.app/api',
+  baseUrl: 'http://localhost:3001/api',
   credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.token

@@ -1,3 +1,4 @@
+export const API_SERVER_URL = import.meta.env.API_SERVER_URL
 export const MIDTRANS_CLIENT_ID = import.meta.env.VITE_MIDTRANS_CLIENT_ID
 export const MIDTRANS_API_URL = import.meta.env.VITE_MIDTRANS_API_URL;
 export const PENDING_PAYMENT = import.meta.env.VITE_STATUS_ORDER_PENDING_PAYMENT

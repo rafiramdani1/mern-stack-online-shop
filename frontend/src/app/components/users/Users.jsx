@@ -60,9 +60,6 @@ const Users = () => {
             </div>
           </div>
           <div className='w-9/12 bg-white'>
-            <div className='mb-2'>
-              <h2 className='text-base text-textPrimary font-medium'>Muhammad Rafi Ramdani</h2>
-            </div>
             <div className='border mb-3 rounded-md'>
               <div className='border-b mb-2'>
                 <ul className='flex items-center gap-1 text-sm font-medium text-textSecondary p-1'>
